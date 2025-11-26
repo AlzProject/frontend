@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { useState } from 'react';
 import MMSETest from './tests/MMSE/MMSETest';
 import MOCATest from './tests/MoCA/MOCATest';
 import ACEIIITest from './tests/ACE-III/ACEIIITest';
@@ -42,17 +43,57 @@ const tests = [
   }
 ];
 
+const translations = {
+  en: {
+    title: "Smriti (स्मृति)",
+    home: "Home",
+    tests: "Tests",
+    about: "About",
+    onlineAssessment: "Online Assessment",
+    heroTitle: "Comprehensive Mental Health Screening",
+    heroSubtitle: "Accessible and professional cognitive assessments to help identify potential concerns early.",
+    startAssessment: "Start Assessment",
+    footer: "© 2025 Smriti (स्मृति). All rights reserved.",
+    switchLang: "मराठी"
+  },
+  mr: {
+    title: "स्मृति (Smriti)",
+    home: "मुख्यपृष्ठ",
+    tests: "चाचण्या",
+    about: "आमच्याबद्दल",
+    onlineAssessment: "ऑनलाइन मूल्यांकन",
+    heroTitle: "सर्वसमावेशक मानसिक आरोग्य तपासणी",
+    heroSubtitle: "संभाव्य चिंता लवकर ओळखण्यासाठी सुलभ आणि व्यावसायिक संज्ञानात्मक मूल्यांकन.",
+    startAssessment: "चाचणी सुरू करा",
+    footer: "© २०२५ स्मृति (Smriti). सर्व हक्क राखीव.",
+    switchLang: "English"
+  }
+};
+
 function LandingPage() {
+  const [language, setLanguage] = useState('mr');
+  const t = translations[language];
+
+  const toggleLanguage = () => {
+    setLanguage(prev => prev === 'en' ? 'mr' : 'en');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">MindCheck</h1>
-          <nav>
-            <Link to="/" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</Link>
-            <a href="#tests" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Tests</a>
-            <a href="#" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">About</a>
+          <h1 className="text-3xl font-bold text-gray-900">{t.title}</h1>
+          <nav className="flex items-center space-x-4">
+            <Link to="/" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.home}</Link>
+            <a href="#tests" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.tests}</a>
+            <a href="#" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.about}</a>
+            <button 
+              onClick={toggleLanguage}
+              className="ml-4 px-3 py-1 border border-indigo-600 text-indigo-600 rounded-md text-sm font-medium hover:bg-indigo-50"
+            >
+              {t.switchLang}
+            </button>
           </nav>
         </div>
       </header>
@@ -60,12 +101,12 @@ function LandingPage() {
       <main>
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">Online Assessment</h2>
+            <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">{t.onlineAssessment}</h2>
             <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              Comprehensive Mental Health Screening
+              {t.heroTitle}
             </p>
             <p className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
-              Accessible and professional cognitive assessments to help identify potential concerns early.
+              {t.heroSubtitle}
             </p>
           </div>
 
@@ -83,7 +124,7 @@ function LandingPage() {
                         to={`/test/${test.id}`}
                         className="inline-flex items-center justify-center px-4 py-2 border border-transparent font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
                       >
-                        Start Assessment
+                        {t.startAssessment}
                       </Link>
                     </div>
                   </div>
@@ -97,7 +138,7 @@ function LandingPage() {
       <footer className="bg-white border-t border-gray-200 mt-12">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           <p className="text-center text-base text-gray-400">
-            &copy; 2025 MindCheck. All rights reserved.
+            {t.footer}
           </p>
         </div>
       </footer>

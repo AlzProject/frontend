@@ -7,11 +7,17 @@ import {
   QuestionWrapper
 } from '../../components/QuestionTypes';
 import api from '../../api';
+import mocaData from './MOCA_Questions.json';
 
 // SVG Data URIs for background images
 const TRAIL_MAKING_SVG = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIzMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjI0NSIgeT0iMzA1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjE8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iMTUwIiBjeT0iMjAwIiByPSIxNSIgc3Ryb2tlPSJibGFjayIgZmlsbD0id2hpdGUiLz4KICA8dGV4dCB4PSIxNDUiIHk9IjIwNSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2Ij5BPC90ZXh0PgogIAogIDxjaXJjbGUgY3g9IjM1MCIgY3k9IjIwMCIgcj0iMTUiIHN0cm9rZT0iYmxhY2siIGZpbGw9IndoaXRlIi8+CiAgPHRleHQgeD0iMzQ1IiB5PSIyMDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+MjwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9Ijk1IiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+QjwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSI0MDAiIGN5PSIxMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjM5NSIgeT0iMTA1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjM8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iNTAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjE5NSIgeT0iNTUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+QzwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSIzMDAiIGN5PSIzNTAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjI5NSIgeT0iMzU1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjQ8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iNTAiIGN5PSIzMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjQ1IiB5PSIzMDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+RDwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSI0NTAiIGN5PSIzMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjQ0NSIgeT0iMzA1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjU8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iMjUwIiBjeT0iMTUwIiByPSIxNSIgc3Ryb2tlPSJibGFjayIgZmlsbD0id2hpdGUiLz4KICA8dGV4dCB4PSIyNDUiIHk9IjE1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2Ij5FPC90ZXh0PgogIDx0ZXh0IHg9IjI1MCIgeT0iMTgwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiPkVuZDwvdGV4dD4KPC9zdmc+`;
 
 const CUBE_SVG = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB4PSI1MCIgeT0iMTUwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHBvbHlsaW5lIHBvaW50cz0iNTAsMTUwIDEwMCwxMDAgMjAwLDEwMCAyMDAsMjAwIDE1MCwyNTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPgogIDxsaW5lIHgxPSIxNTAiIHkxPSIxNTAiIHgyPSIyMDAiIHkyPSIxMDAiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPgogIDxsaW5lIHgxPSIxNTAiIHkxPSIyNTAiIHgyPSIxNTAiIHkyPSIxNTAiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPgogIDxsaW5lIHgxPSIxNTAiIHkxPSIyNTAiIHgyPSI1MCIgeTI9IjI1MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI1LDUiLz4KICA8bGluZSB4MT0iNTAiIHkxPSIyNTAiIHgyPSI1MCIgeTI9IjE1MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPGxpbmUgeDE9IjEwMCIgeTE9IjEwMCIgeDI9IjEwMCIgeTI9IjIwMCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI1LDUiLz4KICA8bGluZSB4MT0iMTAwIiB5MT0iMjAwIiB4Mj0iMjAwIiB5Mj0iMjAwIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8bGluZSB4MT0iMTAwIiB5MT0iMjAwIiB4Mj0iNTAiIHkyPSIyNTAiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNSw1Ii8+Cjwvc3ZnPg==`;
+
+const SVG_MAP = {
+  'TRAIL_MAKING_SVG': TRAIL_MAKING_SVG,
+  'CUBE_SVG': CUBE_SVG
+};
 
 // Internal component for Memory Registration (MoCA version - 5 words)
 const MemoryRegistrationQuestion = ({ title, description, words, onComplete }) => {
@@ -163,6 +169,7 @@ const MOCATest = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attemptId, setAttemptId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState('en');
 
   useEffect(() => {
     const initTest = async () => {
@@ -170,6 +177,9 @@ const MOCATest = () => {
         // 1. Fetch tests to find MoCA
         const testsRes = await api.get('/tests');
         const tests = testsRes.data.items || [];
+        console.log(tests);
+        console.log(testsRes);
+
         const mocaTest = tests.find(t => t.name.toLowerCase().includes('moca') || t.name.toLowerCase().includes('montreal'));
         
         if (mocaTest) {
@@ -189,158 +199,15 @@ const MOCATest = () => {
     initTest();
   }, []);
 
-  const sections = [
-    {
-      title: "Visuospatial / Executive (5 points)",
-      questions: [
-        {
-          id: "visuo_trail",
-          type: "drawing",
-          title: "Trail Making",
-          description: "Draw a line from a number to a letter in ascending order (1-A-2-B-3-C-4-D-5-E). End at E.",
-          backgroundImage: TRAIL_MAKING_SVG
-        },
-        {
-          id: "visuo_cube",
-          type: "drawing",
-          title: "Copy Cube",
-          description: "Copy the drawing of the cube as accurately as possible.",
-          backgroundImage: CUBE_SVG
-        },
-        {
-          id: "visuo_clock",
-          type: "drawing",
-          title: "Draw Clock",
-          description: "Draw a clock. Put in all the numbers and set the time to 10 past 11.",
-        }
-      ]
-    },
-    {
-      title: "Naming (3 points)",
-      questions: [
-        {
-          id: "naming_animals",
-          type: "naming_grouped",
-          title: "Naming",
-          description: "Identify the animals shown below.",
-          items: [
-            { label: "Animal 1", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/020_The_lion_king_Snyggve_in_the_Serengeti_National_Park_Photo_by_Giles_Laurent.jpg/1200px-020_The_lion_king_Snyggve_in_the_Serengeti_National_Park_Photo_by_Giles_Laurent.jpg", placeholder: "Enter animal name" },
-            { label: "Animal 2", img: "https://d1jyxxz9imt9yb.cloudfront.net/medialib/5483/image/s768x1300/XKP144_reduced.jpg", placeholder: "Enter animal name" },
-            { label: "Animal 3", img: "https://cdn.britannica.com/94/152294-050-92FE0C83/Arabian-dromedary-camel.jpg", placeholder: "Enter animal name" }
-          ]
-        }
-      ]
-    },
-    {
-      title: "Memory Registration (No points)",
-      questions: [
-        {
-          id: "memory_reg",
-          type: "memory_registration",
-          title: "Memory Registration",
-          description: "Read the list of words. You will have 10 seconds to memorize them.",
-          words: ["Face", "Velvet", "Church", "Daisy", "Red"]
-        }
-      ]
-    },
-    {
-      title: "Attention (6 points)",
-      questions: [
-        {
-          id: "attention_digits_fwd",
-          type: "digit_span",
-          title: "Digit Span Forward",
-          description: "Read the sequence of numbers displayed one by one. Then enter them in the exact order.",
-          sequence: [2, 1, 8, 5, 4],
-          subType: "Forward"
-        },
-        {
-          id: "attention_digits_bwd",
-          type: "digit_span",
-          title: "Digit Span Backward",
-          description: "Read the sequence of numbers displayed one by one. Then enter them in BACKWARD order.",
-          sequence: [7, 4, 2],
-          subType: "Backward"
-        },
-        {
-          id: "attention_vigilance",
-          type: "vigilance",
-          title: "Vigilance",
-          description: "Tap on every letter 'A' in the sequence below.",
-          sequence: "FBACMNAAJKLBAFAKDEAAAJAMOFAAB"
-        },
-        {
-          id: "attention_serial7",
-          type: "text_grouped",
-          title: "Serial 7s",
-          description: "Subtract 7 from 100 five times (93, 86, 79, 72, 65).",
-          fields: ["100-7", "-7", "-7", "-7", "-7"]
-        }
-      ]
-    },
-    {
-      title: "Language (3 points)",
-      questions: [
-        {
-          id: "language_repetition_1",
-          type: "text",
-          title: "Sentence Repetition 1",
-          description: "Read the following sentence, then type it exactly as shown: 'I only know that John is the one to help today.'",
-          placeholder: "Type the sentence exactly"
-        },
-        {
-          id: "language_repetition_2",
-          type: "text",
-          title: "Sentence Repetition 2",
-          description: "Read the following sentence, then type it exactly as shown: 'The cat always hid under the couch when dogs were in the room.'",
-          placeholder: "Type the sentence exactly"
-        },
-        {
-          id: "language_fluency",
-          type: "text",
-          title: "Verbal Fluency",
-          description: "Name as many words as possible starting with 'F' in 1 minute. (Target >= 11)",
-          placeholder: "Enter count or list words..."
-        }
-      ]
-    },
-    {
-      title: "Abstraction (2 points)",
-      questions: [
-        {
-          id: "abstraction_pairs",
-          type: "text_grouped",
-          title: "Abstraction",
-          description: "What is the similarity between these pairs?",
-          fields: ["Train - Bicycle", "Watch - Ruler"]
-        }
-      ]
-    },
-    {
-      title: "Delayed Recall (5 points)",
-      questions: [
-        {
-          id: "recall_delayed",
-          type: "text_grouped",
-          title: "Delayed Recall",
-          description: "What were the 5 words from earlier?",
-          fields: ["Word 1", "Word 2", "Word 3", "Word 4", "Word 5"]
-        }
-      ]
-    },
-    {
-      title: "Orientation (6 points)",
-      questions: [
-        {
-          id: "orientation_full",
-          type: "text_grouped",
-          title: "Orientation",
-          description: "Enter the current date and place details.",
-          fields: ["Date", "Month", "Year", "Day", "Place", "City"]
-        }
-      ]
+  const sections = mocaData[language].sections;
+
+  const findQuestion = (id) => {
+    for (const section of sections) {
+      const q = section.questions.find(q => q.id == id);
+      if (q) return q;
     }
-  ];
+    return null;
+  };
 
   const handleResponseChange = (questionId, value, fieldIndex = null) => {
     setResponses(prev => {
@@ -374,9 +241,23 @@ const MOCATest = () => {
     setIsSubmitting(true);
     try {
       if (attemptId) {
+        const promises = Object.entries(responses).map(async ([qId, val]) => {
+          const question = findQuestion(qId);
+          if (!question) return null;
+
+          const payload = {
+            attemptId: attemptId,
+            questionId: parseInt(qId),
+            answerText: typeof val === 'string' ? val : JSON.stringify(val)
+          };
+          
+          return api.post('/responses', payload);
+        });
+
+        await Promise.all(promises);
+
         await api.post(`/attempts/${attemptId}`, {
-          submit_time: new Date().toISOString(),
-          responses: responses // Send all responses
+          submit_time: new Date().toISOString()
         });
         alert("MoCA Test submitted successfully!");
       } else {
@@ -397,14 +278,19 @@ const MOCATest = () => {
   }
 
   const renderQuestion = (q) => {
-    switch (q.type) {
+    const config = q.config || {};
+    const type = config.frontend_type || q.type;
+    const title = config.title || q.title;
+    const description = q.text || q.description;
+
+    switch (type) {
       case 'memory_registration':
         return (
           <MemoryRegistrationQuestion
             key={q.id}
-            title={q.title}
-            description={q.description}
-            words={q.words}
+            title={title}
+            description={description}
+            words={config.words || q.words}
             onComplete={() => {}}
           />
         );
@@ -412,10 +298,10 @@ const MOCATest = () => {
         return (
           <DigitSpanQuestion
             key={q.id}
-            title={q.title}
-            description={q.description}
-            sequence={q.sequence}
-            type={q.subType}
+            title={title}
+            description={description}
+            sequence={config.sequence || q.sequence}
+            type={config.subType || q.subType}
             value={responses[q.id]}
             onChange={(val) => handleResponseChange(q.id, val)}
           />
@@ -424,9 +310,9 @@ const MOCATest = () => {
         return (
           <VigilanceQuestion
             key={q.id}
-            title={q.title}
-            description={q.description}
-            sequence={q.sequence}
+            title={title}
+            description={description}
+            sequence={config.sequence || q.sequence}
             value={responses[q.id]}
             onChange={(val) => handleResponseChange(q.id, val)}
           />
@@ -435,18 +321,18 @@ const MOCATest = () => {
         return (
           <TextResponseQuestion
             key={q.id}
-            title={q.title}
-            description={q.description}
+            title={title}
+            description={description}
             value={responses[q.id] || ''}
             onChange={(val) => handleResponseChange(q.id, val)}
-            placeholder={q.placeholder}
+            placeholder={config.placeholder || q.placeholder}
           />
         );
       case 'text_grouped':
         return (
-          <QuestionWrapper key={q.id} title={q.title} description={q.description}>
+          <QuestionWrapper key={q.id} title={title} description={description}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {q.fields.map((field, idx) => (
+              {(config.fields || q.fields).map((field, idx) => (
                 <div key={idx}>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{field}</label>
                   <input
@@ -462,9 +348,9 @@ const MOCATest = () => {
         );
       case 'naming_grouped':
         return (
-          <QuestionWrapper key={q.id} title={q.title} description={q.description}>
+          <QuestionWrapper key={q.id} title={title} description={description}>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {q.items.map((item, idx) => (
+              {(config.items || q.items).map((item, idx) => (
                 <div key={idx} className="flex flex-col items-center">
                   <img src={item.img} alt={item.label} className="w-32 h-32 object-cover rounded-md mb-3 border" />
                   <label className="block text-sm font-medium text-gray-700 mb-1">{item.label}</label>
@@ -484,9 +370,9 @@ const MOCATest = () => {
         return (
           <MultipleChoiceQuestion
             key={q.id}
-            title={q.title}
-            description={q.description}
-            options={q.options}
+            title={title}
+            description={description}
+            options={config.options || q.options}
             selectedValues={responses[q.id] ? [responses[q.id]] : []}
             onChange={(val) => handleResponseChange(q.id, val[0])}
             type="single"
@@ -496,10 +382,10 @@ const MOCATest = () => {
         return (
           <DrawingCanvasQuestion
             key={q.id}
-            title={q.title}
-            description={q.description}
+            title={title}
+            description={description}
             onSave={(dataUrl) => handleResponseChange(q.id, dataUrl)}
-            backgroundImage={q.backgroundImage}
+            backgroundImage={SVG_MAP[config.backgroundImageKey || q.backgroundImageKey] || q.backgroundImage}
           />
         );
       default:
@@ -510,7 +396,15 @@ const MOCATest = () => {
   return (
     <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Montreal Cognitive Assessment (MoCA)</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-900">{mocaData[language].title}</h1>
+          <button
+            onClick={() => setLanguage(prev => prev === 'en' ? 'mr' : 'en')}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+          >
+            {language === 'en' ? 'मराठी' : 'English'}
+          </button>
+        </div>
         <p className="mt-2 text-gray-600">Section {currentSection + 1} of {sections.length}</p>
         <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
           <div 

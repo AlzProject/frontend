@@ -7,6 +7,7 @@ import {
   QuestionWrapper
 } from '../../components/QuestionTypes';
 import api from '../../api';
+import mmseData from './MMSE_Questions.json';
 
 // Internal component for Memory Registration
 const MemoryRegistrationQuestion = ({ title, description, words, fields, value, onChange }) => {
@@ -72,6 +73,7 @@ const MMSETest = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attemptId, setAttemptId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState('en'); // 'en' or 'mr'
 
   useEffect(() => {
     const initTest = async () => {
@@ -99,119 +101,7 @@ const MMSETest = () => {
   }, []);
 
   // Define the test structure based on MMSE_STRUCTURE.md
-  const sections = [
-    {
-      title: "Orientation (10 points)",
-      questions: [
-        {
-          id: "orientation_time",
-          type: "text_grouped",
-          title: "Time Orientation",
-          description: "Please enter the current date and time details.",
-          fields: ["Year", "Season", "Date", "Day", "Month"]
-        },
-        {
-          id: "orientation_place",
-          type: "text_grouped",
-          title: "Place Orientation",
-          description: "Where are we now?",
-          fields: ["State", "County", "Town", "Hospital/Building", "Floor"]
-        }
-      ]
-    },
-    {
-      title: "Registration (3 points)",
-      questions: [
-        {
-          id: "registration_memory",
-          type: "memory_registration",
-          title: "Immediate Registration",
-          description: "Memorize the 3 words shown. You will have 5 seconds.",
-          words: ["Apple", "Penny", "Table"],
-          fields: ["Word 1", "Word 2", "Word 3"]
-        }
-      ]
-    },
-    {
-      title: "Attention and Calculation (5 points)",
-      questions: [
-        {
-          id: "attention_task",
-          type: "text_grouped",
-          title: "Attention Task (Choose One)",
-          description: "Option A: Subtract 7 from 100, and then subtract 7 from that result, continuing 5 times. OR Option B: Spell the word WORLD backwards.",
-          fields: ["100-7 (or Letter 1)", "-7 (or Letter 2)", "-7 (or Letter 3)", "-7 (or Letter 4)", "-7 (or Letter 5)"]
-        }
-      ]
-    },
-    {
-      title: "Recall (3 points)",
-      questions: [
-        {
-          id: "recall_objects",
-          type: "text_grouped",
-          title: "Delayed Recall",
-          description: "What were the 3 objects asked to remember earlier?",
-          fields: ["Object 1", "Object 2", "Object 3"]
-        }
-      ]
-    },
-    {
-      title: "Language and Praxis (9 points)",
-      questions: [
-        {
-          id: "language_naming",
-          type: "text_grouped",
-          title: "Naming",
-          description: "Name the objects described or shown.",
-          fields: ["Object 1 (Used for writing)", "Object 2 (Used for telling time)"]
-        },
-        {
-          id: "language_repetition",
-          type: "text",
-          title: "Repetition",
-          description: "Repeat the phrase exactly: 'No ifs, ands, or buts.'",
-          placeholder: "Type the phrase exactly"
-        },
-        {
-          id: "language_command",
-          type: "mcq",
-          title: "3-Stage Command",
-          description: "Select the correct order of actions: Take paper in right hand, fold in half, put on floor.",
-          options: [
-            { label: "Take -> Fold -> Floor", value: "correct" },
-            { label: "Fold -> Take -> Floor", value: "wrong1" },
-            { label: "Floor -> Fold -> Take", value: "wrong2" },
-            { label: "Take -> Floor -> Fold", value: "wrong3" }
-          ]
-        },
-        {
-          id: "language_reading",
-          type: "mcq",
-          title: "Reading",
-          description: "Read the instruction: 'CLOSE YOUR EYES'. Did you close your eyes?",
-          options: [
-            { label: "Yes", value: "yes" },
-            { label: "No", value: "no" }
-          ]
-        },
-        {
-          id: "language_writing",
-          type: "text_multiline",
-          title: "Writing",
-          description: "Write a complete sentence (must contain a subject and a verb).",
-          placeholder: "Type a sentence here..."
-        },
-        {
-          id: "language_copying",
-          type: "drawing",
-          title: "Copying",
-          description: "Copy the design of two intersecting pentagons.",
-          // In a real app, background image of pentagons would be passed
-        }
-      ]
-    }
-  ];
+  const sections = mmseData[language];
 
   const handleResponseChange = (questionId, value, fieldIndex = null) => {
     setResponses(prev => {
@@ -349,12 +239,42 @@ const MMSETest = () => {
 
   const currentSectionData = sections[currentSection];
 
+  const uiText = {
+    en: {
+      title: "MMSE Assessment",
+      section: "Section",
+      of: "of",
+      previous: "Previous",
+      next: "Next Section",
+      submit: "Submit Assessment",
+      submitting: "Submitting..."
+    },
+    mr: {
+      title: "MMSE मूल्यमापन",
+      section: "विभाग",
+      of: "पैकी",
+      previous: "मागे",
+      next: "पुढील विभाग",
+      submit: "मूल्यमापन जमा करा",
+      submitting: "जमा करत आहे..."
+    }
+  };
+  const t = uiText[language];
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setLanguage(language === 'en' ? 'mr' : 'en')}
+              className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              {language === 'en' ? 'Switch to Marathi (मराठी)' : 'Switch to English'}
+            </button>
+          </div>
 
-          <h1 className="text-3xl font-bold text-gray-900">MMSE Assessment</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t.title}</h1>
           <div className="mt-2 w-full bg-gray-200 rounded-full h-2.5">
             <div 
               className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" 
@@ -362,7 +282,7 @@ const MMSETest = () => {
             ></div>
           </div>
           <p className="mt-2 text-sm text-gray-500 text-right">
-            Section {currentSection + 1} of {sections.length}
+            {t.section} {currentSection + 1} {t.of} {sections.length}
           </p>
         </div>
 
@@ -381,14 +301,14 @@ const MMSETest = () => {
             disabled={currentSection === 0}
             className={`px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${currentSection === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            Previous
+            {t.previous}
           </button>
           <button
             onClick={handleNext}
             disabled={isSubmitting}
             className="px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            {currentSection === sections.length - 1 ? (isSubmitting ? 'Submitting...' : 'Submit Assessment') : 'Next Section'}
+            {currentSection === sections.length - 1 ? (isSubmitting ? t.submitting : t.submit) : t.next}
           </button>
         </div>
       </div>

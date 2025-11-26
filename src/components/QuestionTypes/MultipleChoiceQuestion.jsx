@@ -43,9 +43,18 @@ const MultipleChoiceQuestion = ({
               onChange={() => handleChange(option.value)}
               className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
             />
-            <span className="ml-3 block text-sm font-medium text-gray-700">
-              {option.label}
-            </span>
+            <div className="ml-3 flex flex-col">
+              {option.img && (
+                <img 
+                  src={option.img} 
+                  alt={option.label} 
+                  className="mb-2 h-32 w-32 object-cover rounded-md border border-gray-200"
+                />
+              )}
+              <span className="block text-sm font-medium text-gray-700">
+                {option.label}
+              </span>
+            </div>
           </label>
         ))}
       </div>

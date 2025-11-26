@@ -90,5 +90,41 @@ The ACE-III is a comprehensive cognitive screening tool that assesses five domai
 - **Identifying Letters (4):** Identify fragmented letters.
 
 ## Implementation Notes
+- **Self-Administration:** The test is designed for online self-administration without a doctor present.
+- **Voice Input:** Several sections (Registration, Name & Address, Fluency, Reading) require microphone access and voice recording.
+- **Microphone Permission:** The test checks for microphone permission before starting.
+- **Images:** Placeholder images are used for Naming, Comprehension, and Visuospatial tasks.
 - **Name & Address:** "Harry Barnes, 73 Orchard Close, Kingsbridge, Devon".
-- **Images:** Need placeholders for Naming (12 items) and Visuospatial tasks.
+
+## Section Breakdown (Updated for Self-Admin)
+
+### 1. Attention (18 points)
+- **Orientation (10):** Text input for Time and Place.
+- **Registration (3):** **Voice Input.** User repeats 3 words (Lemon, Key, Ball) and audio is recorded.
+- **Concentration (5):** Serial subtraction (Text input).
+
+### 2. Memory (26 points)
+- **Recall of 3 Words (3):** Text input.
+- **Anterograde Memory (7):** **Voice Input.** User reads the address aloud and audio is recorded.
+- **Retrograde Memory (4):** Text input.
+- **Delayed Recall (7):** Text input.
+- **Recognition (5):** MCQ.
+
+### 3. Fluency (14 points)
+- **Letter Fluency (7):** **Voice Input.** User speaks words starting with 'P'.
+- **Category Fluency (7):** **Voice Input.** User speaks animal names.
+
+### 4. Language (26 points)
+- **Comprehension (3):** MCQ with Images. "Point to the..." (Click the image).
+- **Writing (2):** Text input.
+- **Repetition (4):** Text input (or Voice - currently Text in JSON).
+- **Naming (12):** Text input (Name the object).
+- **Reading (1):** **Voice Input.** User reads words aloud.
+- **Comprehension Association (4):** MCQ with Images.
+
+### 5. Visuospatial (16 points)
+- **Infinity Diagram (1):** Drawing canvas.
+- **Wire Cube (2):** Drawing canvas.
+- **Clock (5):** Drawing canvas.
+- **Dot Counting (4):** Text input.
+- **Identifying Letters (4):** Text input.

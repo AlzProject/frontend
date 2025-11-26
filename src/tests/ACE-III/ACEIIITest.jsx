@@ -7,12 +7,63 @@ import {
   QuestionWrapper
 } from '../../components/QuestionTypes';
 import api from '../../api';
+import aceData from './ACEIII_Questions.json';
 
 // --- Helper Components ---
 
+const AudioRecorder = ({ onRecordingComplete, label = "Start Recording" }) => {
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [audioUrl, setAudioUrl] = useState(null);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks = [];
+      
+      recorder.ondataavailable = e => chunks.push(e.data);
+      recorder.onstop = () => {
+         const blob = new Blob(chunks, { type: 'audio/webm' });
+         const url = URL.createObjectURL(blob);
+         setAudioUrl(url);
+         onRecordingComplete(blob);
+         stream.getTracks().forEach(track => track.stop());
+      };
+      
+      recorder.start();
+      setMediaRecorder(recorder);
+      setIsRecording(true);
+    } catch (err) {
+      console.error("Error accessing microphone:", err);
+      alert("Could not access microphone. Please ensure permissions are granted.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+      setIsRecording(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center space-y-2">
+      <button 
+        onClick={isRecording ? stopRecording : startRecording}
+        className={`px-4 py-2 rounded-md text-white font-medium ${isRecording ? 'bg-red-600 hover:bg-red-700 animate-pulse' : 'bg-indigo-600 hover:bg-indigo-700'}`}
+      >
+        {isRecording ? "Stop Recording" : (audioUrl ? "Re-record" : label)}
+      </button>
+      {audioUrl && (
+        <audio controls src={audioUrl} className="mt-2" />
+      )}
+    </div>
+  );
+};
+
 // Component for Name & Address Learning
-const NameAddressLearning = ({ title, description, onComplete }) => {
-  const address = "Harry Barnes • 73 Orchard Close • Kingsbridge • Devon";
+const NameAddressLearning = ({ title, description, onComplete, address, instructionText, memorizeText, hidingText, repeatText, buttonShow, buttonNext, buttonFinish }) => {
   const [phase, setPhase] = useState('instruction'); // instruction, showing, input
   const [trial, setTrial] = useState(1);
   const [timeLeft, setTimeLeft] = useState(5);
@@ -52,13 +103,13 @@ const NameAddressLearning = ({ title, description, onComplete }) => {
       <QuestionWrapper title={`${title} - Trial ${trial}/3`} description={description}>
         <div className="text-center py-8">
           <p className="mb-4 text-gray-600">
-            I will show you a name and address. Read it and try to remember it.
+            {instructionText}
           </p>
           <button
             onClick={startTrial}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
           >
-            Show Address
+            {buttonShow}
           </button>
         </div>
       </QuestionWrapper>
@@ -67,13 +118,13 @@ const NameAddressLearning = ({ title, description, onComplete }) => {
 
   if (phase === 'showing') {
     return (
-      <QuestionWrapper title={`${title} - Trial ${trial}/3`} description="Memorize this address.">
+      <QuestionWrapper title={`${title} - Trial ${trial}/3`} description={memorizeText}>
         <div className="text-center py-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
           <h3 className="text-2xl font-bold text-indigo-600 mb-6 tracking-wider leading-loose">
             {address}
           </h3>
           <p className="text-sm text-gray-500">
-            Hiding in <span className="font-bold text-gray-900">{timeLeft}</span> seconds.
+            {hidingText} <span className="font-bold text-gray-900">{timeLeft}</span> seconds.
           </p>
         </div>
       </QuestionWrapper>
@@ -81,19 +132,22 @@ const NameAddressLearning = ({ title, description, onComplete }) => {
   }
 
   return (
-    <QuestionWrapper title={`${title} - Trial ${trial}/3`} description="Repeat the address aloud (or type it below for self-check).">
-      <div className="space-y-4">
-        <textarea
-          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-          rows={3}
-          placeholder="Type what you remember..."
+    <QuestionWrapper title={`${title} - Trial ${trial}/3`} description={repeatText}>
+      <div className="space-y-4 flex flex-col items-center">
+        <p className="text-sm text-gray-500 mb-2">Please speak the address clearly.</p>
+        <AudioRecorder 
+          onRecordingComplete={(blob) => {
+             // In a real app, we'd upload this blob. For now, we just acknowledge it.
+             console.log("Address trial recording:", blob);
+          }}
+          label="Record Address"
         />
-        <div className="flex justify-end">
+        <div className="flex justify-end w-full mt-4">
           <button
             onClick={handleNextTrial}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
           >
-            {trial < 3 ? "Next Trial" : "Finish Learning"}
+            {trial < 3 ? buttonNext : buttonFinish}
           </button>
         </div>
       </div>
@@ -110,10 +164,23 @@ const ACEIIITest = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attemptId, setAttemptId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [language, setLanguage] = useState('en');
+  const [micPermission, setMicPermission] = useState(null); // null, granted, denied
 
   useEffect(() => {
     const initTest = async () => {
       try {
+        // Check mic permission first
+        try {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+          setMicPermission('granted');
+        } catch (error) {
+          console.error("Mic permission denied:", error);
+          setMicPermission('denied');
+          setLoading(false);
+          return; // Stop initialization if mic denied
+        }
+
         const testsRes = await api.get('/tests');
         const tests = testsRes.data.items || [];
         const aceTest = tests.find(t => t.name.toLowerCase().includes('ace') || t.name.toLowerCase().includes('addenbrooke'));
@@ -134,265 +201,7 @@ const ACEIIITest = () => {
     initTest();
   }, []);
 
-  const sections = [
-    // --- ATTENTION (18) ---
-    {
-      title: "Attention - Orientation (10 points)",
-      questions: [
-        {
-          id: "att_orientation_time",
-          type: "text_grouped",
-          title: "Time Orientation",
-          description: "Enter the current time details.",
-          fields: ["Day", "Date", "Month", "Year", "Season"]
-        },
-        {
-          id: "att_orientation_place",
-          type: "text_grouped",
-          title: "Place Orientation",
-          description: "Enter the current place details.",
-          fields: ["Building", "Floor", "Town", "County", "Country"]
-        }
-      ]
-    },
-    {
-      title: "Attention - Registration (3 points)",
-      questions: [
-        {
-          id: "att_registration",
-          type: "memory_registration", // Reusing logic or simple text
-          title: "Registration",
-          description: "Repeat and memorize: LEMON, KEY, BALL.",
-          words: ["Lemon", "Key", "Ball"]
-        }
-      ]
-    },
-    {
-      title: "Attention - Concentration (5 points)",
-      questions: [
-        {
-          id: "att_serial7",
-          type: "text_grouped",
-          title: "Serial 7s",
-          description: "Subtract 7 from 100 five times.",
-          fields: ["100-7", "-7", "-7", "-7", "-7"]
-        }
-      ]
-    },
-    // --- MEMORY (26) ---
-    {
-      title: "Memory - Recall of 3 Words (3 points)",
-      questions: [
-        {
-          id: "mem_recall_3words",
-          type: "text_grouped",
-          title: "Recall of 3 Words",
-          description: "Recall the 3 words learned in the Attention section (Lemon, Key, Ball).",
-          fields: ["Word 1", "Word 2", "Word 3"]
-        }
-      ]
-    },
-    {
-      title: "Memory - Anterograde (7 points)",
-      questions: [
-        {
-          id: "mem_anterograde",
-          type: "name_address_learning",
-          title: "Name and Address Learning",
-          description: "Learn the name and address: Harry Barnes, 73 Orchard Close, Kingsbridge, Devon."
-        }
-      ]
-    },
-    {
-      title: "Memory - Retrograde (4 points)",
-      questions: [
-        {
-          id: "mem_retrograde",
-          type: "text_grouped",
-          title: "Retrograde Memory",
-          description: "Answer the following questions.",
-          fields: [
-            "Name of current Prime Minister/President",
-            "Name of a woman who was PM/President",
-            "Name of the US President",
-            "Name of US President assassinated in the 1960s"
-          ]
-        }
-      ]
-    },
-    // --- FLUENCY (14) ---
-    {
-      title: "Fluency (14 points)",
-      questions: [
-        {
-          id: "fluency_letter",
-          type: "text",
-          title: "Letter Fluency",
-          description: "Name as many words as possible starting with 'P' in 1 minute.",
-          placeholder: "List words here..."
-        },
-        {
-          id: "fluency_category",
-          type: "text",
-          title: "Category Fluency",
-          description: "Name as many animals as possible in 1 minute.",
-          placeholder: "List animals here..."
-        }
-      ]
-    },
-    // --- LANGUAGE (26) ---
-    {
-      title: "Language - Comprehension (3 points)",
-      questions: [
-        {
-          id: "lang_comprehension",
-          type: "mcq",
-          title: "Comprehension",
-          description: "Follow the command: 'Point to the one that is a fruit' (assuming images of Frog, Banana, Car).",
-          options: [
-            { label: "Frog", value: "frog" },
-            { label: "Banana", value: "banana" },
-            { label: "Car", value: "car" }
-          ]
-        }
-      ]
-    },
-    {
-      title: "Language - Writing (2 points)",
-      questions: [
-        {
-          id: "lang_writing",
-          type: "text_multiline",
-          title: "Writing",
-          description: "Write two complete sentences about your recent holiday or a hobby.",
-          placeholder: "Write here..."
-        }
-      ]
-    },
-    {
-      title: "Language - Repetition (4 points)",
-      questions: [
-        {
-          id: "lang_repetition",
-          type: "text_grouped",
-          title: "Repetition",
-          description: "Repeat the following exactly.",
-          fields: [
-            "Hippopotamus",
-            "Eccentricity",
-            "Unintelligible",
-            "Statistician"
-          ]
-        }
-      ]
-    },
-    {
-      title: "Language - Naming (12 points)",
-      questions: [
-        {
-          id: "lang_naming",
-          type: "naming_grouped",
-          title: "Naming",
-          description: "Name the objects shown.",
-          items: [
-            { label: "Item 1", img: "https://placehold.co/150?text=Watch", placeholder: "Name" },
-            { label: "Item 2", img: "https://placehold.co/150?text=Pencil", placeholder: "Name" },
-            { label: "Item 3", img: "https://placehold.co/150?text=Penguin", placeholder: "Name" },
-            { label: "Item 4", img: "https://placehold.co/150?text=Anchor", placeholder: "Name" },
-            // ... usually 12 items, shortening for demo
-            { label: "Item 5", img: "https://placehold.co/150?text=Giraffe", placeholder: "Name" },
-            { label: "Item 6", img: "https://placehold.co/150?text=Spoon", placeholder: "Name" }
-          ]
-        }
-      ]
-    },
-    {
-      title: "Language - Reading & Association (5 points)",
-      questions: [
-        {
-          id: "lang_reading",
-          type: "text",
-          title: "Reading (1 point)",
-          description: "Read the following words aloud: 'Sew', 'Pint', 'Soot', 'Dough', 'Height'.",
-          placeholder: "Note errors if any..."
-        },
-        {
-          id: "lang_assoc",
-          type: "mcq",
-          title: "Comprehension Association (4 points)",
-          description: "Match the word to the picture (simulated).",
-          options: [
-             { label: "Correct Matches", value: "correct" },
-             { label: "Incorrect", value: "incorrect" }
-          ]
-        }
-      ]
-    },
-    // --- VISUOSPATIAL (16) ---
-    {
-      title: "Visuospatial (16 points)",
-      questions: [
-        {
-          id: "visuo_infinity",
-          type: "drawing",
-          title: "Infinity Diagram",
-          description: "Copy the infinity loops.",
-          backgroundImage: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNIDUwIDUwIEMgMjAgMjAgMjAgODAgNTAgNTAgQyA4MCAyMCAxMjAgMjAgMTUwIDUwIEMgMTgwIDgwIDE4MCAyMCAxNTAgNTAgQyAxMjAgODAgODAgODAgNTAgNTAiIHN0cm9rZT0iYmxhY2siIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMyIvPjwvc3ZnPg=="
-        },
-        {
-          id: "visuo_cube",
-          type: "drawing",
-          title: "Wire Cube",
-          description: "Copy the wire cube.",
-          backgroundImage: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSI1MCIgeT0iNTAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIi8+PHJlY3QgeD0iODAiIHk9IjIwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI1MCIgeTE9IjUwIiB4Mj0iODAiIHkyPSIyMCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjEzMCIgeTE9IjUwIiB4Mj0iMTYwIiB5Mj0iMjAiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI1MCIgeTE9IjEzMCIgeDI9IjgwIiB5Mj0iMTAwIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMTMwIiB5MT0iMTMwIiB4Mj0iMTYwIiB5Mj0iMTAwIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4="
-        },
-        {
-          id: "visuo_clock",
-          type: "drawing",
-          title: "Clock Drawing",
-          description: "Draw a clock face with numbers and hands set to ten past five.",
-        },
-        {
-          id: "visuo_dots",
-          type: "text_grouped",
-          title: "Dot Counting",
-          description: "Count the dots in the squares shown (simulated).",
-          fields: ["Square 1", "Square 2", "Square 3", "Square 4"]
-        },
-        {
-          id: "visuo_letters",
-          type: "text_grouped",
-          title: "Identifying Letters",
-          description: "Identify the fragmented letters shown (simulated).",
-          fields: ["Letter 1", "Letter 2", "Letter 3", "Letter 4"]
-        }
-      ]
-    },
-    // --- MEMORY RECALL (Delayed) ---
-    {
-      title: "Memory - Delayed Recall & Recognition (12 points)",
-      questions: [
-        {
-          id: "mem_delayed",
-          type: "text_grouped",
-          title: "Delayed Recall (7 points)",
-          description: "Recall the Name and Address learned earlier.",
-          fields: ["Name", "Street", "Town", "County"]
-        },
-        {
-          id: "mem_recognition",
-          type: "mcq",
-          title: "Recognition (5 points)",
-          description: "If recall was incomplete, identify the correct parts.",
-          options: [
-            { label: "Jerry Barnes", value: "wrong1" },
-            { label: "Harry Barnes", value: "correct" },
-            { label: "Harry Bond", value: "wrong2" }
-          ]
-        }
-      ]
-    }
-  ];
+  const sections = aceData[language];
 
   const handleResponseChange = (questionId, value, fieldIndex = null) => {
     setResponses(prev => {
@@ -448,6 +257,21 @@ const ACEIIITest = () => {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   }
 
+  if (micPermission === 'denied') {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen p-4 text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">Microphone Access Required</h2>
+        <p className="text-gray-700 mb-4">This test requires voice input for several sections. Please allow microphone access in your browser settings and refresh the page.</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+        >
+          Refresh Page
+        </button>
+      </div>
+    );
+  }
+
   const renderQuestion = (q) => {
     switch (q.type) {
       case 'name_address_learning':
@@ -457,16 +281,40 @@ const ACEIIITest = () => {
             title={q.title}
             description={q.description}
             onComplete={() => {}}
+            address={q.address}
+            instructionText={q.instructionText}
+            memorizeText={q.memorizeText}
+            hidingText={q.hidingText}
+            repeatText={q.repeatText}
+            buttonShow={q.buttonShow}
+            buttonNext={q.buttonNext}
+            buttonFinish={q.buttonFinish}
           />
         );
       case 'memory_registration':
-        // Simple display for now, or reuse MemoryRegistrationQuestion from MoCA if exported
         return (
           <QuestionWrapper key={q.id} title={q.title} description={q.description}>
-             <div className="p-4 bg-blue-50 text-blue-800 rounded-md text-center font-bold text-xl">
+             <div className="p-4 bg-blue-50 text-blue-800 rounded-md text-center font-bold text-xl mb-6">
                {q.words.join(" - ")}
              </div>
-             <p className="mt-2 text-sm text-gray-500">Ask subject to repeat.</p>
+             <div className="flex flex-col items-center">
+               <p className="mb-2 text-sm text-gray-600">Press record and repeat the words.</p>
+               <AudioRecorder 
+                 onRecordingComplete={(blob) => handleResponseChange(q.id, blob)} 
+                 label="Record Words"
+               />
+             </div>
+          </QuestionWrapper>
+        );
+      case 'audio':
+        return (
+          <QuestionWrapper key={q.id} title={q.title} description={q.description}>
+             <div className="flex flex-col items-center py-4">
+               <AudioRecorder 
+                 onRecordingComplete={(blob) => handleResponseChange(q.id, blob)} 
+                 label="Start Recording Answer"
+               />
+             </div>
           </QuestionWrapper>
         );
       case 'text':
@@ -558,15 +406,24 @@ const ACEIIITest = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">ACE-III Assessment</h1>
-        <p className="mt-2 text-gray-600">Section {currentSection + 1} of {sections.length}</p>
-        <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
-          <div 
-            className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" 
-            style={{ width: `${((currentSection + 1) / sections.length) * 100}%` }}
-          ></div>
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">ACE-III Assessment</h1>
+          <p className="mt-2 text-gray-600">Section {currentSection + 1} of {sections.length}</p>
         </div>
+        <button
+          onClick={() => setLanguage(prev => prev === 'en' ? 'mr' : 'en')}
+          className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 font-medium"
+        >
+          {language === 'en' ? 'Switch to Marathi' : 'Switch to English'}
+        </button>
+      </div>
+      
+      <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4 mb-8">
+        <div 
+          className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" 
+          style={{ width: `${((currentSection + 1) / sections.length) * 100}%` }}
+        ></div>
       </div>
 
       <div className="space-y-8">
