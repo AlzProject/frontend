@@ -186,13 +186,28 @@ const MOCATest = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attemptId, setAttemptId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState(() => localStorage.getItem('moca_language') || 'en');
   const [sections, setSections] = useState([]);
   const [testTitle, setTestTitle] = useState('');
 
+  // Refs to track previous state for migration
+  const sectionsRef = React.useRef([]);
+  const responsesRef = React.useRef({});
+
   useEffect(() => {
+    sectionsRef.current = sections;
+    responsesRef.current = responses;
+  }, [sections, responses]);
+
+  useEffect(() => {
+    localStorage.setItem('moca_language', language);
     const initTest = async () => {
       setLoading(true);
+      
+      // Capture previous state before fetching new data
+      const prevSections = sectionsRef.current;
+      const prevResponses = responsesRef.current;
+
       try {
         // 1. Fetch tests to find MoCA based on language
         const testsRes = await api.get('/tests');
@@ -224,19 +239,42 @@ const MOCATest = () => {
               };
             }));
 
+            // MIGRATION LOGIC: Map answers from previous language to new language by index
+            if (prevSections.length > 0 && fullSections.length > 0) {
+              const migratedResponses = {};
+              fullSections.forEach((section, sIdx) => {
+                if (section.questions) {
+                  section.questions.forEach((question, qIdx) => {
+                    // Find corresponding question in previous sections
+                    if (prevSections[sIdx] && prevSections[sIdx].questions && prevSections[sIdx].questions[qIdx]) {
+                      const prevQId = prevSections[sIdx].questions[qIdx].id;
+                      if (prevResponses[prevQId] !== undefined) {
+                        migratedResponses[question.id] = prevResponses[prevQId];
+                      }
+                    }
+                  });
+                }
+              });
+              // Only update if we actually have migrated responses to avoid clearing on initial load
+              if (Object.keys(migratedResponses).length > 0) {
+                 setResponses(migratedResponses);
+              }
+            }
+
             setSections(fullSections);
+
+            // 3. Start an attempt (Try to create attempt, but allow Demo Mode if it fails)
+            try {
+              const attemptRes = await api.post('/attempts', { testId: mocaTest.id });
+              setAttemptId(attemptRes.data.id);
+            } catch (attemptError) {
+              console.warn("Failed to start attempt (likely not logged in). Running in Demo Mode.", attemptError);
+            }
+
           } catch (secError) {
             console.error("Failed to fetch sections:", secError);
             alert("Failed to load test content.");
             return;
-          }
-
-          // 3. Start an attempt (Try to create attempt, but allow Demo Mode if it fails)
-          try {
-            const attemptRes = await api.post('/attempts', { testId: mocaTest.id });
-            setAttemptId(attemptRes.data.id);
-          } catch (attemptError) {
-            console.warn("Failed to start attempt (likely not logged in). Running in Demo Mode.", attemptError);
           }
 
         } else {
