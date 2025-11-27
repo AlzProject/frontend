@@ -1,10 +1,12 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import MMSETest from './tests/MMSE/MMSETest';
 import MOCATest from './tests/MoCA/MOCATest';
 import ACEIIITest from './tests/ACE-III/ACEIIITest';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import ParticipantLogin from './pages/ParticipantLogin';
+import ParticipantSignup from './pages/ParticipantSignup';
 import TestList from './components/Admin/TestList';
 import CreateTest from './components/Admin/CreateTest';
 import TestDetails from './components/Admin/TestDetails';
@@ -57,6 +59,8 @@ const translations = {
     tests: "Tests",
     about: "About",
     login: "Login",
+    signup: "Sign Up",
+    logout: "Logout",
     onlineAssessment: "Online Assessment",
     heroTitle: "Comprehensive Mental Health Screening",
     heroSubtitle: "Accessible and professional cognitive assessments to help identify potential concerns early.",
@@ -70,6 +74,8 @@ const translations = {
     tests: "चाचण्या",
     about: "आमच्याबद्दल",
     login: "लॉगिन",
+    signup: "साइन अप",
+    logout: "बाहेर पडा",
     onlineAssessment: "ऑनलाइन मूल्यांकन",
     heroTitle: "सर्वसमावेशक मानसिक आरोग्य तपासणी",
     heroSubtitle: "संभाव्य चिंता लवकर ओळखण्यासाठी सुलभ आणि व्यावसायिक संज्ञानात्मक मूल्यांकन.",
@@ -81,10 +87,22 @@ const translations = {
 
 function LandingPage() {
   const [language, setLanguage] = useState('mr');
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
   const t = translations[language];
+  const navigate = useNavigate();
 
   const toggleLanguage = () => {
     setLanguage(prev => prev === 'en' ? 'mr' : 'en');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    navigate('/');
   };
 
   return (
@@ -97,7 +115,19 @@ function LandingPage() {
             <Link to="/" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.home}</Link>
             <a href="#tests" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.tests}</a>
             <a href="#" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.about}</a>
-            <Link to="/admin/login" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.login}</Link>
+            
+            {user ? (
+              <>
+                <span className="text-gray-900 px-3 py-2 text-sm font-medium">Hello, {user.name}</span>
+                <button onClick={handleLogout} className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.logout}</button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.login}</Link>
+                <Link to="/signup" className="text-indigo-600 hover:text-indigo-900 px-3 py-2 rounded-md text-sm font-medium">{t.signup}</Link>
+              </>
+            )}
+            
             <button 
               onClick={toggleLanguage}
               className="ml-4 px-3 py-1 border border-indigo-600 text-indigo-600 rounded-md text-sm font-medium hover:bg-indigo-50"
@@ -161,6 +191,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<ParticipantLogin />} />
+        <Route path="/signup" element={<ParticipantSignup />} />
         <Route path="/test/mmse" element={<MMSETest />} />
         <Route path="/test/moca" element={<MOCATest />} />
         <Route path="/test/ace-iii" element={<ACEIIITest />} />

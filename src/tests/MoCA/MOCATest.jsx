@@ -18,6 +18,24 @@ const SVG_MAP = {
   'CUBE_SVG': CUBE_SVG
 };
 
+// Helper to convert data URL to Blob
+const dataURLtoBlob = (dataurl) => {
+  try {
+    const arr = dataurl.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+  } catch (e) {
+    console.error("Error converting data URL to blob", e);
+    return null;
+  }
+};
+
 // Internal component for Memory Registration (MoCA version - 5 words)
 const MemoryRegistrationQuestion = ({ title, description, words, onComplete }) => {
   const [showWords, setShowWords] = useState(true);
@@ -279,10 +297,36 @@ const MOCATest = () => {
           const question = findQuestion(qId);
           if (!question) return null;
 
+          let answerText = typeof val === 'string' ? val : JSON.stringify(val);
+
+          // Handle Drawing/File Uploads
+          const config = question.config || {};
+          const isDrawing = config.frontend_type === 'drawing' || question.type === 'file_upload';
+
+          if (isDrawing && typeof val === 'string' && val.startsWith('data:')) {
+            try {
+              const blob = dataURLtoBlob(val);
+              if (blob) {
+                const formData = new FormData();
+                formData.append('file', blob, `drawing_attempt_${attemptId}_q_${qId}.png`);
+                
+                const mediaRes = await api.post('/media', formData, {
+                  headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                
+                if (mediaRes.data && mediaRes.data.url) {
+                  answerText = mediaRes.data.url;
+                }
+              }
+            } catch (uploadError) {
+              console.error(`Failed to upload media for question ${qId}:`, uploadError);
+            }
+          }
+
           const payload = {
             attemptId: attemptId,
             questionId: parseInt(qId),
-            answerText: typeof val === 'string' ? val : JSON.stringify(val)
+            answerText: answerText
           };
           
           return api.post('/responses', payload);
@@ -296,7 +340,7 @@ const MOCATest = () => {
         alert("MoCA Test submitted successfully!");
       } else {
         console.log("Demo mode submission:", responses);
-        alert("MoCA Test submitted successfully (Demo Mode)!");
+        alert("MoCA Test submitted successfully (Demo Mode - Not Saved to Backend)!");
       }
       navigate('/');
     } catch (error) {
@@ -429,6 +473,12 @@ const MOCATest = () => {
 
   return (
     <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      {!attemptId && !loading && (
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+          <p className="font-bold">Demo Mode</p>
+          <p>You are not logged in or could not start a session. Your results will NOT be saved.</p>
+        </div>
+      )}
       <div className="mb-8">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">{testTitle || 'MoCA Test'}</h1>

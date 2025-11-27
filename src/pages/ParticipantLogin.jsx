@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
 
-const AdminLogin = () => {
+const ParticipantLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -15,14 +15,14 @@ const AdminLogin = () => {
       const response = await api.post('/auth/login', { email, password });
       const { access_token, user } = response.data;
       
-      if (user.type !== 'admin' && user.type !== 'tester') {
-        setError('Access denied. Admin or Tester privileges required.');
+      if (user.type !== 'participant') {
+        setError('Access denied. Please use the correct login page.');
         return;
       }
 
       localStorage.setItem('token', access_token);
       localStorage.setItem('user', JSON.stringify(user));
-      navigate('/admin/dashboard');
+      navigate('/'); // Redirect to dashboard/home
     } catch (err) {
       console.error(err);
       setError('Invalid credentials or server error.');
@@ -34,11 +34,12 @@ const AdminLogin = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Admin Login
+            Participant Login
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Participant Login
+            Or{' '}
+            <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+              create a new account
             </Link>
           </p>
         </div>
@@ -89,10 +90,16 @@ const AdminLogin = () => {
               Sign in
             </button>
           </div>
+          
+          <div className="text-center mt-4">
+            <Link to="/admin/login" className="text-sm text-gray-500 hover:text-gray-900">
+              Admin Login
+            </Link>
+          </div>
         </form>
       </div>
     </div>
   );
 };
 
-export default AdminLogin;
+export default ParticipantLogin;
