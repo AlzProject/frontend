@@ -1,5 +1,5 @@
-{
-  "en": {
+[
+  {
     "title": "Montreal Cognitive Assessment (MoCA)",
     "description": "Assessment for detection of mild cognitive impairment",
     "sections": [
@@ -271,9 +271,10 @@
           }
         ]
       }
-    ]
+    ],
+    "language": "en"
   },
-  "mr": {
+  {
     "title": "मॉन्ट्रियल कॉग्निटिव्ह असेसमेंट (MoCA)",
     "description": "सौम्य संज्ञानात्मक कमजोरी शोधण्यासाठी मूल्यांकन",
     "sections": [
@@ -386,6 +387,7 @@
               "sequence": [
                 2,
                 1,
+
                 8,
                 5,
                 4
@@ -432,6 +434,7 @@
                 "100-7",
                 "-7",
                 "-7",
+
                 "-7",
                 "-7"
               ]
@@ -458,6 +461,7 @@
             "id": 111,
             "text": "खालील वाक्य वाचा, नंतर ते जसेच्या तसे टाइप करा: 'जेव्हा कुत्रे खोलीत असत तेव्हा मांजर नेहमी सोफ्याखाली लपत असे.'",
             "type": "text",
+
             "maxScore": 1,
             "config": {
               "title": "वाक्य पुनरावृत्ती 2",
@@ -467,6 +471,7 @@
           },
           {
             "id": 112,
+
             "text": "1 मिनिटात 'क' ने सुरू होणारे जास्तीत जास्त शब्द सांगा. (लक्ष्य >= 11)",
             "type": "text",
             "maxScore": 1,
@@ -532,6 +537,7 @@
             "maxScore": 6,
             "config": {
               "title": "अभिमुखता",
+
               "frontend_type": "text_grouped",
               "fields": [
                 "तारीख",
@@ -545,6 +551,8 @@
           }
         ]
       }
-    ]
+    ],
+    "language": "mr"
   }
-}
+]
+

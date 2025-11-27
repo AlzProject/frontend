@@ -7,7 +7,6 @@ import {
   QuestionWrapper
 } from '../../components/QuestionTypes';
 import api from '../../api';
-import mocaData from './MOCA_Questions.json';
 
 // SVG Data URIs for background images
 const TRAIL_MAKING_SVG = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIzMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjI0NSIgeT0iMzA1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjE8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iMTUwIiBjeT0iMjAwIiByPSIxNSIgc3Ryb2tlPSJibGFjayIgZmlsbD0id2hpdGUiLz4KICA8dGV4dCB4PSIxNDUiIHk9IjIwNSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2Ij5BPC90ZXh0PgogIAogIDxjaXJjbGUgY3g9IjM1MCIgY3k9IjIwMCIgcj0iMTUiIHN0cm9rZT0iYmxhY2siIGZpbGw9IndoaXRlIi8+CiAgPHRleHQgeD0iMzQ1IiB5PSIyMDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+MjwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9Ijk1IiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+QjwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSI0MDAiIGN5PSIxMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjM5NSIgeT0iMTA1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjM8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iNTAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjE5NSIgeT0iNTUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+QzwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSIzMDAiIGN5PSIzNTAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjI5NSIgeT0iMzU1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjQ8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iNTAiIGN5PSIzMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjQ1IiB5PSIzMDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+RDwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSI0NTAiIGN5PSIzMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjQ0NSIgeT0iMzA1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjU8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iMjUwIiBjeT0iMTUwIiByPSIxNSIgc3Ryb2tlPSJibGFjayIgZmlsbD0id2hpdGUiLz4KICA8dGV4dCB4PSIyNDUiIHk9IjE1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2Ij5FPC90ZXh0PgogIDx0ZXh0IHg9IjI1MCIgeT0iMTgwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiPkVuZDwvdGV4dD4KPC9zdmc+`;
@@ -22,7 +21,7 @@ const SVG_MAP = {
 // Internal component for Memory Registration (MoCA version - 5 words)
 const MemoryRegistrationQuestion = ({ title, description, words, onComplete }) => {
   const [showWords, setShowWords] = useState(true);
-  const [timeLeft, setTimeLeft] = useState(10); // 10 seconds for 5 words
+  const [timeLeft, setTimeLeft] = useState(5); // 5 seconds for 5 words
 
   useEffect(() => {
     if (!showWords) return;
@@ -170,24 +169,61 @@ const MOCATest = () => {
   const [attemptId, setAttemptId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState('en');
+  const [sections, setSections] = useState([]);
+  const [testTitle, setTestTitle] = useState('');
 
   useEffect(() => {
     const initTest = async () => {
+      setLoading(true);
       try {
-        // 1. Fetch tests to find MoCA
+        // 1. Fetch tests to find MoCA based on language
         const testsRes = await api.get('/tests');
         const tests = testsRes.data.items || [];
-        console.log(tests);
-        console.log(testsRes);
-
-        const mocaTest = tests.find(t => t.name.toLowerCase().includes('moca') || t.name.toLowerCase().includes('montreal'));
+        
+        const targetTitle = language === 'en' ? 'Moca_English' : 'Moca_Marathi';
+        const mocaTest = tests.find(t => 
+          (t.title || '').toLowerCase().includes(targetTitle.toLowerCase()) ||
+          (t.title || '').toLowerCase().includes('montreal') // Fallback
+        );
         
         if (mocaTest) {
-          // 2. Start an attempt
-          const attemptRes = await api.post('/attempts', { testId: mocaTest.id });
-          setAttemptId(attemptRes.data.id);
+          setTestTitle(mocaTest.title);
+          
+          // 2. Fetch Sections & Questions (Prioritize content loading)
+          try {
+            const sectionsRes = await api.get(`/tests/${mocaTest.id}/sections`);
+            const sectionsData = Array.isArray(sectionsRes.data) ? sectionsRes.data : [];
+            sectionsData.sort((a, b) => a.orderIndex - b.orderIndex);
+
+            const fullSections = await Promise.all(sectionsData.map(async (section) => {
+              const qRes = await api.get(`/sections/${section.id}/questions`);
+              return {
+                ...section,
+                questions: qRes.data.map(q => ({
+                  ...q,
+                  config: q.config || q.test_specific_info || {} // Map backend info to config, preserving existing config
+                }))
+              };
+            }));
+
+            setSections(fullSections);
+          } catch (secError) {
+            console.error("Failed to fetch sections:", secError);
+            alert("Failed to load test content.");
+            return;
+          }
+
+          // 3. Start an attempt (Try to create attempt, but allow Demo Mode if it fails)
+          try {
+            const attemptRes = await api.post('/attempts', { testId: mocaTest.id });
+            setAttemptId(attemptRes.data.id);
+          } catch (attemptError) {
+            console.warn("Failed to start attempt (likely not logged in). Running in Demo Mode.", attemptError);
+          }
+
         } else {
-          console.warn("MoCA test not found in backend. Running in offline/demo mode.");
+          console.warn("MoCA test not found in backend.");
+          alert("Test not found for selected language.");
         }
       } catch (error) {
         console.error("Failed to initialize test:", error);
@@ -197,9 +233,7 @@ const MOCATest = () => {
     };
 
     initTest();
-  }, []);
-
-  const sections = mocaData[language].sections;
+  }, [language]);
 
   const findQuestion = (id) => {
     for (const section of sections) {
@@ -397,7 +431,7 @@ const MOCATest = () => {
     <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">{mocaData[language].title}</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{testTitle || 'MoCA Test'}</h1>
           <button
             onClick={() => setLanguage(prev => prev === 'en' ? 'mr' : 'en')}
             className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
@@ -409,18 +443,22 @@ const MOCATest = () => {
         <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
           <div 
             className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" 
-            style={{ width: `${((currentSection + 1) / sections.length) * 100}%` }}
+            style={{ width: sections.length > 0 ? `${((currentSection + 1) / sections.length) * 100}%` : '0%' }}
           ></div>
         </div>
       </div>
 
       <div className="space-y-8">
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
-          <h2 className="text-xl font-medium text-gray-900 mb-4">{sections[currentSection].title}</h2>
-          <div className="space-y-6">
-            {sections[currentSection].questions.map(q => renderQuestion(q))}
+        {sections.length > 0 && sections[currentSection] ? (
+          <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+            <h2 className="text-xl font-medium text-gray-900 mb-4">{sections[currentSection].title}</h2>
+            <div className="space-y-6">
+              {sections[currentSection].questions.map(q => renderQuestion(q))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-10">No sections found.</div>
+        )}
 
         <div className="flex justify-between pt-4">
           <button

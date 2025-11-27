@@ -3,6 +3,13 @@ import { useState } from 'react';
 import MMSETest from './tests/MMSE/MMSETest';
 import MOCATest from './tests/MoCA/MOCATest';
 import ACEIIITest from './tests/ACE-III/ACEIIITest';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+import TestList from './components/Admin/TestList';
+import CreateTest from './components/Admin/CreateTest';
+import TestDetails from './components/Admin/TestDetails';
+import AttemptList from './components/Admin/AttemptList';
+import EvaluationView from './components/Admin/EvaluationView';
 import './App.css'
 
 const tests = [
@@ -49,6 +56,7 @@ const translations = {
     home: "Home",
     tests: "Tests",
     about: "About",
+    login: "Login",
     onlineAssessment: "Online Assessment",
     heroTitle: "Comprehensive Mental Health Screening",
     heroSubtitle: "Accessible and professional cognitive assessments to help identify potential concerns early.",
@@ -61,6 +69,7 @@ const translations = {
     home: "मुख्यपृष्ठ",
     tests: "चाचण्या",
     about: "आमच्याबद्दल",
+    login: "लॉगिन",
     onlineAssessment: "ऑनलाइन मूल्यांकन",
     heroTitle: "सर्वसमावेशक मानसिक आरोग्य तपासणी",
     heroSubtitle: "संभाव्य चिंता लवकर ओळखण्यासाठी सुलभ आणि व्यावसायिक संज्ञानात्मक मूल्यांकन.",
@@ -88,6 +97,7 @@ function LandingPage() {
             <Link to="/" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.home}</Link>
             <a href="#tests" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.tests}</a>
             <a href="#" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.about}</a>
+            <Link to="/admin/login" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">{t.login}</Link>
             <button 
               onClick={toggleLanguage}
               className="ml-4 px-3 py-1 border border-indigo-600 text-indigo-600 rounded-md text-sm font-medium hover:bg-indigo-50"
@@ -154,6 +164,18 @@ function App() {
         <Route path="/test/mmse" element={<MMSETest />} />
         <Route path="/test/moca" element={<MOCATest />} />
         <Route path="/test/ace-iii" element={<ACEIIITest />} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />}>
+          <Route index element={<div className="text-center py-10">Select an option from the menu</div>} />
+          <Route path="tests" element={<TestList />} />
+          <Route path="tests/create" element={<CreateTest />} />
+          <Route path="tests/:testId" element={<TestDetails />} />
+          <Route path="attempts" element={<AttemptList />} />
+          <Route path="attempts/:attemptId" element={<EvaluationView />} />
+          <Route path="users" element={<div className="p-4">User management coming soon...</div>} />
+        </Route>
         {/* Add other test routes here as needed */}
       </Routes>
     </Router>
