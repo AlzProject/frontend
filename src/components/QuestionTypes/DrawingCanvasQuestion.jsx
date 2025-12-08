@@ -7,11 +7,14 @@ const DrawingCanvasQuestion = ({
   onSave, // Callback with dataURL
   width = 500,
   height = 400,
-  backgroundImage = null
+  backgroundImage = null,
+  referenceImage = null,
+  savedImage = null // Can be data URL or regular URL
 }) => {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState(null);
+  const [hasLoadedSaved, setHasLoadedSaved] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -21,19 +24,51 @@ const DrawingCanvasQuestion = ({
     ctx.lineWidth = 2;
     setContext(ctx);
 
+    // Load background image first
     if (backgroundImage) {
       const img = new Image();
       img.src = backgroundImage;
       img.onload = () => {
         ctx.drawImage(img, 0, 0, width, height);
+        // Load saved image after background if available
+        loadSavedImage(ctx);
       };
+    } else {
+      // Load saved image directly if no background
+      loadSavedImage(ctx);
     }
   }, [backgroundImage, width, height]);
 
-  const startDrawing = ({ nativeEvent }) => {
-    const { offsetX, offsetY } = nativeEvent;
+  const loadSavedImage = (ctx) => {
+    if (savedImage && !hasLoadedSaved) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous'; // Handle CORS for external URLs
+      img.src = savedImage;
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, width, height);
+        setHasLoadedSaved(true);
+      };
+      img.onerror = (error) => {
+        console.error('Failed to load saved image:', error);
+        setHasLoadedSaved(true);
+      };
+    }
+  };
+
+  const startDrawing = (e) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    const clientX = e.nativeEvent.clientX;
+    const clientY = e.nativeEvent.clientY;
+    
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+
     context.beginPath();
-    context.moveTo(offsetX, offsetY);
+    context.moveTo(x, y);
     setIsDrawing(true);
   };
 
@@ -45,10 +80,21 @@ const DrawingCanvasQuestion = ({
     }
   };
 
-  const draw = ({ nativeEvent }) => {
+  const draw = (e) => {
     if (!isDrawing) return;
-    const { offsetX, offsetY } = nativeEvent;
-    context.lineTo(offsetX, offsetY);
+    
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    const clientX = e.nativeEvent.clientX;
+    const clientY = e.nativeEvent.clientY;
+    
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+
+    context.lineTo(x, y);
     context.stroke();
   };
 
@@ -68,26 +114,41 @@ const DrawingCanvasQuestion = ({
 
   return (
     <QuestionWrapper title={title} description={description}>
-      <div className="flex flex-col items-center">
-        <canvas
-          ref={canvasRef}
-          width={width}
-          height={height}
-          className="border-2 border-gray-300 rounded-lg cursor-crosshair touch-none bg-white"
-          onMouseDown={startDrawing}
-          onMouseUp={finishDrawing}
-          onMouseMove={draw}
-          onMouseLeave={finishDrawing}
-          // Add touch support if needed, but mouse events often work for basic touch in some browsers or need mapping
-        />
-        <div className="mt-4 flex space-x-4">
-          <button
-            type="button"
-            onClick={clearCanvas}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Clear Drawing
-          </button>
+      <div className={`flex ${referenceImage ? 'flex-wrap gap-8 items-start justify-center' : 'flex-col items-center'}`}>
+        
+        {referenceImage && (
+          <div className="flex flex-col items-center p-4 border rounded-lg bg-white shadow-sm max-w-full">
+            <img 
+              src={referenceImage} 
+              alt="Reference" 
+              className="max-w-full h-auto object-contain mb-2"
+              style={{ maxHeight: height, maxWidth: width }} 
+            />
+            <p className="text-sm text-gray-500 font-medium">Copy this drawing</p>
+          </div>
+        )}
+
+        <div className="flex flex-col items-center max-w-full">
+          <canvas
+            ref={canvasRef}
+            width={width}
+            height={height}
+            className="border-2 border-gray-300 rounded-lg cursor-crosshair touch-none bg-white max-w-full h-auto"
+            onMouseDown={startDrawing}
+            onMouseUp={finishDrawing}
+            onMouseMove={draw}
+            onMouseLeave={finishDrawing}
+            // Add touch support if needed, but mouse events often work for basic touch in some browsers or need mapping
+          />
+          <div className="mt-4 flex space-x-4">
+            <button
+              type="button"
+              onClick={clearCanvas}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Clear Drawing
+            </button>
+          </div>
         </div>
       </div>
     </QuestionWrapper>

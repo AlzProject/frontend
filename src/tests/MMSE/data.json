@@ -1,0 +1,414 @@
+[
+  {
+    "title": "Mini-Mental State Examination (MMSE)",
+    "description": "Standardized screening tool for cognitive impairment.",
+    "language": "en",
+    "sections": [
+      {
+        "title": "Orientation (10 points)",
+        "orderIndex": 1,
+        "questions": [
+          {
+            "id": 1,
+            "text": "Please enter the current date and time details.",
+            "type": "text",
+            "maxScore": 5,
+            "config": {
+              "title": "Time Orientation",
+              "frontend_type": "text_grouped",
+              "description": "Please enter the current date and time details.",
+              "fields": [
+                "Year",
+                "Season",
+                "Date",
+                "Day",
+                "Month"
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "text": "Where are we now?",
+            "type": "text",
+            "maxScore": 5,
+            "config": {
+              "title": "Place Orientation",
+              "frontend_type": "text_grouped",
+              "description": "Where are we now?",
+              "fields": [
+                "State",
+                "County",
+                "Town",
+                "Hospital/Building",
+                "Floor"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Registration (3 points)",
+        "orderIndex": 2,
+        "questions": [
+          {
+            "id": 3,
+            "text": "Memorize the 3 words shown. You will have 5 seconds.",
+            "type": "text",
+            "maxScore": 3,
+            "config": {
+              "title": "Immediate Registration",
+              "frontend_type": "memory_registration",
+              "description": "Memorize the 3 words shown. You will have 5 seconds.",
+              "fields": [
+                "Word 1",
+                "Word 2",
+                "Word 3"
+              ],
+              "words": [
+                "Apple",
+                "Penny",
+                "Table"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Attention and Calculation (5 points)",
+        "orderIndex": 3,
+        "questions": [
+          {
+            "id": 4,
+            "text": "Option A: Subtract 7 from 100, and then subtract 7 from that result, continuing 5 times. OR Option B: Spell the word WORLD backwards.",
+            "type": "text",
+            "maxScore": 5,
+            "config": {
+              "title": "Attention Task (Choose One)",
+              "frontend_type": "text_grouped",
+              "description": "Option A: Subtract 7 from 100, and then subtract 7 from that result, continuing 5 times. OR Option B: Spell the word WORLD backwards.",
+              "fields": [
+                "100-7 (or Letter 1)",
+                "-7 (or Letter 2)",
+                "-7 (or Letter 3)",
+                "-7 (or Letter 4)",
+                "-7 (or Letter 5)"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Recall (3 points)",
+        "orderIndex": 4,
+        "questions": [
+          {
+            "id": 5,
+            "text": "What were the 3 objects asked to remember earlier?",
+            "type": "text",
+            "maxScore": 3,
+            "config": {
+              "title": "Delayed Recall",
+              "frontend_type": "text_grouped",
+              "description": "What were the 3 objects asked to remember earlier?",
+              "fields": [
+                "Object 1",
+                "Object 2",
+                "Object 3"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Language and Praxis (9 points)",
+        "orderIndex": 5,
+        "questions": [
+          {
+            "id": 6,
+            "text": "Name the objects described or shown.",
+            "type": "text",
+            "maxScore": 2,
+            "config": {
+              "title": "Naming",
+              "frontend_type": "text_grouped",
+              "description": "Name the objects described or shown.",
+              "fields": [
+                "Object 1 (Used for writing)",
+                "Object 2 (Used for telling time)"
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "text": "Repeat the phrase exactly: 'No ifs, ands, or buts.'",
+            "type": "text",
+            "maxScore": 1,
+            "config": {
+              "title": "Repetition",
+              "frontend_type": "text",
+              "description": "Repeat the phrase exactly: 'No ifs, ands, or buts.'",
+              "placeholder": "Type the phrase exactly"
+            }
+          },
+          {
+            "id": 8,
+            "text": "Select the correct order of actions: Take paper in right hand, fold in half, put on floor.",
+            "type": "scmcq",
+            "maxScore": 3,
+            "config": {
+              "title": "3-Stage Command",
+              "frontend_type": "mcq",
+              "description": "Select the correct order of actions: Take paper in right hand, fold in half, put on floor.",
+              "options": [
+                {
+                  "label": "Take -> Fold -> Floor",
+                  "value": "correct"
+                },
+                {
+                  "label": "Fold -> Take -> Floor",
+                  "value": "wrong1"
+                },
+                {
+                  "label": "Floor -> Fold -> Take",
+                  "value": "wrong2"
+                },
+                {
+                  "label": "Take -> Floor -> Fold",
+                  "value": "wrong3"
+                }
+              ]
+            }
+          },
+          {
+            "id": 9,
+            "text": "Read the instruction: 'CLOSE YOUR EYES'. Did you close your eyes?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Reading",
+              "frontend_type": "mcq",
+              "description": "Read the instruction: 'CLOSE YOUR EYES'. Did you close your eyes?",
+              "options": [
+                {
+                  "label": "Yes",
+                  "value": "yes"
+                },
+                {
+                  "label": "No",
+                  "value": "no"
+                }
+              ]
+            }
+          },
+          {
+            "id": 10,
+            "text": "Write a complete sentence (must contain a subject and a verb).",
+            "type": "text",
+            "maxScore": 1,
+            "config": {
+              "title": "Writing",
+              "frontend_type": "text_multiline",
+              "description": "Write a complete sentence (must contain a subject and a verb).",
+              "placeholder": "Type a sentence here..."
+            }
+          },
+          {
+            "id": 11,
+            "text": "Copy the design of two intersecting pentagons.",
+            "type": "file_upload",
+            "maxScore": 1,
+            "config": {
+              "title": "Copying",
+              "frontend_type": "drawing",
+              "description": "Copy the design of two intersecting pentagons."
+            }
+          }
+        ]
+      }
+    ],
+    "language": "en",
+    "test_specific_info": {
+      "slug": "mmse",
+      "translations": {
+        "mr": {
+          "title": "मिनी-मेंटल स्टेट परीक्षा (MMSE)",
+          "description": "संज्ञानात्मक कमजोरीसाठी प्रमाणित तपासणी साधन.",
+          "sections": [
+            {
+              "title": "ओरिएंटेशन (Orientation) (10 गुण)",
+              "questions": [
+                {
+                  "text": "कृपया सध्याची तारीख आणि वेळेचा तपशील प्रविष्ट करा.",
+                  "config": {
+                    "title": "वेळ ओरिएंटेशन (Time Orientation)",
+                    "description": "कृपया सध्याची तारीख आणि वेळेचा तपशील प्रविष्ट करा.",
+                    "fields": [
+                      "वर्ष",
+                      "ऋतू",
+                      "तारीख",
+                      "दिवस",
+                      "महिना"
+                    ]
+                  }
+                },
+                {
+                  "text": "आम्ही आता कुठे आहोत?",
+                  "config": {
+                    "title": "ठिकाण ओरिएंटेशन (Place Orientation)",
+                    "description": "आम्ही आता कुठे आहोत?",
+                    "fields": [
+                      "राज्य",
+                      "जिल्हा",
+                      "शहर/गाव",
+                      "रुग्णालय/इमारत",
+                      "मजला"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "नोंदणी (Registration) (3 गुण)",
+              "questions": [
+                {
+                  "text": "दर्शविलेले 3 शब्द लक्षात ठेवा. तुमच्याकडे 5 सेकंद असतील.",
+                  "config": {
+                    "title": "तात्काळ नोंदणी (Immediate Registration)",
+                    "description": "दर्शविलेले 3 शब्द लक्षात ठेवा. तुमच्याकडे 5 सेकंद असतील.",
+                    "fields": [
+                      "शब्द 1",
+                      "शब्द 2",
+                      "शब्द 3"
+                    ],
+                    "words": [
+                      "सफरचंद",
+                      "नाणे",
+                      "टेबल"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "लक्ष आणि गणना (Attention and Calculation) (5 गुण)",
+              "questions": [
+                {
+                  "text": "पर्याय अ: 100 मधून 7 वजा करा, आणि आलेल्या उत्तरातून पुन्हा 7 वजा करा, असे 5 वेळा करा. किंवा पर्याय ब: 'WORLD' हा शब्द उलटा सांगा.",
+                  "config": {
+                    "title": "लक्ष कार्य (एक निवडा)",
+                    "description": "पर्याय अ: 100 मधून 7 वजा करा, आणि आलेल्या उत्तरातून पुन्हा 7 वजा करा, असे 5 वेळा करा. किंवा पर्याय ब: 'WORLD' हा शब्द उलटा सांगा.",
+                    "fields": [
+                      "100-7 (किंवा अक्षर 1)",
+                      "-7 (किंवा अक्षर 2)",
+                      "-7 (किंवा अक्षर 3)",
+                      "-7 (किंवा अक्षर 4)",
+                      "-7 (किंवा अक्षर 5)"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "आठवण (Recall) (3 गुण)",
+              "questions": [
+                {
+                  "text": "आधी लक्षात ठेवण्यास सांगितलेले 3 शब्द कोणते होते?",
+                  "config": {
+                    "title": "विलंबित आठवण (Delayed Recall)",
+                    "description": "आधी लक्षात ठेवण्यास सांगितलेले 3 शब्द कोणते होते?",
+                    "fields": [
+                      "वस्तू 1",
+                      "वस्तू 2",
+                      "वस्तू 3"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "भाषा आणि कृती (Language and Praxis) (9 गुण)",
+              "questions": [
+                {
+                  "text": "वर्णन केलेल्या किंवा दर्शविलेल्या वस्तूंची नावे सांगा.",
+                  "config": {
+                    "title": "नाव सांगणे (Naming)",
+                    "description": "वर्णन केलेल्या किंवा दर्शविलेल्या वस्तूंची नावे सांगा.",
+                    "fields": [
+                      "वस्तू 1 (लिहिण्यासाठी वापरली जाते)",
+                      "वस्तू 2 (वेळ पाहण्यासाठी वापरली जाते)"
+                    ]
+                  }
+                },
+                {
+                  "text": "वाक्य जसेच्या तसे पुन्हा म्हणा: 'ना जर, ना तर, ना पण'.",
+                  "config": {
+                    "title": "पुनरावृत्ती (Repetition)",
+                    "description": "वाक्य जसेच्या तसे पुन्हा म्हणा: 'ना जर, ना तर, ना पण'.",
+                    "placeholder": "वाक्य जसेच्या तसे टाइप करा"
+                  }
+                },
+                {
+                  "text": "कृतींचा योग्य क्रम निवडा: उजव्या हातात कागद घ्या, अर्धा दुमडा, जमिनीवर ठेवा.",
+                  "config": {
+                    "title": "3-टप्प्यांची आज्ञा (3-Stage Command)",
+                    "description": "कृतींचा योग्य क्रम निवडा: उजव्या हातात कागद घ्या, अर्धा दुमडा, जमिनीवर ठेवा.",
+                    "options": [
+                      {
+                        "label": "घ्या -> दुमडा -> ठेवा",
+                        "value": "correct"
+                      },
+                      {
+                        "label": "दुमडा -> घ्या -> ठेवा",
+                        "value": "wrong1"
+                      },
+                      {
+                        "label": "ठेवा -> दुमडा -> घ्या",
+                        "value": "wrong2"
+                      },
+                      {
+                        "label": "घ्या -> ठेवा -> दुमडा",
+                        "value": "wrong3"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "text": "सूचना वाचा: 'डोळे बंद करा'. तुम्ही डोळे बंद केले का?",
+                  "config": {
+                    "title": "वाचन (Reading)",
+                    "description": "सूचना वाचा: 'डोळे बंद करा'. तुम्ही डोळे बंद केले का?",
+                    "options": [
+                      {
+                        "label": "होय",
+                        "value": "yes"
+                      },
+                      {
+                        "label": "नाही",
+                        "value": "no"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "text": "एक पूर्ण वाक्य लिहा (त्यात कर्ता आणि क्रियापद असावे).",
+                  "config": {
+                    "title": "लेखन (Writing)",
+                    "description": "एक पूर्ण वाक्य लिहा (त्यात कर्ता आणि क्रियापद असावे).",
+                    "placeholder": "येथे वाक्य लिहा..."
+                  }
+                },
+                {
+                  "text": "दोन छेदणाऱ्या पंचकोनांची रचना पाहून काढा.",
+                  "config": {
+                    "title": "प्रतिकृती (Copying)",
+                    "description": "दोन छेदणाऱ्या पंचकोनांची रचना पाहून काढा."
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,887 @@
+[
+  {
+    "title": "Clinical Dementia Rating (CDR) - Patient Self-Assessment",
+    "description": "A structured assessment to evaluate cognitive and functional abilities across multiple domains",
+    "sections": [
+      {
+        "title": "Memory (6 questions)",
+        "orderIndex": 1,
+        "questions": [
+          {
+            "id": 1,
+            "text": "Please remember these three words. You will be asked to recall them later.",
+            "type": "text",
+            "maxScore": 1,
+            "config": {
+              "title": "Memory Registration",
+              "frontend_type": "memory_words_display",
+              "words": ["Apple", "Chair", "River"],
+              "instruction": "I will show you three words. Please remember them.",
+              "note": "This is a display-only question for memory registration"
+            }
+          },
+          {
+            "id": 2,
+            "text": "Please tell me the three words I asked you to remember.",
+            "type": "scmcq",
+            "maxScore": 3,
+            "config": {
+              "title": "Delayed Recall",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Apple", "value": "apple" },
+                { "label": "Chair", "value": "chair" },
+                { "label": "River", "value": "river" },
+                { "label": "Garden", "value": "garden" },
+                { "label": "Phone", "value": "phone" }
+              ],
+              "multiselect": true,
+              "instruction": "Select all three words you remember"
+            }
+          },
+          {
+            "id": 3,
+            "text": "How often do you forget recent conversations?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Conversation Memory",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Never", "value": "never", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 0.5 },
+                { "label": "Often", "value": "often", "score": 1 },
+                { "label": "Almost always", "value": "always", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "text": "How often do you misplace objects (keys, phone, wallet, etc.)?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Object Misplacement",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Never", "value": "never", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 0.5 },
+                { "label": "Often", "value": "often", "score": 1 },
+                { "label": "Almost always", "value": "always", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "text": "Do you repeat the same questions or stories without realizing it?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Repetition",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Never", "value": "never", "score": 0 },
+                { "label": "Rarely", "value": "rarely", "score": 0.5 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "Often", "value": "often", "score": 2 }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Orientation (6 questions)",
+        "orderIndex": 2,
+        "questions": [
+          {
+            "id": 6,
+            "text": "What is today's date?",
+            "type": "text",
+            "maxScore": 1,
+            "config": {
+              "title": "Date",
+              "frontend_type": "text",
+              "placeholder": "DD/MM/YYYY"
+            }
+          },
+          {
+            "id": 7,
+            "text": "What day of the week is it?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Day of Week",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Monday", "value": "monday" },
+                { "label": "Tuesday", "value": "tuesday" },
+                { "label": "Wednesday", "value": "wednesday" },
+                { "label": "Thursday", "value": "thursday" },
+                { "label": "Friday", "value": "friday" },
+                { "label": "Saturday", "value": "saturday" },
+                { "label": "Sunday", "value": "sunday" }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "text": "What month is it right now?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Month",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "January", "value": "january" },
+                { "label": "February", "value": "february" },
+                { "label": "March", "value": "march" },
+                { "label": "April", "value": "april" },
+                { "label": "May", "value": "may" },
+                { "label": "June", "value": "june" },
+                { "label": "July", "value": "july" },
+                { "label": "August", "value": "august" },
+                { "label": "September", "value": "september" },
+                { "label": "October", "value": "october" },
+                { "label": "November", "value": "november" },
+                { "label": "December", "value": "december" }
+              ]
+            }
+          },
+          {
+            "id": 9,
+            "text": "What year is it?",
+            "type": "numerical",
+            "maxScore": 1,
+            "config": {
+              "title": "Year",
+              "frontend_type": "text",
+              "placeholder": "YYYY"
+            }
+          },
+          {
+            "id": 10,
+            "text": "Where are you right now?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Location",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Home", "value": "home" },
+                { "label": "Hospital / Clinic", "value": "hospital" },
+                { "label": "My city", "value": "city" },
+                { "label": "Other", "value": "other" }
+              ]
+            }
+          },
+          {
+            "id": 11,
+            "text": "Do you ever feel confused about where you are?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Location Confusion",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Never", "value": "never", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "Often", "value": "often", "score": 2 }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Judgment & Problem-Solving (5 questions)",
+        "orderIndex": 3,
+        "questions": [
+          {
+            "id": 12,
+            "text": "If you smelled smoke in your home, what would you do?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Emergency Response",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Call for help", "value": "call_help", "score": 0 },
+                { "label": "Leave the house", "value": "leave", "score": 0 },
+                { "label": "Ignore it", "value": "ignore", "score": 2 },
+                { "label": "Not sure", "value": "not_sure", "score": 1 }
+              ]
+            }
+          },
+          {
+            "id": 13,
+            "text": "If you lost your house keys, what would you do next?",
+            "type": "text",
+            "maxScore": 1,
+            "config": {
+              "title": "Problem Solving",
+              "frontend_type": "text_multiline",
+              "placeholder": "Describe what you would do..."
+            }
+          },
+          {
+            "id": 14,
+            "text": "If a medicine bottle says 'Take two tablets daily', how would you take it?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Medication Understanding",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Both tablets together", "value": "together", "score": 0.5 },
+                { "label": "One in morning & one at night", "value": "split", "score": 0 },
+                { "label": "Only one tablet", "value": "one", "score": 2 },
+                { "label": "I'm not sure", "value": "not_sure", "score": 1 }
+              ]
+            }
+          },
+          {
+            "id": 15,
+            "text": "If you need ₹75 and you have ₹100, how much change will you get?",
+            "type": "numerical",
+            "maxScore": 1,
+            "config": {
+              "title": "Basic Math",
+              "frontend_type": "text",
+              "placeholder": "Enter amount",
+              "correctAnswer": "25"
+            }
+          },
+          {
+            "id": 16,
+            "text": "When plans change suddenly, is it hard for you to adjust?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Adaptability",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "No, I adjust easily", "value": "easy", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "Yes, it's difficult", "value": "difficult", "score": 2 }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Community Affairs (5 questions)",
+        "orderIndex": 4,
+        "questions": [
+          {
+            "id": 17,
+            "text": "Do you manage your appointments on your own?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Appointment Management",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Yes, always", "value": "always", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "No, someone else manages them", "value": "never", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 18,
+            "text": "Do you go shopping by yourself?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Shopping Independence",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Yes", "value": "yes", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "No", "value": "no", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 19,
+            "text": "Do you handle your own money (payments, banking, bills)?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Financial Management",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Yes, completely", "value": "yes", "score": 0 },
+                { "label": "Partially", "value": "partial", "score": 1 },
+                { "label": "No", "value": "no", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 20,
+            "text": "Do you use transportation on your own?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Transportation",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Yes (bus, train, driving, etc.)", "value": "independent", "score": 0 },
+                { "label": "Only with someone", "value": "assisted", "score": 1 },
+                { "label": "No, not at all", "value": "dependent", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 21,
+            "text": "Do you get confused in busy public places?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Public Places",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Never", "value": "never", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "Often", "value": "often", "score": 2 }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Home & Hobbies (4 questions)",
+        "orderIndex": 5,
+        "questions": [
+          {
+            "id": 22,
+            "text": "Do you take care of small tasks at home (cooking, cleaning, organizing)?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Home Tasks",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Yes, easily", "value": "easy", "score": 0 },
+                { "label": "Yes, but sometimes need help", "value": "need_help", "score": 1 },
+                { "label": "No, I need help for most tasks", "value": "dependent", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 23,
+            "text": "Do you still enjoy your hobbies? (Reading, gardening, TV, singing, games)",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Hobbies",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Yes", "value": "yes", "score": 0 },
+                { "label": "Somewhat", "value": "somewhat", "score": 0.5 },
+                { "label": "Not as much", "value": "less", "score": 1 },
+                { "label": "No, I've stopped", "value": "stopped", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 24,
+            "text": "Do you complete tasks you start?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Task Completion",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Yes", "value": "yes", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "No", "value": "no", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 25,
+            "text": "Do you lose track of what you're doing in the middle of a task?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Task Focus",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Never", "value": "never", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "Often", "value": "often", "score": 2 }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Personal Care (5 questions)",
+        "orderIndex": 6,
+        "questions": [
+          {
+            "id": 26,
+            "text": "Do you bathe or shower without assistance?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Bathing",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Yes", "value": "yes", "score": 0 },
+                { "label": "Sometimes need help", "value": "sometimes", "score": 1 },
+                { "label": "No", "value": "no", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 27,
+            "text": "Do you dress yourself fully?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Dressing",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Yes", "value": "yes", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "No", "value": "no", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 28,
+            "text": "Do you eat meals without help?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Eating",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Yes", "value": "yes", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "No", "value": "no", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 29,
+            "text": "Do you need reminders to brush your teeth or comb your hair?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Hygiene Reminders",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "No", "value": "no", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "Yes", "value": "yes", "score": 2 }
+              ]
+            }
+          },
+          {
+            "id": 30,
+            "text": "Do you ever forget to change clothes or maintain hygiene?",
+            "type": "scmcq",
+            "maxScore": 1,
+            "config": {
+              "title": "Hygiene Maintenance",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Never", "value": "never", "score": 0 },
+                { "label": "Sometimes", "value": "sometimes", "score": 1 },
+                { "label": "Often", "value": "often", "score": 2 }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "language": "en",
+    "test_specific_info": {
+      "slug": "cdr",
+      "scoring_note": "This is a patient self-assessment tool. Clinician review is required for final CDR scoring.",
+      "domains": {
+        "memory": { "questions": [1, 2, 3, 4, 5], "weight": 2 },
+        "orientation": { "questions": [6, 7, 8, 9, 10, 11], "weight": 1 },
+        "judgment": { "questions": [12, 13, 14, 15, 16], "weight": 1 },
+        "community": { "questions": [17, 18, 19, 20, 21], "weight": 1 },
+        "home": { "questions": [22, 23, 24, 25], "weight": 1 },
+        "personal_care": { "questions": [26, 27, 28, 29, 30], "weight": 1 }
+      },
+      "translations": {
+        "mr": {
+          "title": "क्लिनिकल डिमेंशिया रेटिंग (CDR) - रुग्ण स्वयं-मूल्यांकन",
+          "description": "अनेक क्षेत्रांमध्ये संज्ञानात्मक आणि कार्यात्मक क्षमतांचे मूल्यमापन करण्यासाठी संरचित मूल्यांकन",
+          "sections": [
+            {
+              "title": "स्मृती (६ प्रश्न)",
+              "questions": [
+                {
+                  "text": "कृपया हे तीन शब्द लक्षात ठेवा. तुम्हाला नंतर त्यांची आठवण विचारली जाईल.",
+                  "config": {
+                    "title": "स्मृती नोंदणी",
+                    "words": ["सफरचंद", "खुर्ची", "नदी"],
+                    "instruction": "मी तुम्हाला तीन शब्द दाखवेन. ते लक्षात ठेवा."
+                  }
+                },
+                {
+                  "text": "कृपया मी तुम्हाला लक्षात ठेवायला सांगितलेले तीन शब्द सांगा.",
+                  "config": {
+                    "title": "विलंबित आठवण",
+                    "options": [
+                      { "label": "सफरचंद", "value": "apple" },
+                      { "label": "खुर्ची", "value": "chair" },
+                      { "label": "नदी", "value": "river" },
+                      { "label": "बाग", "value": "garden" },
+                      { "label": "फोन", "value": "phone" }
+                    ],
+                    "instruction": "तुम्हाला आठवणारे सर्व तीन शब्द निवडा"
+                  }
+                },
+                {
+                  "text": "तुम्ही अलीकडील संभाषणे किती वेळा विसरता?",
+                  "config": {
+                    "title": "संभाषण स्मृती",
+                    "options": [
+                      { "label": "कधीही नाही", "value": "never" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "अनेकदा", "value": "often" },
+                      { "label": "जवळजवळ नेहमी", "value": "always" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्ही वस्तू (चावी, फोन, पाकीट इ.) किती वेळा चुकीच्या ठिकाणी ठेवता?",
+                  "config": {
+                    "title": "वस्तू चुकीच्या ठिकाणी ठेवणे",
+                    "options": [
+                      { "label": "कधीही नाही", "value": "never" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "अनेकदा", "value": "often" },
+                      { "label": "जवळजवळ नेहमी", "value": "always" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्हाला कळल्याशिवाय तुम्ही तेच प्रश्न किंवा कथा पुन्हा सांगता का?",
+                  "config": {
+                    "title": "पुनरावृत्ती",
+                    "options": [
+                      { "label": "कधीही नाही", "value": "never" },
+                      { "label": "क्वचितच", "value": "rarely" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "अनेकदा", "value": "often" }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "अभिमुखता (६ प्रश्न)",
+              "questions": [
+                {
+                  "text": "आजची तारीख काय आहे?",
+                  "config": {
+                    "title": "तारीख",
+                    "placeholder": "दिन/महिना/वर्ष"
+                  }
+                },
+                {
+                  "text": "आज आठवड्याचा कोणता दिवस आहे?",
+                  "config": {
+                    "title": "आठवड्याचा दिवस",
+                    "options": [
+                      { "label": "सोमवार", "value": "monday" },
+                      { "label": "मंगळवार", "value": "tuesday" },
+                      { "label": "बुधवार", "value": "wednesday" },
+                      { "label": "गुरुवार", "value": "thursday" },
+                      { "label": "शुक्रवार", "value": "friday" },
+                      { "label": "शनिवार", "value": "saturday" },
+                      { "label": "रविवार", "value": "sunday" }
+                    ]
+                  }
+                },
+                {
+                  "text": "आत्ता कोणता महिना आहे?",
+                  "config": {
+                    "title": "महिना",
+                    "options": [
+                      { "label": "जानेवारी", "value": "january" },
+                      { "label": "फेब्रुवारी", "value": "february" },
+                      { "label": "मार्च", "value": "march" },
+                      { "label": "एप्रिल", "value": "april" },
+                      { "label": "मे", "value": "may" },
+                      { "label": "जून", "value": "june" },
+                      { "label": "जुलै", "value": "july" },
+                      { "label": "ऑगस्ट", "value": "august" },
+                      { "label": "सप्टेंबर", "value": "september" },
+                      { "label": "ऑक्टोबर", "value": "october" },
+                      { "label": "नोव्हेंबर", "value": "november" },
+                      { "label": "डिसेंबर", "value": "december" }
+                    ]
+                  }
+                },
+                {
+                  "text": "हे कोणते वर्ष आहे?",
+                  "config": {
+                    "title": "वर्ष",
+                    "placeholder": "वर्ष"
+                  }
+                },
+                {
+                  "text": "तुम्ही सध्या कुठे आहात?",
+                  "config": {
+                    "title": "स्थान",
+                    "options": [
+                      { "label": "घर", "value": "home" },
+                      { "label": "हॉस्पिटल / दवाखाना", "value": "hospital" },
+                      { "label": "माझे शहर", "value": "city" },
+                      { "label": "इतर", "value": "other" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्ही कुठे आहात याबद्दल कधी गोंधळ होतो का?",
+                  "config": {
+                    "title": "स्थान गोंधळ",
+                    "options": [
+                      { "label": "कधीही नाही", "value": "never" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "अनेकदा", "value": "often" }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "निर्णय आणि समस्या सोडवणे (५ प्रश्न)",
+              "questions": [
+                {
+                  "text": "जर तुम्हाला तुमच्या घरात धूर दिसला तर तुम्ही काय कराल?",
+                  "config": {
+                    "title": "आपत्कालीन प्रतिसाद",
+                    "options": [
+                      { "label": "मदतीसाठी कॉल करा", "value": "call_help" },
+                      { "label": "घर सोडा", "value": "leave" },
+                      { "label": "दुर्लक्ष करा", "value": "ignore" },
+                      { "label": "खात्री नाही", "value": "not_sure" }
+                    ]
+                  }
+                },
+                {
+                  "text": "जर तुमची घराची चावी हरवली तर तुम्ही पुढे काय कराल?",
+                  "config": {
+                    "title": "समस्या सोडवणे",
+                    "placeholder": "तुम्ही काय कराल ते वर्णन करा..."
+                  }
+                },
+                {
+                  "text": "जर औषधाच्या बाटलीवर 'दररोज दोन गोळ्या घ्या' असे लिहिले असेल तर तुम्ही ते कसे घ्याल?",
+                  "config": {
+                    "title": "औषध समजून घेणे",
+                    "options": [
+                      { "label": "दोन्ही गोळ्या एकत्र", "value": "together" },
+                      { "label": "एक सकाळी आणि एक रात्री", "value": "split" },
+                      { "label": "फक्त एक गोळी", "value": "one" },
+                      { "label": "मला खात्री नाही", "value": "not_sure" }
+                    ]
+                  }
+                },
+                {
+                  "text": "जर तुम्हाला ₹७५ हवे असतील आणि तुमच्याकडे ₹१०० असतील तर तुम्हाला किती परतावा मिळेल?",
+                  "config": {
+                    "title": "मूलभूत गणित",
+                    "placeholder": "रक्कम प्रविष्ट करा"
+                  }
+                },
+                {
+                  "text": "जेव्हा योजना अचानक बदलतात तेव्हा तुम्हाला समायोजित करणे कठीण आहे का?",
+                  "config": {
+                    "title": "अनुकूलता",
+                    "options": [
+                      { "label": "नाही, मी सहजपणे समायोजित होतो", "value": "easy" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "होय, ते कठीण आहे", "value": "difficult" }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "समुदाय व्यवहार (५ प्रश्न)",
+              "questions": [
+                {
+                  "text": "तुम्ही तुमच्या भेटी स्वतः व्यवस्थापित करता का?",
+                  "config": {
+                    "title": "भेट व्यवस्थापन",
+                    "options": [
+                      { "label": "होय, नेहमी", "value": "always" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "नाही, दुसरा कोणीतरी व्यवस्थापित करतो", "value": "never" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्ही स्वतः खरेदीला जाता का?",
+                  "config": {
+                    "title": "खरेदी स्वातंत्र्य",
+                    "options": [
+                      { "label": "होय", "value": "yes" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "नाही", "value": "no" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्ही तुमचे स्वतःचे पैसे (पेमेंट, बँकिंग, बिले) हाताळता का?",
+                  "config": {
+                    "title": "आर्थिक व्यवस्थापन",
+                    "options": [
+                      { "label": "होय, पूर्णपणे", "value": "yes" },
+                      { "label": "अंशतः", "value": "partial" },
+                      { "label": "नाही", "value": "no" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्ही स्वतः वाहतूक वापरता का?",
+                  "config": {
+                    "title": "वाहतूक",
+                    "options": [
+                      { "label": "होय (बस, ट्रेन, ड्रायव्हिंग इ.)", "value": "independent" },
+                      { "label": "फक्त कोणाच्या सोबत", "value": "assisted" },
+                      { "label": "नाही, अजिबात नाही", "value": "dependent" }
+                    ]
+                  }
+                },
+                {
+                  "text": "व्यस्त सार्वजनिक ठिकाणी तुम्हाला गोंधळ होतो का?",
+                  "config": {
+                    "title": "सार्वजनिक ठिकाणे",
+                    "options": [
+                      { "label": "कधीही नाही", "value": "never" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "अनेकदा", "value": "often" }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "घर आणि छंद (४ प्रश्न)",
+              "questions": [
+                {
+                  "text": "तुम्ही घरातील छोटी कामे (स्वयंपाक, साफसफाई, आयोजन) करता का?",
+                  "config": {
+                    "title": "घरातील कामे",
+                    "options": [
+                      { "label": "होय, सहजपणे", "value": "easy" },
+                      { "label": "होय, पण कधीकधी मदत लागते", "value": "need_help" },
+                      { "label": "नाही, बहुतेक कामांसाठी मला मदत लागते", "value": "dependent" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्हाला अजूनही तुमच्या छंदांचा आनंद आहे का? (वाचन, बागकाम, टीव्ही, गाणे, खेळ)",
+                  "config": {
+                    "title": "छंद",
+                    "options": [
+                      { "label": "होय", "value": "yes" },
+                      { "label": "काहीसे", "value": "somewhat" },
+                      { "label": "इतके नाही", "value": "less" },
+                      { "label": "नाही, मी थांबवले आहे", "value": "stopped" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्ही सुरू केलेली कामे पूर्ण करता का?",
+                  "config": {
+                    "title": "कार्य पूर्णत्व",
+                    "options": [
+                      { "label": "होय", "value": "yes" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "नाही", "value": "no" }
+                    ]
+                  }
+                },
+                {
+                  "text": "एखाद्या कामाच्या मध्यभागी तुम्हाला तुम्ही काय करत आहात ते विसरता का?",
+                  "config": {
+                    "title": "कार्य लक्ष",
+                    "options": [
+                      { "label": "कधीही नाही", "value": "never" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "अनेकदा", "value": "often" }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "वैयक्तिक काळजी (५ प्रश्न)",
+              "questions": [
+                {
+                  "text": "तुम्ही मदतीशिवाय आंघोळ किंवा शॉवर करता का?",
+                  "config": {
+                    "title": "आंघोळ",
+                    "options": [
+                      { "label": "होय", "value": "yes" },
+                      { "label": "कधीकधी मदत लागते", "value": "sometimes" },
+                      { "label": "नाही", "value": "no" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्ही स्वतः पूर्णपणे कपडे घालता का?",
+                  "config": {
+                    "title": "कपडे घालणे",
+                    "options": [
+                      { "label": "होय", "value": "yes" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "नाही", "value": "no" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्ही मदतीशिवाय जेवण करता का?",
+                  "config": {
+                    "title": "जेवण",
+                    "options": [
+                      { "label": "होय", "value": "yes" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "नाही", "value": "no" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्हाला दात घासायला किंवा कंगवा करायला आठवण करून द्यावी लागते का?",
+                  "config": {
+                    "title": "स्वच्छता आठवणी",
+                    "options": [
+                      { "label": "नाही", "value": "no" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "होय", "value": "yes" }
+                    ]
+                  }
+                },
+                {
+                  "text": "तुम्ही कधी कपडे बदलणे किंवा स्वच्छता राखणे विसरता का?",
+                  "config": {
+                    "title": "स्वच्छता राखणे",
+                    "options": [
+                      { "label": "कधीही नाही", "value": "never" },
+                      { "label": "कधीकधी", "value": "sometimes" },
+                      { "label": "अनेकदा", "value": "often" }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+]
+

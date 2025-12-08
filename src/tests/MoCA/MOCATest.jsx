@@ -190,9 +190,14 @@ const MOCATest = () => {
   const [sections, setSections] = useState([]);
   const [testTitle, setTestTitle] = useState('');
 
+  const [testSpecificInfo, setTestSpecificInfo] = useState({});
+
   // Refs to track previous state for migration
   const sectionsRef = React.useRef([]);
   const responsesRef = React.useRef({});
+  
+  // Ref to prevent duplicate attempt creation
+  const attemptInitializedRef = React.useRef(false);
 
   useEffect(() => {
     sectionsRef.current = sections;
@@ -201,26 +206,29 @@ const MOCATest = () => {
 
   useEffect(() => {
     localStorage.setItem('moca_language', language);
+  }, [language]);
+
+  useEffect(() => {
     const initTest = async () => {
+      // Prevent duplicate initialization (React Strict Mode double-mount)
+      if (attemptInitializedRef.current) return;
+      attemptInitializedRef.current = true;
+      
       setLoading(true);
       
-      // Capture previous state before fetching new data
-      const prevSections = sectionsRef.current;
-      const prevResponses = responsesRef.current;
-
       try {
-        // 1. Fetch tests to find MoCA based on language
+        // 1. Fetch tests to find MoCA
         const testsRes = await api.get('/tests');
         const tests = testsRes.data.items || [];
         
-        const targetTitle = language === 'en' ? 'Moca_English' : 'Moca_Marathi';
         const mocaTest = tests.find(t => 
-          (t.title || '').toLowerCase().includes(targetTitle.toLowerCase()) ||
-          (t.title || '').toLowerCase().includes('montreal') // Fallback
+          (t.title || '').includes('Montreal Cognitive Assessment') || 
+          (t.title || '').toLowerCase().includes('moca')
         );
         
         if (mocaTest) {
           setTestTitle(mocaTest.title);
+          setTestSpecificInfo(mocaTest.test_specific_info || {});
           
           // 2. Fetch Sections & Questions (Prioritize content loading)
           try {
@@ -239,34 +247,49 @@ const MOCATest = () => {
               };
             }));
 
-            // MIGRATION LOGIC: Map answers from previous language to new language by index
-            if (prevSections.length > 0 && fullSections.length > 0) {
-              const migratedResponses = {};
-              fullSections.forEach((section, sIdx) => {
-                if (section.questions) {
-                  section.questions.forEach((question, qIdx) => {
-                    // Find corresponding question in previous sections
-                    if (prevSections[sIdx] && prevSections[sIdx].questions && prevSections[sIdx].questions[qIdx]) {
-                      const prevQId = prevSections[sIdx].questions[qIdx].id;
-                      if (prevResponses[prevQId] !== undefined) {
-                        migratedResponses[question.id] = prevResponses[prevQId];
-                      }
-                    }
-                  });
-                }
-              });
-              // Only update if we actually have migrated responses to avoid clearing on initial load
-              if (Object.keys(migratedResponses).length > 0) {
-                 setResponses(migratedResponses);
-              }
-            }
-
             setSections(fullSections);
 
-            // 3. Start an attempt (Try to create attempt, but allow Demo Mode if it fails)
+            // 3. Check for existing in-progress attempt
             try {
-              const attemptRes = await api.post('/attempts', { testId: mocaTest.id });
-              setAttemptId(attemptRes.data.id);
+              const attemptsRes = await api.get('/attempts');
+              const attempts = attemptsRes.data.items || attemptsRes.data || [];
+              
+              const activeAttempt = attempts.find(a => 
+                a.testId === mocaTest.id && !a.submittedAt && !a.submit_time
+              );
+
+              if (activeAttempt) {
+                console.log("Resuming attempt:", activeAttempt.id);
+                setAttemptId(activeAttempt.id);
+                
+                // Fetch previous responses for this attempt
+                try {
+                  const responsesRes = await api.get(`/responses?attempt_id=${activeAttempt.id}`);
+                  const responsesData = responsesRes.data.items || responsesRes.data || [];
+                  
+                  if (Array.isArray(responsesData) && responsesData.length > 0) {
+                    const loadedResponses = {};
+                    responsesData.forEach(r => {
+                      // Parse answerText if it's a JSON string
+                      let value = r.answerText;
+                      try {
+                        value = JSON.parse(r.answerText);
+                      } catch (e) {
+                        // If parsing fails, keep as string
+                      }
+                      loadedResponses[r.questionId] = value;
+                    });
+                    setResponses(loadedResponses);
+                    console.log("Loaded", responsesData.length, "previous responses");
+                  }
+                } catch (err) {
+                  console.error("Failed to load existing responses", err);
+                }
+              } else {
+                // Start a new attempt
+                const attemptRes = await api.post('/attempts', { testId: mocaTest.id });
+                setAttemptId(attemptRes.data.id);
+              }
             } catch (attemptError) {
               console.warn("Failed to start attempt (likely not logged in). Running in Demo Mode.", attemptError);
             }
@@ -279,7 +302,7 @@ const MOCATest = () => {
 
         } else {
           console.warn("MoCA test not found in backend.");
-          alert("Test not found for selected language.");
+          alert("Test not found.");
         }
       } catch (error) {
         console.error("Failed to initialize test:", error);
@@ -289,7 +312,30 @@ const MOCATest = () => {
     };
 
     initTest();
-  }, [language]);
+  }, []); // Run once on mount
+
+  const getTranslation = (lang, sectionIdx = null, questionIdx = null) => {
+     if (lang === 'en') return null;
+     const trans = testSpecificInfo?.translations?.[lang];
+     if (!trans) return null;
+     
+     if (sectionIdx !== null && questionIdx === null) {
+        return trans.sections?.[sectionIdx];
+     }
+     if (sectionIdx !== null && questionIdx !== null) {
+        return trans.sections?.[sectionIdx]?.questions?.[questionIdx];
+     }
+     return trans; // Test level
+  };
+
+  const currentTestTitle = language === 'en' 
+    ? (testTitle || 'MoCA Test') 
+    : (getTranslation(language)?.title || testTitle || 'MoCA Test');
+
+  const currentSectionData = sections[currentSection];
+  const currentSectionTitle = currentSectionData 
+    ? (language === 'en' ? currentSectionData.title : (getTranslation(language, currentSection)?.title || currentSectionData.title))
+    : '';
 
   const findQuestion = (id) => {
     for (const section of sections) {
@@ -299,15 +345,85 @@ const MOCATest = () => {
     return null;
   };
 
+  const saveResponseToBackend = async (questionId, valueToSave) => {
+    if (!attemptId) return;
+    
+    try {
+      const question = findQuestion(questionId);
+      if (!question) return;
+
+      let answerText = typeof valueToSave === 'string' ? valueToSave : JSON.stringify(valueToSave);
+
+      // Handle Drawing/File Uploads - upload immediately
+      const config = question.config || {};
+      const isDrawing = config.frontend_type === 'drawing' || question.type === 'file_upload';
+
+      if (isDrawing && typeof valueToSave === 'string' && valueToSave.startsWith('data:')) {
+        try {
+          const blob = dataURLtoBlob(valueToSave);
+          if (blob) {
+            const formData = new FormData();
+            // Append the blob directly as 'file' - FormData will handle binary conversion
+            formData.append('file', blob, `drawing_q${questionId}.png`);
+            formData.append('type', 'image');
+            formData.append('label', `Drawing for Question ${questionId}`);
+            
+            console.log(`Uploading drawing for question ${questionId}...`);
+            console.log('FormData contents:', { type: 'image', label: `Drawing for Question ${questionId}`, fileSize: blob.size, fileType: blob.type });
+            
+            // Don't set Content-Type header - let the browser set it with proper boundary
+            const mediaRes = await api.post('/media', formData);
+            
+            if (mediaRes.data && mediaRes.data.url) {
+              answerText = mediaRes.data.url;
+              console.log(`Drawing uploaded successfully: ${answerText}`);
+            } else {
+              console.error('Media upload succeeded but no URL returned:', mediaRes.data);
+            }
+          } else {
+            console.error('Failed to convert data URL to blob');
+            return;
+          }
+        } catch (uploadError) {
+          console.error(`Failed to upload media for question ${questionId}:`, uploadError);
+          console.error('Upload error details:', uploadError.response?.data);
+          return; // Don't save if upload fails
+        }
+      }
+
+      const payload = {
+        attemptId: attemptId,
+        questionId: parseInt(questionId),
+        answerText: answerText
+      };
+      
+      await api.post('/responses', payload);
+      console.log(`Saved response for question ${questionId}:`, answerText.substring(0, 100));
+    } catch (error) {
+      console.error(`Failed to save response for question ${questionId}:`, error);
+    }
+  };
+
   const handleResponseChange = (questionId, value, fieldIndex = null) => {
+    // Update local state and get the new value
     setResponses(prev => {
+      let newValue;
       if (fieldIndex !== null) {
         const currentArr = prev[questionId] || [];
         const newArr = [...currentArr];
         newArr[fieldIndex] = value;
-        return { ...prev, [questionId]: newArr };
+        newValue = newArr;
+      } else {
+        newValue = value;
       }
-      return { ...prev, [questionId]: value };
+      
+      // Save to backend after state update
+      // Use setTimeout to ensure state has updated
+      setTimeout(() => {
+        saveResponseToBackend(questionId, newValue);
+      }, 0);
+      
+      return { ...prev, [questionId]: newValue };
     });
   };
 
@@ -331,47 +447,7 @@ const MOCATest = () => {
     setIsSubmitting(true);
     try {
       if (attemptId) {
-        const promises = Object.entries(responses).map(async ([qId, val]) => {
-          const question = findQuestion(qId);
-          if (!question) return null;
-
-          let answerText = typeof val === 'string' ? val : JSON.stringify(val);
-
-          // Handle Drawing/File Uploads
-          const config = question.config || {};
-          const isDrawing = config.frontend_type === 'drawing' || question.type === 'file_upload';
-
-          if (isDrawing && typeof val === 'string' && val.startsWith('data:')) {
-            try {
-              const blob = dataURLtoBlob(val);
-              if (blob) {
-                const formData = new FormData();
-                formData.append('file', blob, `drawing_attempt_${attemptId}_q_${qId}.png`);
-                
-                const mediaRes = await api.post('/media', formData, {
-                  headers: { 'Content-Type': 'multipart/form-data' }
-                });
-                
-                if (mediaRes.data && mediaRes.data.url) {
-                  answerText = mediaRes.data.url;
-                }
-              }
-            } catch (uploadError) {
-              console.error(`Failed to upload media for question ${qId}:`, uploadError);
-            }
-          }
-
-          const payload = {
-            attemptId: attemptId,
-            questionId: parseInt(qId),
-            answerText: answerText
-          };
-          
-          return api.post('/responses', payload);
-        });
-
-        await Promise.all(promises);
-
+        // Responses are already saved, just finalize the attempt
         await api.post(`/attempts/${attemptId}`, {
           submit_time: new Date().toISOString()
         });
@@ -393,11 +469,12 @@ const MOCATest = () => {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   }
 
-  const renderQuestion = (q) => {
-    const config = q.config || {};
+  const renderQuestion = (q, qIdx) => {
+    const qTrans = getTranslation(language, currentSection, qIdx);
+    const config = { ...(q.config || {}), ...(qTrans?.config || {}) };
     const type = config.frontend_type || q.type;
-    const title = config.title || q.title;
-    const description = q.text || q.description;
+    const title = config.title || q.title; // Note: q.title might not exist on backend object, usually in config
+    const description = qTrans?.text || q.text || q.description;
 
     switch (type) {
       case 'memory_registration':
@@ -502,6 +579,7 @@ const MOCATest = () => {
             description={description}
             onSave={(dataUrl) => handleResponseChange(q.id, dataUrl)}
             backgroundImage={SVG_MAP[config.backgroundImageKey || q.backgroundImageKey] || q.backgroundImage}
+            savedImage={responses[q.id] || null}
           />
         );
       default:
@@ -519,7 +597,7 @@ const MOCATest = () => {
       )}
       <div className="mb-8">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">{testTitle || 'MoCA Test'}</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{currentTestTitle}</h1>
           <button
             onClick={() => setLanguage(prev => prev === 'en' ? 'mr' : 'en')}
             className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
@@ -539,9 +617,9 @@ const MOCATest = () => {
       <div className="space-y-8">
         {sections.length > 0 && sections[currentSection] ? (
           <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
-            <h2 className="text-xl font-medium text-gray-900 mb-4">{sections[currentSection].title}</h2>
+            <h2 className="text-xl font-medium text-gray-900 mb-4">{currentSectionTitle}</h2>
             <div className="space-y-6">
-              {sections[currentSection].questions.map(q => renderQuestion(q))}
+              {sections[currentSection].questions.map((q, idx) => renderQuestion(q, idx))}
             </div>
           </div>
         ) : (

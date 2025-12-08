@@ -1,0 +1,631 @@
+[
+  {
+    "title": "Addenbrooke's Cognitive Examination III (ACE-III)",
+    "description": "Comprehensive cognitive assessment for dementia screening and differential diagnosis",
+    "sections": [
+      {
+        "title": "Attention - Orientation (10 points)",
+        "orderIndex": 1,
+        "questions": [
+          {
+            "id": 1,
+            "text": "Enter the current time details.",
+            "type": "text",
+            "maxScore": 5,
+            "config": {
+              "title": "Time Orientation",
+              "frontend_type": "text_grouped",
+              "fields": ["Day", "Date", "Month", "Year", "Season"]
+            }
+          },
+          {
+            "id": 2,
+            "text": "Enter the current place details.",
+            "type": "text",
+            "maxScore": 5,
+            "config": {
+              "title": "Place Orientation",
+              "frontend_type": "text_grouped",
+              "fields": ["Building", "Floor", "Town", "County", "Country"]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Attention - Registration (3 points)",
+        "orderIndex": 2,
+        "questions": [
+          {
+            "id": 3,
+            "text": "Repeat and memorize: LEMON, KEY, BALL.",
+            "type": "text",
+            "maxScore": 3,
+            "config": {
+              "title": "Registration",
+              "frontend_type": "memory_registration",
+              "words": ["Lemon", "Key", "Ball"]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Attention - Concentration (5 points)",
+        "orderIndex": 3,
+        "questions": [
+          {
+            "id": 4,
+            "text": "Subtract 7 from 100 five times.",
+            "type": "text",
+            "maxScore": 5,
+            "config": {
+              "title": "Serial 7s",
+              "frontend_type": "text_grouped",
+              "fields": ["100-7", "-7", "-7", "-7", "-7"]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Memory - Recall of 3 Words (3 points)",
+        "orderIndex": 4,
+        "questions": [
+          {
+            "id": 5,
+            "text": "Recall the 3 words learned in the Attention section (Lemon, Key, Ball).",
+            "type": "text",
+            "maxScore": 3,
+            "config": {
+              "title": "Recall of 3 Words",
+              "frontend_type": "text_grouped",
+              "fields": ["Word 1", "Word 2", "Word 3"]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Memory - Anterograde (7 points)",
+        "orderIndex": 5,
+        "questions": [
+          {
+            "id": 6,
+            "text": "Learn the name and address: Harry Barnes, 73 Orchard Close, Kingsbridge, Devon.",
+            "type": "text",
+            "maxScore": 7,
+            "config": {
+              "title": "Name and Address Learning",
+              "frontend_type": "name_address_learning",
+              "address": "Harry Barnes • 73 Orchard Close • Kingsbridge • Devon",
+              "instructionText": "I will show you a name and address. Read it and try to remember it.",
+              "memorizeText": "Memorize this address.",
+              "hidingText": "Hiding in",
+              "repeatText": "Repeat the address aloud (or type it below for self-check).",
+              "buttonShow": "Show Address",
+              "buttonNext": "Next Trial",
+              "buttonFinish": "Finish Learning"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Memory - Retrograde (4 points)",
+        "orderIndex": 6,
+        "questions": [
+          {
+            "id": 7,
+            "text": "Answer the following questions.",
+            "type": "text",
+            "maxScore": 4,
+            "config": {
+              "title": "Retrograde Memory",
+              "frontend_type": "text_grouped",
+              "fields": [
+                "Name of current Prime Minister/President",
+                "Name of a woman who was PM/President",
+                "Name of the US President",
+                "Name of US President assassinated in the 1960s"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Fluency (14 points)",
+        "orderIndex": 7,
+        "questions": [
+          {
+            "id": 8,
+            "text": "Name as many words as possible starting with 'P' in 1 minute.",
+            "type": "text",
+            "maxScore": 7,
+            "config": {
+              "title": "Letter Fluency",
+              "frontend_type": "audio",
+              "placeholder": "List words here..."
+            }
+          },
+          {
+            "id": 9,
+            "text": "Name as many animals as possible in 1 minute.",
+            "type": "text",
+            "maxScore": 7,
+            "config": {
+              "title": "Category Fluency",
+              "frontend_type": "audio",
+              "placeholder": "List animals here..."
+            }
+          }
+        ]
+      },
+      {
+        "title": "Language - Comprehension (3 points)",
+        "orderIndex": 8,
+        "questions": [
+          {
+            "id": 10,
+            "text": "Follow the command: 'Point to the one that is a fruit'.",
+            "type": "scmcq",
+            "maxScore": 3,
+            "config": {
+              "title": "Comprehension",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "", "value": "frog", "img": "https://cdn.hswstatic.com/gif/frog-1.jpg" },
+                { "label": "", "value": "banana", "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLWh-E-5rCitwZiTaKzesMB6kupUh0TRu1FQ&s" },
+                { "label": "", "value": "car", "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7bSsO4gPq_R_Z3NMvoIxzpJOWlcR7dB7ejg&s" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Language - Writing (2 points)",
+        "orderIndex": 9,
+        "questions": [
+          {
+            "id": 11,
+            "text": "Write two complete sentences about your recent holiday or a hobby.",
+            "type": "text",
+            "maxScore": 2,
+            "config": {
+              "title": "Writing",
+              "frontend_type": "text_multiline",
+              "placeholder": "Write here..."
+            }
+          }
+        ]
+      },
+      {
+        "title": "Language - Repetition (4 points)",
+        "orderIndex": 10,
+        "questions": [
+          {
+            "id": 12,
+            "text": "Repeat the following exactly.",
+            "type": "text",
+            "maxScore": 4,
+            "config": {
+              "title": "Repetition",
+              "frontend_type": "text_grouped",
+              "fields": [
+                "Hippopotamus",
+                "Eccentricity",
+                "Unintelligible",
+                "Statistician"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Language - Naming (12 points)",
+        "orderIndex": 11,
+        "questions": [
+          {
+            "id": 13,
+            "text": "Name the objects shown.",
+            "type": "text",
+            "maxScore": 12,
+            "config": {
+              "title": "Naming",
+              "frontend_type": "naming_grouped",
+              "items": [
+                { "label": "Item 1", "img": "https://placehold.co/150?text=Watch", "placeholder": "Name" },
+                { "label": "Item 2", "img": "https://placehold.co/150?text=Pencil", "placeholder": "Name" },
+                { "label": "Item 3", "img": "https://placehold.co/150?text=Penguin", "placeholder": "Name" },
+                { "label": "Item 4", "img": "https://placehold.co/150?text=Anchor", "placeholder": "Name" },
+                { "label": "Item 5", "img": "https://placehold.co/150?text=Giraffe", "placeholder": "Name" },
+                { "label": "Item 6", "img": "https://placehold.co/150?text=Spoon", "placeholder": "Name" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Language - Reading & Association (5 points)",
+        "orderIndex": 12,
+        "questions": [
+          {
+            "id": 14,
+            "text": "Read the following words aloud: 'Sew', 'Pint', 'Soot', 'Dough', 'Height'.",
+            "type": "text",
+            "maxScore": 1,
+            "config": {
+              "title": "Reading (1 point)",
+              "frontend_type": "audio",
+              "placeholder": "Note errors if any..."
+            }
+          },
+          {
+            "id": 15,
+            "text": "Match the word to the picture (simulated).",
+            "type": "scmcq",
+            "maxScore": 4,
+            "config": {
+              "title": "Comprehension Association (4 points)",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Correct Matches", "value": "correct", "img": "https://placehold.co/150?text=Correct" },
+                { "label": "Incorrect", "value": "incorrect", "img": "https://placehold.co/150?text=Incorrect" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Visuospatial (16 points)",
+        "orderIndex": 13,
+        "questions": [
+          {
+            "id": 16,
+            "text": "Copy the infinity loops.",
+            "type": "file_upload",
+            "maxScore": 1,
+            "config": {
+              "title": "Infinity Diagram",
+              "frontend_type": "drawing",
+              "backgroundImage": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNIDUwIDUwIEMgMjAgMjAgMjAgODAgNTAgNTAgQyA4MCAyMCAxMjAgMjAgMTUwIDUwIEMgMTgwIDgwIDE4MCAyMCAxNTAgNTAgQyAxMjAgODAgODAgODAgNTAgNTAiIHN0cm9rZT0iYmxhY2siIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMyIvPjwvc3ZnPg=="
+            }
+          },
+          {
+            "id": 17,
+            "text": "Copy the wire cube.",
+            "type": "file_upload",
+            "maxScore": 2,
+            "config": {
+              "title": "Wire Cube",
+              "frontend_type": "drawing",
+              "backgroundImage": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSI1MCIgeT0iNTAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIi8+PHJlY3QgeD0iODAiIHk9IjIwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI1MCIgeTE9IjUwIiB4Mj0iODAiIHkyPSIyMCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIi8+PHxpbmUgeDE9IjEzMCIgeTE9IjUwIiB4Mj0iMTYwIiB5Mj0iMjAiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI1MCIgeTE9IjEzMCIgeDI9IjgwIiB5Mj0iMTAwIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMTMwIiB5MT0iMTMwIiB4Mj0iMTYwIiB5Mj0iMTAwIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4="
+            }
+          },
+          {
+            "id": 18,
+            "text": "Draw a clock face with numbers and hands set to ten past five.",
+            "type": "file_upload",
+            "maxScore": 5,
+            "config": {
+              "title": "Clock Drawing",
+              "frontend_type": "drawing"
+            }
+          },
+          {
+            "id": 19,
+            "text": "Count the dots in the squares shown (simulated).",
+            "type": "text",
+            "maxScore": 4,
+            "config": {
+              "title": "Dot Counting",
+              "frontend_type": "text_grouped",
+              "fields": ["Square 1", "Square 2", "Square 3", "Square 4"]
+            }
+          },
+          {
+            "id": 20,
+            "text": "Identify the fragmented letters shown (simulated).",
+            "type": "text",
+            "maxScore": 4,
+            "config": {
+              "title": "Identifying Letters",
+              "frontend_type": "text_grouped",
+              "fields": ["Letter 1", "Letter 2", "Letter 3", "Letter 4"]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Memory - Delayed Recall & Recognition (12 points)",
+        "orderIndex": 14,
+        "questions": [
+          {
+            "id": 21,
+            "text": "Recall the Name and Address learned earlier.",
+            "type": "text",
+            "maxScore": 7,
+            "config": {
+              "title": "Delayed Recall (7 points)",
+              "frontend_type": "text_grouped",
+              "fields": ["Name", "Street", "Town", "County"]
+            }
+          },
+          {
+            "id": 22,
+            "text": "If recall was incomplete, identify the correct parts.",
+            "type": "scmcq",
+            "maxScore": 5,
+            "config": {
+              "title": "Recognition (5 points)",
+              "frontend_type": "mcq",
+              "options": [
+                { "label": "Jerry Barnes", "value": "wrong1" },
+                { "label": "Harry Barnes", "value": "correct" },
+                { "label": "Harry Bond", "value": "wrong2" }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "language": "en",
+    "test_specific_info": {
+      "slug": "ace-iii",
+      "translations": {
+        "mr": {
+          "title": "अॅडेनब्रुक्स कॉग्निटिव्ह एक्झामिनेशन III (ACE-III)",
+          "description": "स्मृतिभ्रंश तपासणी आणि विभेदक निदानासाठी सर्वसमावेशक संज्ञानात्मक मूल्यांकन",
+          "sections": [
+            {
+              "title": "अवधान - अभिमुखता (10 गुण)",
+              "questions": [
+                {
+                  "text": "सध्याच्या वेळेचा तपशील प्रविष्ट करा.",
+                  "config": {
+                    "title": "वेळेची अभिमुखता",
+                    "fields": ["दिवस", "तारीख", "महिना", "वर्ष", "ऋतू"]
+                  }
+                },
+                {
+                  "text": "सध्याच्या ठिकाणाचा तपशील प्रविष्ट करा.",
+                  "config": {
+                    "title": "ठिकाणाची अभिमुखता",
+                    "fields": ["इमारत", "मजला", "शहर", "जिल्हा", "देश"]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "अवधान - नोंदणी (3 गुण)",
+              "questions": [
+                {
+                  "text": "पुनरावृत्ती करा आणि लक्षात ठेवा: लिंबू, चावी, चेंडू.",
+                  "config": {
+                    "title": "नोंदणी",
+                    "words": ["लिंबू", "चावी", "चेंडू"]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "अवधान - एकाग्रता (5 गुण)",
+              "questions": [
+                {
+                  "text": "100 मधून पाच वेळा 7 वजा करा.",
+                  "config": {
+                    "title": "क्रमिक 7",
+                    "fields": ["100-7", "-7", "-7", "-7", "-7"]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "स्मृती - 3 शब्दांची आठवण (3 गुण)",
+              "questions": [
+                {
+                  "text": "अवधान विभागात शिकलेले 3 शब्द आठवा (लिंबू, चावी, चेंडू).",
+                  "config": {
+                    "title": "3 शब्दांची आठवण",
+                    "fields": ["शब्द 1", "शब्द 2", "शब्द 3"]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "स्मृती - नवीन माहिती (7 गुण)",
+              "questions": [
+                {
+                  "text": "नाव आणि पत्ता शिका: हरी बर्वे, ७३ सदाशिव पेठ, पुणे, महाराष्ट्र.",
+                  "config": {
+                    "title": "नाव आणि पत्ता शिकणे",
+                    "address": "हरी बर्वे • ७३ सदाशिव पेठ • पुणे • महाराष्ट्र",
+                    "instructionText": "मी तुम्हाला एक नाव आणि पत्ता दाखवेन. ते वाचा आणि लक्षात ठेवण्याचा प्रयत्न करा.",
+                    "memorizeText": "हा पत्ता लक्षात ठेवा.",
+                    "hidingText": "लपवत आहे",
+                    "repeatText": "पत्ता मोठ्याने सांगा (किंवा स्वतःच्या तपासणीसाठी खाली टाइप करा).",
+                    "buttonShow": "पत्ता दाखवा",
+                    "buttonNext": "पुढील प्रयत्न",
+                    "buttonFinish": "शिकणे पूर्ण करा"
+                  }
+                }
+              ]
+            },
+            {
+              "title": "स्मृती - जुनी माहिती (4 गुण)",
+              "questions": [
+                {
+                  "text": "खालील प्रश्नांची उत्तरे द्या.",
+                  "config": {
+                    "title": "जुनी स्मृती",
+                    "fields": [
+                      "सध्याच्या पंतप्रधानांचे/राष्ट्राध्यक्षांचे नाव",
+                      "पंतप्रधान/राष्ट्राध्यक्ष राहिलेल्या महिलेचे नाव",
+                      "अमेरिकेच्या राष्ट्राध्यक्षांचे नाव",
+                      "1960 च्या दशकात हत्या झालेल्या अमेरिकन राष्ट्राध्यक्षांचे नाव"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "ओघ (14 गुण)",
+              "questions": [
+                {
+                  "text": "1 मिनिटात 'प' ने सुरू होणारे जास्तीत जास्त शब्द सांगा.",
+                  "config": {
+                    "title": "अक्षर ओघ",
+                    "placeholder": "येथे शब्दांची यादी करा..."
+                  }
+                },
+                {
+                  "text": "1 मिनिटात जास्तीत जास्त प्राण्यांची नावे सांगा.",
+                  "config": {
+                    "title": "श्रेणी ओघ",
+                    "placeholder": "येथे प्राण्यांची यादी करा..."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "भाषा - आकलन (3 गुण)",
+              "questions": [
+                {
+                  "text": "आदेशाचे पालन करा: 'फळ असलेल्या चित्राकडे बोट दाखवा'.",
+                  "config": {
+                    "title": "आकलन"
+                  }
+                }
+              ]
+            },
+            {
+              "title": "भाषा - लेखन (2 गुण)",
+              "questions": [
+                {
+                  "text": "तुमच्या नुकत्याच झालेल्या सुट्टीबद्दल किंवा छंदाबद्दल दोन पूर्ण वाक्ये लिहा.",
+                  "config": {
+                    "title": "लेखन",
+                    "placeholder": "येथे लिहा..."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "भाषा - पुनरावृत्ती (4 गुण)",
+              "questions": [
+                {
+                  "text": "खालील शब्दांची जशीच्या तशी पुनरावृत्ती करा.",
+                  "config": {
+                    "title": "पुनरावृत्ती",
+                    "fields": [
+                      "हिप्पोपोटॅमस (पाणघोडा)",
+                      "विक्षिप्तपणा",
+                      "अगम्य",
+                      "सांख्यिकीशास्त्रज्ञ"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "भाषा - नामकरण (12 गुण)",
+              "questions": [
+                {
+                  "text": "दर्शविलेल्या वस्तूंची नावे सांगा.",
+                  "config": {
+                    "title": "नामकरण",
+                    "items": [
+                      { "label": "वस्तू 1", "placeholder": "नाव" },
+                      { "label": "वस्तू 2", "placeholder": "नाव" },
+                      { "label": "वस्तू 3", "placeholder": "नाव" },
+                      { "label": "वस्तू 4", "placeholder": "नाव" },
+                      { "label": "वस्तू 5", "placeholder": "नाव" },
+                      { "label": "वस्तू 6", "placeholder": "नाव" }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "भाषा - वाचन आणि सहसंबंध (5 गुण)",
+              "questions": [
+                {
+                  "text": "खालील शब्द मोठ्याने वाचा: 'शिवणे', 'पंत', 'काजळी', 'कणिक', 'उंची'.",
+                  "config": {
+                    "title": "वाचन (1 गुण)",
+                    "placeholder": "चुका असल्यास नोंदवा..."
+                  }
+                },
+                {
+                  "text": "शब्दाला चित्राशी जोडा (सिम्युलेटेड).",
+                  "config": {
+                    "title": "आकलन सहसंबंध (4 गुण)",
+                    "options": [
+                      { "label": "योग्य जोड्या", "value": "correct" },
+                      { "label": "अयोग्य", "value": "incorrect" }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "दृश्य-स्थानिक (16 गुण)",
+              "questions": [
+                {
+                  "text": "अनंत लूपची (Infinity loops) नक्कल करा.",
+                  "config": {
+                    "title": "अनंत आकृती"
+                  }
+                },
+                {
+                  "text": "वायर क्यूबची नक्कल करा.",
+                  "config": {
+                    "title": "वायर क्यूब"
+                  }
+                },
+                {
+                  "text": "अंक आणि काटे असलेले घड्याळ काढा आणि 5 वाजून 10 मिनिटे ही वेळ दर्शवा.",
+                  "config": {
+                    "title": "घड्याळ काढणे"
+                  }
+                },
+                {
+                  "text": "दर्शविलेल्या चौकोनांमधील ठिपके मोजा (सिम्युलेटेड).",
+                  "config": {
+                    "title": "ठिपके मोजणे",
+                    "fields": ["चौकोन 1", "चौकोन 2", "चौकोन 3", "चौकोन 4"]
+                  }
+                },
+                {
+                  "text": "दर्शविलेली तुटक अक्षरे ओळखा (सिम्युलेटेड).",
+                  "config": {
+                    "title": "अक्षरे ओळखणे",
+                    "fields": ["अक्षर 1", "अक्षर 2", "अक्षर 3", "अक्षर 4"]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "स्मृती - विलंबित आठवण आणि ओळख (12 गुण)",
+              "questions": [
+                {
+                  "text": "मगाशी शिकलेले नाव आणि पत्ता आठवा.",
+                  "config": {
+                    "title": "विलंबित आठवण (7 गुण)",
+                    "fields": ["नाव", "रस्ता", "शहर", "जिल्हा"]
+                  }
+                },
+                {
+                  "text": "जर आठवत नसेल, तर योग्य भाग ओळखा.",
+                  "config": {
+                    "title": "ओळख (5 गुण)",
+                    "options": [
+                      { "label": "जेरी बर्वे", "value": "wrong1" },
+                      { "label": "हरी बर्वे", "value": "correct" },
+                      { "label": "हरी बोंड", "value": "wrong2" }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+]
