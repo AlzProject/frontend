@@ -621,23 +621,78 @@ const MOCATest = () => {
             </div>
           </QuestionWrapper>
         );
+      case 'dropdown_grouped':
+        return (
+          <QuestionWrapper key={q.id} title={title} description={description}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {(config.fields || q.fields).map((field, idx) => {
+                const fieldLabel = typeof field === 'string' ? field : field.label;
+                const fieldOptions = typeof field === 'object' ? field.options : [];
+                
+                return (
+                  <div key={idx}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{fieldLabel}</label>
+                    <select
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                      value={(responses[q.id] || [])[idx] || ''}
+                      onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
+                    >
+                      <option value="">Select...</option>
+                      {fieldOptions.map((opt, optIdx) => (
+                        <option key={optIdx} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              })}
+            </div>
+          </QuestionWrapper>
+        );
       case 'naming_grouped':
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {(config.items || q.items).map((item, idx) => (
-                <div key={idx} className="flex flex-col items-center">
-                  <img src={item.img} alt={item.label} className="w-32 h-32 object-cover rounded-md mb-3 border" />
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{item.label}</label>
-                  <input
-                    type="text"
-                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                    value={(responses[q.id] || [])[idx] || ''}
-                    onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
-                    placeholder={item.placeholder}
-                  />
-                </div>
-              ))}
+              {(config.items || q.items || []).map((item, idx) => {
+                const mediaIndex = item.imageIndex !== undefined ? item.imageIndex : idx;
+                const imageUrl = q.media?.[mediaIndex]?.url || item.img;
+
+                return (
+                  <div key={idx} className="flex flex-col items-center">
+                    {imageUrl ? (
+                      <img 
+                        src={imageUrl} 
+                        alt={item.label} 
+                        className="w-32 h-32 object-contain rounded-md mb-3 border bg-white"
+                      />
+                    ) : (
+                      <div className="w-32 h-32 bg-gray-100 rounded-md mb-3 border flex items-center justify-center text-gray-400">
+                        No Image
+                      </div>
+                    )}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{item.label}</label>
+                    {item.options ? (
+                      <select
+                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                        value={(responses[q.id] || [])[idx] || ''}
+                        onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
+                      >
+                        <option value="">{item.placeholder || 'Select...'}</option>
+                        {item.options.map((opt, optIdx) => (
+                          <option key={optIdx} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                        value={(responses[q.id] || [])[idx] || ''}
+                        onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
+                        placeholder={item.placeholder}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </QuestionWrapper>
         );

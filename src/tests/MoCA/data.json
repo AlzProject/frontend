@@ -58,17 +58,23 @@
                 {
                   "label": "Animal 1",
                   "imageIndex": 0,
-                  "placeholder": "Enter animal name"
+                  "placeholder": "Select animal",
+                  "options": ["Lion", "Tiger", "Elephant", "Rhinoceros", "Camel", "Giraffe"],
+                  "correctAnswer": "Lion"
                 },
                 {
                   "label": "Animal 2",
                   "imageIndex": 1,
-                  "placeholder": "Enter animal name"
+                  "placeholder": "Select animal",
+                  "options": ["Lion", "Tiger", "Elephant", "Rhinoceros", "Camel", "Giraffe"],
+                  "correctAnswer": "Rhinoceros"
                 },
                 {
                   "label": "Animal 3",
                   "imageIndex": 2,
-                  "placeholder": "Enter animal name"
+                  "placeholder": "Select animal",
+                  "options": ["Lion", "Tiger", "Elephant", "Rhinoceros", "Camel", "Giraffe"],
+                  "correctAnswer": "Camel"
                 }
               ]
             }
@@ -150,18 +156,18 @@
           },
           {
             "id": 9,
-            "text": "Subtract 7 from 100 five times (93, 86, 79, 72, 65).",
+            "text": "Subtract 7 from 100 five times.",
             "type": "text",
             "maxScore": 3,
             "config": {
               "title": "Serial 7s",
-              "frontend_type": "text_grouped",
+              "frontend_type": "dropdown_grouped",
               "fields": [
-                "100-7",
-                "-7",
-                "-7",
-                "-7",
-                "-7"
+                {"label": "100 - 7", "options": ["90", "91", "92", "93", "94", "95"], "correctAnswer": "93"},
+                {"label": "93 - 7", "options": ["83", "84", "85", "86", "87", "88"], "correctAnswer": "86"},
+                {"label": "86 - 7", "options": ["76", "77", "78", "79", "80", "81"], "correctAnswer": "79"},
+                {"label": "79 - 7", "options": ["69", "70", "71", "72", "73", "74"], "correctAnswer": "72"},
+                {"label": "72 - 7", "options": ["62", "63", "64", "65", "66", "67"], "correctAnswer": "65"}
               ]
             }
           }
@@ -217,10 +223,10 @@
             "maxScore": 2,
             "config": {
               "title": "Abstraction",
-              "frontend_type": "text_grouped",
+              "frontend_type": "dropdown_grouped",
               "fields": [
-                "Train - Bicycle",
-                "Watch - Ruler"
+                {"label": "Train - Bicycle", "options": ["Both have wheels", "Means of transportation", "Both are vehicles", "Both need fuel", "Both are fast"], "correctAnswer": "Means of transportation"},
+                {"label": "Watch - Ruler", "options": ["Both measure things", "Both are tools", "Measuring instruments", "Both have numbers", "Both are made of metal"], "correctAnswer": "Measuring instruments"}
               ]
             }
           }
@@ -237,13 +243,13 @@
             "maxScore": 5,
             "config": {
               "title": "Delayed Recall",
-              "frontend_type": "text_grouped",
+              "frontend_type": "dropdown_grouped",
               "fields": [
-                "Word 1",
-                "Word 2",
-                "Word 3",
-                "Word 4",
-                "Word 5"
+                {"label": "Word 1", "options": ["Face", "Velvet", "Church", "Daisy", "Red", "House", "Blue", "River"], "correctAnswer": "Face"},
+                {"label": "Word 2", "options": ["Face", "Velvet", "Church", "Daisy", "Red", "House", "Blue", "River"], "correctAnswer": "Velvet"},
+                {"label": "Word 3", "options": ["Face", "Velvet", "Church", "Daisy", "Red", "House", "Blue", "River"], "correctAnswer": "Church"},
+                {"label": "Word 4", "options": ["Face", "Velvet", "Church", "Daisy", "Red", "House", "Blue", "River"], "correctAnswer": "Daisy"},
+                {"label": "Word 5", "options": ["Face", "Velvet", "Church", "Daisy", "Red", "House", "Blue", "River"], "correctAnswer": "Red"}
               ]
             }
           }
@@ -260,14 +266,14 @@
             "maxScore": 6,
             "config": {
               "title": "Orientation",
-              "frontend_type": "text_grouped",
+              "frontend_type": "dropdown_grouped",
               "fields": [
-                "Date",
-                "Month",
-                "Year",
-                "Day",
-                "Place",
-                "City"
+                {"label": "Date", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"], "correctAnswer": "dynamic"},
+                {"label": "Month", "options": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], "correctAnswer": "dynamic"},
+                {"label": "Year", "options": ["2023", "2024", "2025", "2026"], "correctAnswer": "dynamic"},
+                {"label": "Day", "options": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "correctAnswer": "dynamic"},
+                {"label": "Place", "options": ["Hospital", "Clinic", "Home", "Office", "Community Center"], "correctAnswer": "dynamic"},
+                {"label": "City", "options": ["Mumbai", "Pune", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata", "Nagpur"], "correctAnswer": "dynamic"}
               ]
             }
           }
@@ -311,29 +317,35 @@
               ]
             },
             {
-              "title": "नावे द्या",
+              "title": "ओळख",
               "questions": [
                 {
-                  "text": "खालील प्राणी ओळखा.",
+                  "text": "या प्राण्यांची नावे सांगा.",
                   "config": {
-                    "title": "नावे द्या",
+                    "title": "प्राणी ओळखा",
                     "frontend_type": "naming_grouped",
                     "imageFiles": ["lion.jpg", "rhinoceros.jpg", "camel.jpg"],
                     "items": [
                       {
-                        "label": "प्राणी 1",
+                        "label": "प्राणी १",
                         "imageIndex": 0,
-                        "placeholder": "प्राण्याचे नाव प्रविष्ट करा"
+                        "placeholder": "निवडा",
+                        "options": ["सिंह", "वाघ", "हत्ती", "गेंडा", "उंट", "जिराफ"],
+                        "correctAnswer": "सिंह"
                       },
                       {
-                        "label": "प्राणी 2",
+                        "label": "प्राणी २",
                         "imageIndex": 1,
-                        "placeholder": "प्राण्याचे नाव प्रविष्ट करा"
+                        "placeholder": "निवडा",
+                        "options": ["सिंह", "वाघ", "हत्ती", "गेंडा", "उंट", "जिराफ"],
+                        "correctAnswer": "गेंडा"
                       },
                       {
-                        "label": "प्राणी 3",
+                        "label": "प्राणी ३",
                         "imageIndex": 2,
-                        "placeholder": "प्राण्याचे नाव प्रविष्ट करा"
+                        "placeholder": "निवडा",
+                        "options": ["सिंह", "वाघ", "हत्ती", "गेंडा", "उंट", "जिराफ"],
+                        "correctAnswer": "उंट"
                       }
                     ]
                   }
@@ -341,18 +353,18 @@
               ]
             },
             {
-              "title": "शब्द लक्षात ठेवणे",
+              "title": "स्मरणशक्ती",
               "questions": [
                 {
-                  "text": "शब्दांची यादी वाचा. तुम्हाला ते लक्षात ठेवण्यासाठी 10 सेकंद मिळतील.",
+                  "text": "हे शब्द लक्षात ठेवा. तुम्हाला १० सेकंद मिळतील.",
                   "config": {
-                    "title": "शब्द लक्षात ठेवणे",
+                    "title": "शब्द लक्षात ठेवा",
                     "frontend_type": "memory_registration",
                     "words": [
                       "चेहरा",
-                      "मखमली",
-                      "चर्च",
-                      "डेझी",
+                      "मखमल",
+                      "मंदिर",
+                      "फूल",
                       "लाल"
                     ]
                   }
@@ -360,12 +372,12 @@
               ]
             },
             {
-              "title": "एकाग्रता",
+              "title": "लक्ष केंद्रीकरण",
               "questions": [
                 {
-                  "text": "एक-एक करून दिसणारे अंक वाचा. नंतर ते त्याच क्रमाने प्रविष्ट करा.",
+                  "text": "दाखवलेले अंक लक्षात ठेवा आणि त्याच क्रमाने लिहा.",
                   "config": {
-                    "title": "अंक क्रम (सरळ)",
+                    "title": "अंक लक्षात ठेवा (सरळ)",
                     "frontend_type": "digit_span",
                     "sequence": [
                       2,
@@ -378,9 +390,9 @@
                   }
                 },
                 {
-                  "text": "एक-एक करून दिसणारे अंक वाचा. नंतर ते उलट क्रमाने प्रविष्ट करा.",
+                  "text": "दाखवलेले अंक लक्षात ठेवा आणि उलट क्रमाने लिहा.",
                   "config": {
-                    "title": "अंक क्रम (उलट)",
+                    "title": "अंक लक्षात ठेवा (उलट)",
                     "frontend_type": "digit_span",
                     "sequence": [
                       7,
@@ -391,24 +403,24 @@
                   }
                 },
                 {
-                  "text": "खालील क्रमामध्ये प्रत्येक 'A' अक्षरावर टॅप करा.",
+                  "text": "या क्रमात 'A' अक्षर दिसेल तिथे टॅप करा.",
                   "config": {
-                    "title": "दक्षता",
+                    "title": "लक्ष लावा",
                     "frontend_type": "vigilance",
                     "sequence": "FBACMNAAJKLBAFAKDEAAAJAMOFAAB"
                   }
                 },
                 {
-                  "text": "100 मधून पाच वेळा 7 वजा करा (93, 86, 79, 72, 65).",
+                  "text": "१०० मधून पाच वेळा ७ वजा करा.",
                   "config": {
-                    "title": "क्रमिक 7",
-                    "frontend_type": "text_grouped",
+                    "title": "वजाबाकी",
+                    "frontend_type": "dropdown_grouped",
                     "fields": [
-                      "100-7",
-                      "-7",
-                      "-7",
-                      "-7",
-                      "-7"
+                      {"label": "१०० - ७", "options": ["९०", "९१", "९२", "९३", "९४", "९५"], "correctAnswer": "९३"},
+                      {"label": "९३ - ७", "options": ["८३", "८४", "८५", "८६", "८७", "८८"], "correctAnswer": "८६"},
+                      {"label": "८६ - ७", "options": ["७६", "७७", "७८", "७९", "८०", "८१"], "correctAnswer": "७९"},
+                      {"label": "७९ - ७", "options": ["६९", "७०", "७१", "७२", "७३", "७४"], "correctAnswer": "७२"},
+                      {"label": "७२ - ७", "options": ["६२", "६३", "६४", "६५", "६६", "६७"], "correctAnswer": "६५"}
                     ]
                   }
                 }
@@ -418,81 +430,81 @@
               "title": "भाषा",
               "questions": [
                 {
-                  "text": "खालील वाक्य वाचा, नंतर ते जसेच्या तसे टाइप करा: 'मला फक्त एवढेच माहित आहे की जॉन आज मदत करणार आहे.'",
+                  "text": "हे वाक्य तंतोतंत टाइप करा: 'मला एवढंच माहीत की आज जॉन मदत करणार आहे.'",
                   "config": {
-                    "title": "वाक्य पुनरावृत्ती 1",
+                    "title": "वाक्य म्हणा १",
                     "frontend_type": "text",
-                    "placeholder": "वाक्य जसेच्या तसे टाइप करा"
+                    "placeholder": "वाक्य तंतोतंत लिहा"
                   }
                 },
                 {
-                  "text": "खालील वाक्य वाचा, नंतर ते जसेच्या तसे टाइप करा: 'जेव्हा कुत्रे खोलीत असत तेव्हा मांजर नेहमी सोफ्याखाली लपत असे.'",
+                  "text": "हे वाक्य तंतोतंत टाइप करा: 'कुत्रे खोलीत असल्यावर मांजर नेहमी सोफ्याखाली लपायची.'",
                   "config": {
-                    "title": "वाक्य पुनरावृत्ती 2",
+                    "title": "वाक्य म्हणा २",
                     "frontend_type": "text",
-                    "placeholder": "वाक्य जसेच्या तसे टाइप करा"
+                    "placeholder": "वाक्य तंतोतंत लिहा"
                   }
                 },
                 {
-                  "text": "1 मिनिटात 'क' ने सुरू होणारे जास्तीत जास्त शब्द सांगा. (लक्ष्य >= 11)",
+                  "text": "१ मिनिटात 'क' ने सुरू होणारे जास्तीत जास्त शब्द सांगा (किमान ११ शब्द).",
                   "config": {
-                    "title": "शाब्दिक ओघ",
+                    "title": "शब्द सांगा",
                     "frontend_type": "text",
-                    "placeholder": "संख्या किंवा शब्दांची यादी प्रविष्ट करा..."
+                    "placeholder": "किती शब्द सांगितले ते लिहा..."
                   }
                 }
               ]
             },
             {
-              "title": "साम्य ओळखा",
+              "title": "समानता",
               "questions": [
                 {
-                  "text": "या जोड्यांमध्ये काय साम्य आहे?",
+                  "text": "या दोन गोष्टींमध्ये काय समान आहे?",
                   "config": {
-                    "title": "साम्य ओळखा",
-                    "frontend_type": "text_grouped",
+                    "title": "समानता शोधा",
+                    "frontend_type": "dropdown_grouped",
                     "fields": [
-                      "रेल्वे - सायकल",
-                      "घड्याळ - मोजपट्टी"
+                      {"label": "रेल्वे - सायकल", "options": ["दोन्ही चाके आहेत", "वाहतुकीची साधने", "दोन्ही वाहने", "दोन्हींना इंधन लागते", "दोन्ही वेगवान"], "correctAnswer": "वाहतुकीची साधने"},
+                      {"label": "घड्याळ - मोजपट्टी", "options": ["दोन्ही माप घेतात", "दोन्ही साधने", "मापाची साधने", "दोन्हींवर अंक आहेत", "दोन्ही धातूची"], "correctAnswer": "मापाची साधने"}
                     ]
                   }
                 }
               ]
             },
             {
-              "title": "आठवून सांगा",
+              "title": "आठवण",
               "questions": [
                 {
-                  "text": "मगाशी वाचलेले 5 शब्द कोणते होते?",
+                  "text": "आधी सांगितलेले ५ शब्द कोणते होते?",
                   "config": {
-                    "title": "आठवून सांगा",
-                    "frontend_type": "text_grouped",
+                    "title": "शब्द आठवा",
+                    "frontend_type": "dropdown_grouped",
                     "fields": [
-                      "शब्द 1",
-                      "शब्द 2",
-                      "शब्द 3",
-                      "शब्द 4",
-                      "शब्द 5"
+                      {"label": "शब्द १", "options": ["चेहरा", "मखमल", "मंदिर", "फूल", "लाल", "घर", "निळा", "नदी"], "correctAnswer": "चेहरा"},
+                      {"label": "शब्द २", "options": ["चेहरा", "मखमल", "मंदिर", "फूल", "लाल", "घर", "निळा", "नदी"], "correctAnswer": "मखमल"},
+                      {"label": "शब्द ३", "options": ["चेहरा", "मखमल", "मंदिर", "फूल", "लाल", "घर", "निळा", "नदी"], "correctAnswer": "मंदिर"},
+                      {"label": "शब्द ४", "options": ["चेहरा", "मखमल", "मंदिर", "फूल", "लाल", "घर", "निळा", "नदी"], "correctAnswer": "फूल"},
+                      {"label": "शब्द ५", "options": ["चेहरा", "मखमल", "मंदिर", "फूल", "लाल", "घर", "निळा", "नदी"], "correctAnswer": "लाल"}
                     ]
                   }
                 }
               ]
             },
             {
-              "title": "स्थळ आणि काळ",
+              "title": "माहिती",
               "questions": [
                 {
-                  "text": "आजची तारीख आणि ठिकाणाचा तपशील प्रविष्ट करा.",
+                  "text": "आजची तारीख आणि ठिकाण सांगा.",
                   "config": {
-                    "title": "स्थळ आणि काळ",
-                    "frontend_type": "text_grouped",
+                    "title": "आजची माहिती",
+                    "frontend_type": "dropdown_grouped",
                     "fields": [
-                      "तारीख",
-                      "महिना",
-                      "वर्ष",
-                      "दिवस",
-                      "ठिकाण",
-                      "शहर"
+                      {"label": "तारीख", "options": ["१", "२", "३", "४", "५", "६", "७", "८", "९", "१०", "११", "१२", "१३", "१४", "१५", "१६", "१७", "१८", "१९", "२०", "२१", "२२", "२३", "२४", "२५", "२६", "२७", "२८", "२९", "३०", "३१"], "correctAnswer": "dynamic"},
+                      {"label": "महिना", "options": ["जानेवारी", "फेब्रुवारी", "मार्च", "एप्रिल", "मे", "जून", "जुलै", "ऑगस्ट", "सप्टेंबर", "ऑक्टोबर", "नोव्हेंबर", "डिसेंबर"], "correctAnswer": "dynamic"},
+                      {"label": "वर्ष", "options": ["२०२३", "२०२४", "२०२५", "२०२६"], "correctAnswer": "dynamic"},
+                      {"label": "वार", "options": ["सोमवार", "मंगळवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार", "रविवार"], "correctAnswer": "dynamic"},
+                      {"label": "ठिकाण", "options": ["रुग्णालय", "दवाखाना", "घर", "कार्यालय", "सामुदायिक केंद्र"], "correctAnswer": "dynamic"},
+                      {"label": "शहर", "options": ["मुंबई", "पुणे", "दिल्ली", "बेंगळुरु", "हैदराबाद", "चेन्नई", "कोलकाता", "नागपूर"], "correctAnswer": "dynamic"}
                     ]
                   }
                 }
