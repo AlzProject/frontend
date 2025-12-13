@@ -7,24 +7,10 @@ import {
   QuestionWrapper
 } from '../../components/QuestionTypes';
 import api from '../../api';
+import { uploadMediaAndGetAnswerText } from '../../media';
 
-// Helper to convert data URL to Blob
-const dataURLtoBlob = (dataurl) => {
-  try {
-    const arr = dataurl.split(',');
-    const mime = arr[0].match(/:(.*?);/)[1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new Blob([u8arr], { type: mime });
-  } catch (e) {
-    console.error("Error converting data URL to blob", e);
-    return null;
-  }
-};
+const isMediaRef = (value) => typeof value === 'string' && value.toLowerCase().startsWith('media:');
+const getMediaIdFromRef = (value) => (isMediaRef(value) ? value.slice('media:'.length).trim() : null);
 
 // Internal component for Memory Registration
 const MemoryRegistrationQuestion = ({ title, description, words, fields, value, onChange }) => {
@@ -93,7 +79,6 @@ const MMSETest = () => {
   const [error, setError] = useState(null);
   const [language, setLanguage] = useState('en'); // 'en' or 'mr'
   const [sections, setSections] = useState([]);
-  const [testId, setTestId] = useState(null);
   const [testSpecificInfo, setTestSpecificInfo] = useState({});
   const [testTitle, setTestTitle] = useState('MMSE Test');
   
@@ -117,7 +102,6 @@ const MMSETest = () => {
         );
         
         if (mmseTest) {
-          setTestId(mmseTest.id);
           setTestTitle(mmseTest.title);
           setTestSpecificInfo(mmseTest.test_specific_info || {});
           
@@ -129,14 +113,79 @@ const MMSETest = () => {
 
             const fullSections = await Promise.all(sectionsData.map(async (section) => {
               const qRes = await api.get(`/sections/${section.id}/questions`);
+              
+              // Fetch detailed question data with media and options
+              const questionsWithMedia = await Promise.all(qRes.data.map(async (q) => {
+                try {
+                  const detailRes = await api.get(`/questions/${q.id}`);
+                  const questionDetail = detailRes.data;
+                  
+                  // Fetch presigned URLs for question media
+                  let questionMedia = [];
+                  if (questionDetail.media && Array.isArray(questionDetail.media)) {
+                    questionMedia = await Promise.all(questionDetail.media.map(async (m) => {
+                      try {
+                        const downloadRes = await api.get(`/media/${m.id}/download`);
+                        return {
+                          ...m,
+                          url: downloadRes.data.presignedUrl
+                        };
+                      } catch (err) {
+                        console.error(`Failed to fetch media ${m.id}:`, err);
+                        return m;
+                      }
+                    }));
+                  }
+                  
+                  // Fetch options with their media
+                  let options = [];
+                  if (questionDetail.options && Array.isArray(questionDetail.options)) {
+                    options = await Promise.all(questionDetail.options.map(async (opt) => {
+                      // Fetch media for each option if it has any
+                      let optionMedia = [];
+                      if (opt.media && Array.isArray(opt.media)) {
+                        optionMedia = await Promise.all(opt.media.map(async (m) => {
+                          try {
+                            const downloadRes = await api.get(`/media/${m.id}/download`);
+                            return {
+                              ...m,
+                              url: downloadRes.data.presignedUrl
+                            };
+                          } catch (err) {
+                            console.error(`Failed to fetch option media ${m.id}:`, err);
+                            return m;
+                          }
+                        }));
+                      }
+                      return {
+                        ...opt,
+                        media: optionMedia
+                      };
+                    }));
+                  }
+                  
+                  return {
+                    ...q,
+                    config: q.config || {},
+                    media: questionMedia,
+                    options: options
+                  };
+                } catch (err) {
+                  console.error(`Failed to fetch details for question ${q.id}:`, err);
+                  return {
+                    ...q,
+                    config: q.config || {}
+                  };
+                }
+              }));
+              
               return {
                 ...section,
-                questions: Array.isArray(qRes.data) ? qRes.data.map(q => ({
-                  ...q,
-                  config: q.config || {}
-                })) : []
+                questions: questionsWithMedia
               };
             }));
+            
+            console.log("Loaded sections with questions and media:", fullSections);
 
             setSections(fullSections);
 
@@ -160,16 +209,37 @@ const MMSETest = () => {
                   
                   if (Array.isArray(responsesData) && responsesData.length > 0) {
                     const loadedResponses = {};
-                    responsesData.forEach(r => {
+                    await Promise.all(responsesData.map(async (r) => {
                       // Parse answerText if it's a JSON string
                       let value = r.answerText;
                       try {
                         value = JSON.parse(r.answerText);
-                      } catch (e) {
+                      } catch {
                         // If parsing fails, keep as string
                       }
-                      loadedResponses[r.questionId] = value;
-                    });
+
+                      // Resolve media refs to a presigned URL for display
+                      if (typeof value === 'string' && (value.startsWith('media:') || value.startsWith('media/'))) {
+                        try {
+                          let mediaId = getMediaIdFromRef(value);
+                          if (!mediaId && value.startsWith('media/')) {
+                            const match = value.match(/media\/(\d+)\//);
+                            if (match) mediaId = match[1];
+                          }
+                          if (mediaId) {
+                            const downloadRes = await api.get(`/media/${mediaId}/download`);
+                            loadedResponses[r.questionId] = downloadRes.data.presignedUrl || value;
+                          } else {
+                            loadedResponses[r.questionId] = value;
+                          }
+                        } catch (err) {
+                          console.error(`Failed to load media for question ${r.questionId}:`, err);
+                          loadedResponses[r.questionId] = value;
+                        }
+                      } else {
+                        loadedResponses[r.questionId] = value;
+                      }
+                    }));
                     setResponses(loadedResponses);
                     console.log("Loaded", responsesData.length, "previous responses");
                   }
@@ -253,38 +323,40 @@ const MMSETest = () => {
 
       // Handle Drawing/File Uploads - upload immediately
       const config = question.config || {};
-      const isDrawing = config.frontend_type === 'drawing' || question.type === 'file_upload';
+      const isDrawing = config.frontend_type === 'drawing';
+      const isFileUpload = question.type === 'file_upload' || config.frontend_type === 'file_upload';
 
-      if (isDrawing && typeof valueToSave === 'string' && valueToSave.startsWith('data:')) {
+      if (isDrawing && valueToSave instanceof Blob && !(valueToSave.type || '').startsWith('audio/')) {
         try {
-          const blob = dataURLtoBlob(valueToSave);
-          if (blob) {
-            const formData = new FormData();
-            // Append the blob directly as 'file' - FormData will handle binary conversion
-            formData.append('file', blob, `drawing_q${questionId}.png`);
-            formData.append('type', 'image');
-            formData.append('label', `Drawing for Question ${questionId}`);
-            
-            console.log(`Uploading drawing for question ${questionId}...`);
-            console.log('FormData contents:', { type: 'image', label: `Drawing for Question ${questionId}`, fileSize: blob.size, fileType: blob.type });
-            
-            // Don't set Content-Type header - let the browser set it with proper boundary
-            const mediaRes = await api.post('/media', formData);
-            
-            if (mediaRes.data && mediaRes.data.url) {
-              answerText = mediaRes.data.url;
-              console.log(`Drawing uploaded successfully: ${answerText}`);
-            } else {
-              console.error('Media upload succeeded but no URL returned:', mediaRes.data);
-            }
-          } else {
-            console.error('Failed to convert data URL to blob');
-            return;
-          }
+          answerText = await uploadMediaAndGetAnswerText({
+            questionId: parseInt(questionId),
+            fileOrBlob: valueToSave,
+            type: 'image',
+            label: `Drawing for Question ${questionId}`,
+            attachToQuestion: true,
+          });
         } catch (uploadError) {
-          console.error(`Failed to upload media for question ${questionId}:`, uploadError);
+          console.error(`Failed to upload drawing for question ${questionId}:`, uploadError);
           console.error('Upload error details:', uploadError.response?.data);
+          alert('Failed to upload drawing. Please try again.');
           return; // Don't save if upload fails
+        }
+      }
+
+      if (isFileUpload && valueToSave instanceof File) {
+        try {
+          answerText = await uploadMediaAndGetAnswerText({
+            questionId: parseInt(questionId),
+            fileOrBlob: valueToSave,
+            type: 'image',
+            label: `File upload for Question ${questionId}`,
+            attachToQuestion: true,
+          });
+        } catch (uploadError) {
+          console.error(`Failed to upload file for question ${questionId}:`, uploadError);
+          console.error('Upload error details:', uploadError.response?.data);
+          alert('Failed to upload file. Please try again.');
+          return;
         }
       }
 
@@ -313,11 +385,21 @@ const MMSETest = () => {
       } else {
         newValue = value;
       }
+
+      // For Blob values (drawing), store a preview URL but save the original bytes
+      let valueToSave = newValue;
+      if (fieldIndex === null && newValue instanceof Blob) {
+        const prevVal = prev[questionId];
+        if (typeof prevVal === 'string' && prevVal.startsWith('blob:')) {
+          try { URL.revokeObjectURL(prevVal); } catch { /* ignore */ }
+        }
+        newValue = URL.createObjectURL(newValue);
+      }
       
       // Save to backend after state update
       // Use setTimeout to ensure state has updated
       setTimeout(() => {
-        saveResponseToBackend(questionId, newValue);
+        saveResponseToBackend(questionId, valueToSave);
       }, 0);
       
       return { ...prev, [questionId]: newValue };
@@ -446,29 +528,84 @@ const MMSETest = () => {
           </QuestionWrapper>
         );
       case 'mcq':
-      case 'scmcq': // Backend type might be scmcq
+      case 'scmcq': { // Backend type might be scmcq
+        // Use actual options from backend if available, otherwise fall back to config
+        const rawOptions = q.options && q.options.length > 0 ? q.options : (config.options || []);
+        
+        // Transform backend options to component format
+        const transformedOptions = rawOptions.map(opt => ({
+          value: opt.id || opt.value,
+          label: opt.text || opt.label,
+          img: opt.media?.[0]?.url || opt.img
+        }));
+        
         return (
           <MultipleChoiceQuestion
             key={q.id}
             title={config.title}
             description={config.description || qText}
-            options={config.options || []}
+            options={transformedOptions}
             selectedValues={responses[q.id] ? [responses[q.id]] : []}
             onChange={(vals) => handleResponseChange(q.id, vals[0])}
             type="single"
           />
         );
-      case 'drawing':
-      case 'file_upload': // Backend type might be file_upload
+      }
+      case 'drawing': {
+        // Determine reference image from question media attachments
+        // This provides visual guidance for what the patient needs to draw
+        let referenceImage = null;
+        
+        // First, check if question has attached media (from backend)
+        if (q.media && Array.isArray(q.media) && q.media.length > 0) {
+          // Find the first image-type media
+          const imageMedia = q.media.find(m => m.type === 'image');
+          if (imageMedia) {
+            // Use presigned URL from url field
+            referenceImage = imageMedia.url;
+          }
+        }
+        
+        // Fallback to config.referenceImage if specified
+        if (!referenceImage && config.referenceImage) {
+          referenceImage = config.referenceImage;
+        }
+        
         return (
           <DrawingCanvasQuestion
             key={q.id}
             title={config.title}
             description={config.description || qText}
-            onSave={(dataUrl) => handleResponseChange(q.id, dataUrl)}
-            referenceImage={q.id === 11 ? "https://ars.els-cdn.com/content/image/3-s2.0-B9780128121122000033-f03-01-9780128121122.jpg" : null} // Hardcoded ID check might fail if IDs change. Better to check config title or something.
+            onSave={(blob) => handleResponseChange(q.id, blob)}
+            referenceImage={referenceImage}
             savedImage={responses[q.id] || null}
           />
+        );
+      }
+      case 'file_upload': // Backend type
+        return (
+          <QuestionWrapper key={q.id} title={config.title} description={config.description || qText}>
+            <div className="space-y-3">
+              <input
+                type="file"
+                accept="image/*"
+                className="block w-full text-sm text-gray-700"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setResponses(prev => ({ ...prev, [q.id]: URL.createObjectURL(file) }));
+                  saveResponseToBackend(q.id, file);
+                }}
+              />
+              {typeof responses[q.id] === 'string' && (responses[q.id].startsWith('http') || responses[q.id].startsWith('blob:')) && (
+                <img
+                  src={responses[q.id]}
+                  alt="Uploaded"
+                  className="max-h-64 rounded border"
+                />
+              )}
+            </div>
+          </QuestionWrapper>
         );
       default:
         return (

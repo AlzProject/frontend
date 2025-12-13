@@ -7,34 +7,19 @@ import {
   QuestionWrapper
 } from '../../components/QuestionTypes';
 import api from '../../api';
+import { uploadMediaAndGetAnswerText } from '../../media';
 
-// SVG Data URIs for background images
-const TRAIL_MAKING_SVG = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIzMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjI0NSIgeT0iMzA1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjE8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iMTUwIiBjeT0iMjAwIiByPSIxNSIgc3Ryb2tlPSJibGFjayIgZmlsbD0id2hpdGUiLz4KICA8dGV4dCB4PSIxNDUiIHk9IjIwNSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2Ij5BPC90ZXh0PgogIAogIDxjaXJjbGUgY3g9IjM1MCIgY3k9IjIwMCIgcj0iMTUiIHN0cm9rZT0iYmxhY2siIGZpbGw9IndoaXRlIi8+CiAgPHRleHQgeD0iMzQ1IiB5PSIyMDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+MjwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9Ijk1IiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+QjwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSI0MDAiIGN5PSIxMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjM5NSIgeT0iMTA1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjM8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iNTAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjE5NSIgeT0iNTUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+QzwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSIzMDAiIGN5PSIzNTAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjI5NSIgeT0iMzU1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjQ8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iNTAiIGN5PSIzMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjQ1IiB5PSIzMDUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiI+RDwvdGV4dD4KICAKICA8Y2lyY2xlIGN4PSI0NTAiIGN5PSIzMDAiIHI9IjE1IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJ3aGl0ZSIvPgogIDx0ZXh0IHg9IjQ0NSIgeT0iMzA1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiPjU8L3RleHQ+CiAgCiAgPGNpcmNsZSBjeD0iMjUwIiBjeT0iMTUwIiByPSIxNSIgc3Ryb2tlPSJibGFjayIgZmlsbD0id2hpdGUiLz4KICA8dGV4dCB4PSIyNDUiIHk9IjE1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2Ij5FPC90ZXh0PgogIDx0ZXh0IHg9IjI1MCIgeT0iMTgwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTIiPkVuZDwvdGV4dD4KPC9zdmc+`;
-
-const CUBE_SVG = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB4PSI1MCIgeT0iMTUwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHBvbHlsaW5lIHBvaW50cz0iNTAsMTUwIDEwMCwxMDAgMjAwLDEwMCAyMDAsMjAwIDE1MCwyNTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPgogIDxsaW5lIHgxPSIxNTAiIHkxPSIxNTAiIHgyPSIyMDAiIHkyPSIxMDAiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPgogIDxsaW5lIHgxPSIxNTAiIHkxPSIyNTAiIHgyPSIxNTAiIHkyPSIxNTAiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPgogIDxsaW5lIHgxPSIxNTAiIHkxPSIyNTAiIHgyPSI1MCIgeTI9IjI1MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI1LDUiLz4KICA8bGluZSB4MT0iNTAiIHkxPSIyNTAiIHgyPSI1MCIgeTI9IjE1MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPGxpbmUgeDE9IjEwMCIgeTE9IjEwMCIgeDI9IjEwMCIgeTI9IjIwMCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI1LDUiLz4KICA8bGluZSB4MT0iMTAwIiB5MT0iMjAwIiB4Mj0iMjAwIiB5Mj0iMjAwIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8bGluZSB4MT0iMTAwIiB5MT0iMjAwIiB4Mj0iNTAiIHkyPSIyNTAiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iNSw1Ii8+Cjwvc3ZnPg==`;
+// SVG files served from the frontend (avoid data: URLs)
+const TRAIL_MAKING_SVG = '/moca-trail-making.svg';
+const CUBE_SVG = '/moca-cube.svg';
 
 const SVG_MAP = {
   'TRAIL_MAKING_SVG': TRAIL_MAKING_SVG,
   'CUBE_SVG': CUBE_SVG
 };
 
-// Helper to convert data URL to Blob
-const dataURLtoBlob = (dataurl) => {
-  try {
-    const arr = dataurl.split(',');
-    const mime = arr[0].match(/:(.*?);/)[1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new Blob([u8arr], { type: mime });
-  } catch (e) {
-    console.error("Error converting data URL to blob", e);
-    return null;
-  }
-};
+const isMediaRef = (value) => typeof value === 'string' && value.toLowerCase().startsWith('media:');
+const getMediaIdFromRef = (value) => (isMediaRef(value) ? value.slice('media:'.length).trim() : null);
 
 // Internal component for Memory Registration (MoCA version - 5 words)
 const MemoryRegistrationQuestion = ({ title, description, words, onComplete }) => {
@@ -238,12 +223,75 @@ const MOCATest = () => {
 
             const fullSections = await Promise.all(sectionsData.map(async (section) => {
               const qRes = await api.get(`/sections/${section.id}/questions`);
+              
+              // Fetch detailed question data with media and options
+              const questionsWithMedia = await Promise.all(qRes.data.map(async (q) => {
+                try {
+                  const detailRes = await api.get(`/questions/${q.id}`);
+                  const questionDetail = detailRes.data;
+                  
+                  // Fetch presigned URLs for question media
+                  let questionMedia = [];
+                  if (questionDetail.media && Array.isArray(questionDetail.media)) {
+                    questionMedia = await Promise.all(questionDetail.media.map(async (m) => {
+                      try {
+                        const downloadRes = await api.get(`/media/${m.id}/download`);
+                        return {
+                          ...m,
+                          url: downloadRes.data.presignedUrl
+                        };
+                      } catch (err) {
+                        console.error(`Failed to fetch media ${m.id}:`, err);
+                        return m;
+                      }
+                    }));
+                  }
+                  
+                  // Fetch options with their media
+                  let options = [];
+                  if (questionDetail.options && Array.isArray(questionDetail.options)) {
+                    options = await Promise.all(questionDetail.options.map(async (opt) => {
+                      // Fetch media for each option if it has any
+                      let optionMedia = [];
+                      if (opt.media && Array.isArray(opt.media)) {
+                        optionMedia = await Promise.all(opt.media.map(async (m) => {
+                          try {
+                            const downloadRes = await api.get(`/media/${m.id}/download`);
+                            return {
+                              ...m,
+                              url: downloadRes.data.presignedUrl
+                            };
+                          } catch (err) {
+                            console.error(`Failed to fetch option media ${m.id}:`, err);
+                            return m;
+                          }
+                        }));
+                      }
+                      return {
+                        ...opt,
+                        media: optionMedia
+                      };
+                    }));
+                  }
+                  
+                  return {
+                    ...q,
+                    config: q.config || q.test_specific_info || {},
+                    media: questionMedia,
+                    options: options
+                  };
+                } catch (err) {
+                  console.error(`Failed to fetch details for question ${q.id}:`, err);
+                  return {
+                    ...q,
+                    config: q.config || q.test_specific_info || {}
+                  };
+                }
+              }));
+              
               return {
                 ...section,
-                questions: qRes.data.map(q => ({
-                  ...q,
-                  config: q.config || q.test_specific_info || {} // Map backend info to config, preserving existing config
-                }))
+                questions: questionsWithMedia
               };
             }));
 
@@ -269,16 +317,40 @@ const MOCATest = () => {
                   
                   if (Array.isArray(responsesData) && responsesData.length > 0) {
                     const loadedResponses = {};
-                    responsesData.forEach(r => {
-                      // Parse answerText if it's a JSON string
+                    
+                    // Process each response
+                    await Promise.all(responsesData.map(async (r) => {
                       let value = r.answerText;
                       try {
                         value = JSON.parse(r.answerText);
-                      } catch (e) {
-                        // If parsing fails, keep as string
+                      } catch {
+                        // Keep as string if not JSON
                       }
-                      loadedResponses[r.questionId] = value;
-                    });
+                      
+                      // Handle media refs: store presigned URL for display/playback
+                      if (typeof value === 'string' && (value.startsWith('media:') || value.startsWith('media/'))) {
+                        try {
+                          let mediaId = getMediaIdFromRef(value);
+                          if (!mediaId && value.startsWith('media/')) {
+                            const match = value.match(/media\/(\d+)\//);
+                            if (match) mediaId = match[1];
+                          }
+
+                          if (mediaId) {
+                            const downloadRes = await api.get(`/media/${mediaId}/download`);
+                            loadedResponses[r.questionId] = downloadRes.data.presignedUrl || value;
+                          } else {
+                            loadedResponses[r.questionId] = value;
+                          }
+                        } catch (error) {
+                          console.error(`Failed to load media for question ${r.questionId}:`, error);
+                          loadedResponses[r.questionId] = value;
+                        }
+                      } else {
+                        loadedResponses[r.questionId] = value;
+                      }
+                    }));
+                    
                     setResponses(loadedResponses);
                     console.log("Loaded", responsesData.length, "previous responses");
                   }
@@ -356,38 +428,38 @@ const MOCATest = () => {
 
       // Handle Drawing/File Uploads - upload immediately
       const config = question.config || {};
-      const isDrawing = config.frontend_type === 'drawing' || question.type === 'file_upload';
+      const isDrawing = config.frontend_type === 'drawing';
+      const isFileUpload = question.type === 'file_upload' || config.frontend_type === 'file_upload';
 
-      if (isDrawing && typeof valueToSave === 'string' && valueToSave.startsWith('data:')) {
+      if (isDrawing && valueToSave instanceof Blob && !(valueToSave.type || '').startsWith('audio/')) {
         try {
-          const blob = dataURLtoBlob(valueToSave);
-          if (blob) {
-            const formData = new FormData();
-            // Append the blob directly as 'file' - FormData will handle binary conversion
-            formData.append('file', blob, `drawing_q${questionId}.png`);
-            formData.append('type', 'image');
-            formData.append('label', `Drawing for Question ${questionId}`);
-            
-            console.log(`Uploading drawing for question ${questionId}...`);
-            console.log('FormData contents:', { type: 'image', label: `Drawing for Question ${questionId}`, fileSize: blob.size, fileType: blob.type });
-            
-            // Don't set Content-Type header - let the browser set it with proper boundary
-            const mediaRes = await api.post('/media', formData);
-            
-            if (mediaRes.data && mediaRes.data.url) {
-              answerText = mediaRes.data.url;
-              console.log(`Drawing uploaded successfully: ${answerText}`);
-            } else {
-              console.error('Media upload succeeded but no URL returned:', mediaRes.data);
-            }
-          } else {
-            console.error('Failed to convert data URL to blob');
-            return;
-          }
+          answerText = await uploadMediaAndGetAnswerText({
+            questionId: parseInt(questionId),
+            fileOrBlob: valueToSave,
+            type: 'image',
+            label: `Drawing for Question ${questionId}`,
+            attachToQuestion: true,
+          });
         } catch (uploadError) {
-          console.error(`Failed to upload media for question ${questionId}:`, uploadError);
+          console.error(`Failed to upload drawing for question ${questionId}:`, uploadError);
           console.error('Upload error details:', uploadError.response?.data);
           return; // Don't save if upload fails
+        }
+      }
+
+      if (isFileUpload && valueToSave instanceof File) {
+        try {
+          answerText = await uploadMediaAndGetAnswerText({
+            questionId: parseInt(questionId),
+            fileOrBlob: valueToSave,
+            type: 'image',
+            label: `File upload for Question ${questionId}`,
+            attachToQuestion: true,
+          });
+        } catch (uploadError) {
+          console.error(`Failed to upload file for question ${questionId}:`, uploadError);
+          console.error('Upload error details:', uploadError.response?.data);
+          return;
         }
       }
 
@@ -416,11 +488,21 @@ const MOCATest = () => {
       } else {
         newValue = value;
       }
+
+      // For Blob/File values (drawing), store a preview URL but save the original bytes
+      let valueToSave = newValue;
+      if (fieldIndex === null && newValue instanceof Blob) {
+        const prevVal = prev[questionId];
+        if (typeof prevVal === 'string' && prevVal.startsWith('blob:')) {
+          try { URL.revokeObjectURL(prevVal); } catch { /* ignore */ }
+        }
+        newValue = URL.createObjectURL(newValue);
+      }
       
       // Save to backend after state update
       // Use setTimeout to ensure state has updated
       setTimeout(() => {
-        saveResponseToBackend(questionId, newValue);
+        saveResponseToBackend(questionId, valueToSave);
       }, 0);
       
       return { ...prev, [questionId]: newValue };
@@ -559,17 +641,53 @@ const MOCATest = () => {
             </div>
           </QuestionWrapper>
         );
-      case 'mcq':
+      case 'mcq': {
+        // Use actual options from backend if available, otherwise fall back to config
+        const rawOptions = q.options && q.options.length > 0 ? q.options : (config.options || []);
+        
+        // Transform backend options to component format
+        const transformedOptions = rawOptions.map(opt => ({
+          value: opt.id || opt.value,
+          label: opt.text || opt.label,
+          img: opt.media?.[0]?.url || opt.img
+        }));
+        
         return (
           <MultipleChoiceQuestion
             key={q.id}
             title={title}
             description={description}
-            options={config.options || q.options}
+            options={transformedOptions}
             selectedValues={responses[q.id] ? [responses[q.id]] : []}
             onChange={(val) => handleResponseChange(q.id, val[0])}
             type="single"
           />
+        );
+      }
+      case 'file_upload':
+        return (
+          <QuestionWrapper key={q.id} title={title} description={description}>
+            <div className="space-y-3">
+              <input
+                type="file"
+                accept="image/*"
+                className="block w-full text-sm text-gray-700"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setResponses(prev => ({ ...prev, [q.id]: URL.createObjectURL(file) }));
+                  saveResponseToBackend(q.id, file);
+                }}
+              />
+              {typeof responses[q.id] === 'string' && (responses[q.id].startsWith('data:') || responses[q.id].startsWith('http') || responses[q.id].startsWith('blob:')) && (
+                <img
+                  src={responses[q.id]}
+                  alt="Uploaded"
+                  className="max-h-64 rounded border"
+                />
+              )}
+            </div>
+          </QuestionWrapper>
         );
       case 'drawing':
         return (

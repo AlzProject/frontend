@@ -7,32 +7,125 @@ import {
   QuestionWrapper
 } from '../../components/QuestionTypes';
 import api from '../../api';
+import { uploadMediaAndGetAnswerText } from '../../media';
 
-// Helper to convert data URL to Blob
-const dataURLtoBlob = (dataurl) => {
-  try {
-    const arr = dataurl.split(',');
-    const mime = arr[0].match(/:(.*?);/)[1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new Blob([u8arr], { type: mime });
-  } catch (e) {
-    console.error("Error converting data URL to blob", e);
-    return null;
-  }
-};
+const isMediaRef = (value) => typeof value === 'string' && value.toLowerCase().startsWith('media:');
+const getMediaIdFromRef = (value) => (isMediaRef(value) ? value.slice('media:'.length).trim() : null);
 
 // --- Helper Components ---
+
+const MatchingQuestion = ({ title, description, leftItems, rightItems, value, onChange }) => {
+  const [matches, setMatches] = useState(value || {});
+  const [selectedLeft, setSelectedLeft] = useState(null);
+
+  const handleLeftClick = (leftId) => {
+    setSelectedLeft(leftId);
+  };
+
+  const handleRightClick = (rightId) => {
+    if (selectedLeft) {
+      const newMatches = { ...matches, [selectedLeft]: rightId };
+      setMatches(newMatches);
+      onChange(newMatches);
+      setSelectedLeft(null);
+    }
+  };
+
+  const clearMatch = (leftId) => {
+    const newMatches = { ...matches };
+    delete newMatches[leftId];
+    setMatches(newMatches);
+    onChange(newMatches);
+  };
+
+  return (
+    <QuestionWrapper title={title} description={description}>
+      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+        <p className="text-sm text-blue-800">
+          <strong>Instructions:</strong> Click on a word on the left, then click on the matching picture on the right to connect them.
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-8">
+        {/* Left Column - Words */}
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold mb-3 text-gray-700">Words</h3>
+          {leftItems.map((item) => {
+            const isSelected = selectedLeft === item.id;
+            const isMatched = matches[item.id];
+            
+            return (
+              <div key={item.id} className="flex items-center gap-2">
+                <button
+                  onClick={() => handleLeftClick(item.id)}
+                  className={`flex-1 p-3 rounded-lg border-2 font-medium text-left transition-all ${
+                    isSelected
+                      ? 'border-indigo-600 bg-indigo-50 shadow-md'
+                      : isMatched
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+                  }`}
+                >
+                  {item.label}
+                  {isMatched && <span className="ml-2 text-green-600">✓</span>}
+                </button>
+                {isMatched && (
+                  <button
+                    onClick={() => clearMatch(item.id)}
+                    className="px-3 py-2 text-red-600 hover:bg-red-50 rounded"
+                    title="Clear match"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Right Column - Pictures */}
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold mb-3 text-gray-700">Pictures</h3>
+          {rightItems.map((item) => {
+            const isTargetOfSelected = selectedLeft && !matches[selectedLeft];
+            const matchedByLeft = Object.entries(matches).find(([, right]) => right === item.id)?.[0];
+            
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleRightClick(item.id)}
+                disabled={!selectedLeft}
+                className={`w-full p-3 rounded-lg border-2 font-medium text-left transition-all ${
+                  matchedByLeft
+                    ? 'border-green-500 bg-green-50'
+                    : isTargetOfSelected
+                    ? 'border-indigo-400 bg-indigo-50 cursor-pointer hover:border-indigo-600'
+                    : selectedLeft
+                    ? 'border-gray-200 cursor-not-allowed opacity-50'
+                    : 'border-gray-300 cursor-not-allowed opacity-50'
+                }`}
+              >
+                {item.label}
+                {matchedByLeft && (
+                  <span className="ml-2 text-green-600 text-sm">
+                    ← {leftItems.find(l => l.id === matchedByLeft)?.label}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div className="mt-4 text-sm text-gray-600">
+        Matched: {Object.keys(matches).length} / {leftItems.length}
+      </div>
+    </QuestionWrapper>
+  );
+};
 
 const AudioRecorder = ({ onRecordingComplete, label = "Start Recording", savedAudioUrl = null }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [audioUrl, setAudioUrl] = useState(savedAudioUrl);
-  const [isUploading, setIsUploading] = useState(false);
 
   const startRecording = async () => {
     try {
@@ -87,16 +180,13 @@ const AudioRecorder = ({ onRecordingComplete, label = "Start Recording", savedAu
     <div className="flex flex-col items-center space-y-2">
       <button 
         onClick={isRecording ? stopRecording : startRecording}
-        disabled={isUploading}
         className={`px-4 py-2 rounded-md text-white font-medium ${
           isRecording 
             ? 'bg-red-600 hover:bg-red-700 animate-pulse' 
-            : isUploading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-indigo-600 hover:bg-indigo-700'
+            : 'bg-indigo-600 hover:bg-indigo-700'
         }`}
       >
-        {isRecording ? "Stop Recording" : isUploading ? "Uploading..." : (audioUrl ? "Re-record" : label)}
+        {isRecording ? "Stop Recording" : (audioUrl ? "Re-record" : label)}
       </button>
       {audioUrl && (
         <div className="flex flex-col items-center">
@@ -238,19 +328,14 @@ const ACEIIITest = () => {
       attemptInitializedRef.current = true;
       
       setLoading(true);
+      
       try {
-        // Check mic permission first
-        try {
-          await navigator.mediaDevices.getUserMedia({ audio: true });
-          setMicPermission('granted');
-        } catch (error) {
-          console.error("Mic permission denied:", error);
-          setMicPermission('denied');
-          setLoading(false);
-          return; // Stop initialization if mic denied
-        }
+        // Check microphone permission
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop());
+        setMicPermission('granted');
 
-        // 1. Fetch tests to find ACE-III
+        // Fetch ACE-III test
         const testsRes = await api.get('/tests');
         const tests = testsRes.data.items || [];
         const aceTest = tests.find(t => 
@@ -258,90 +343,168 @@ const ACEIIITest = () => {
           (t.title || '').toLowerCase().includes('addenbrooke')
         );
         
-        if (aceTest) {
-          setTestTitle(aceTest.title);
-          setTestSpecificInfo(aceTest.test_specific_info || {});
+        if (!aceTest) {
+          alert("ACE-III test not found.");
+          setLoading(false);
+          return;
+        }
 
-          // 2. Fetch Sections & Questions
-          try {
-            const sectionsRes = await api.get(`/tests/${aceTest.id}/sections`);
-            const sectionsData = Array.isArray(sectionsRes.data) ? sectionsRes.data : [];
-            sectionsData.sort((a, b) => a.orderIndex - b.orderIndex);
+        setTestTitle(aceTest.title);
+        setTestSpecificInfo(aceTest.test_specific_info || {});
 
-            const fullSections = await Promise.all(sectionsData.map(async (section) => {
-              const qRes = await api.get(`/sections/${section.id}/questions`);
-              return {
-                ...section,
-                questions: Array.isArray(qRes.data) ? qRes.data.map(q => ({
-                  ...q,
-                  config: q.config || {}
-                })) : []
-              };
-            }));
+        // Fetch sections & questions
+        const sectionsRes = await api.get(`/tests/${aceTest.id}/sections`);
+        const sectionsData = Array.isArray(sectionsRes.data) ? sectionsRes.data : [];
+        sectionsData.sort((a, b) => a.orderIndex - b.orderIndex);
 
-            setSections(fullSections);
-
-            // 3. Check for existing in-progress attempt
+        const fullSections = await Promise.all(sectionsData.map(async (section) => {
+          const qRes = await api.get(`/sections/${section.id}/questions`);
+          
+          // Fetch detailed question data with media and options
+          const questionsWithMedia = await Promise.all(qRes.data.map(async (q) => {
             try {
-              const attemptsRes = await api.get('/attempts');
-              const attempts = attemptsRes.data.items || attemptsRes.data || [];
+              const detailRes = await api.get(`/questions/${q.id}`);
+              const questionDetail = detailRes.data;
               
-              const activeAttempt = attempts.find(a => 
-                a.testId === aceTest.id && !a.submittedAt && !a.submit_time
-              );
-
-              if (activeAttempt) {
-                console.log("Resuming attempt:", activeAttempt.id);
-                setAttemptId(activeAttempt.id);
-                
-                // Fetch previous responses for this attempt
-                try {
-                  const responsesRes = await api.get(`/responses?attempt_id=${activeAttempt.id}`);
-                  const responsesData = responsesRes.data.items || responsesRes.data || [];
-                  
-                  if (Array.isArray(responsesData) && responsesData.length > 0) {
-                    const loadedResponses = {};
-                    responsesData.forEach(r => {
-                      // Parse answerText if it's a JSON string for arrays/objects
-                      let value = r.answerText;
+              // Fetch presigned URLs for question media
+              let questionMedia = [];
+              if (questionDetail.media && Array.isArray(questionDetail.media)) {
+                questionMedia = await Promise.all(questionDetail.media.map(async (m) => {
+                  try {
+                    const downloadRes = await api.get(`/media/${m.id}/download`);
+                    return {
+                      ...m,
+                      url: downloadRes.data.presignedUrl
+                    };
+                  } catch (err) {
+                    console.error(`Failed to fetch media ${m.id}:`, err);
+                    return m;
+                  }
+                }));
+              }
+              
+              // Fetch options with their media
+              let options = [];
+              if (questionDetail.options && Array.isArray(questionDetail.options)) {
+                options = await Promise.all(questionDetail.options.map(async (opt) => {
+                  // Fetch media for each option if it has any
+                  let optionMedia = [];
+                  if (opt.media && Array.isArray(opt.media)) {
+                    optionMedia = await Promise.all(opt.media.map(async (m) => {
                       try {
-                        value = JSON.parse(r.answerText);
-                      } catch (e) {
-                        // If parsing fails, keep as string
+                        const downloadRes = await api.get(`/media/${m.id}/download`);
+                        return {
+                          ...m,
+                          url: downloadRes.data.presignedUrl
+                        };
+                      } catch (err) {
+                        console.error(`Failed to fetch option media ${m.id}:`, err);
+                        return m;
                       }
-                      loadedResponses[r.questionId] = value;
-                    });
-                    setResponses(loadedResponses);
-                    console.log("Loaded", responsesData.length, "previous responses");
+                    }));
+                  }
+                  return {
+                    ...opt,
+                    media: optionMedia
+                  };
+                }));
+              }
+              
+              return {
+                ...q,
+                config: q.config || q.test_specific_info || {},
+                media: questionMedia,
+                options: options
+              };
+            } catch (err) {
+              console.error(`Failed to fetch details for question ${q.id}:`, err);
+              return {
+                ...q,
+                config: q.config || q.test_specific_info || {}
+              };
+            }
+          }));
+          
+          return {
+            ...section,
+            questions: questionsWithMedia
+          };
+        }));
+
+        setSections(fullSections);
+
+        // Check for existing attempt or create new one
+        try {
+          const attemptsRes = await api.get('/attempts');
+          const attempts = attemptsRes.data.items || attemptsRes.data || [];
+          
+          const activeAttempt = attempts.find(a => 
+            a.testId === aceTest.id && !a.submittedAt && !a.submit_time
+          );
+
+          if (activeAttempt) {
+            setAttemptId(activeAttempt.id);
+            
+            // Load previous responses
+            const responsesRes = await api.get(`/responses?attempt_id=${activeAttempt.id}`);
+            const responsesData = responsesRes.data.items || responsesRes.data || [];
+            
+            const loadedResponses = {};
+            
+            // Process each response
+            await Promise.all(responsesData.map(async (r) => {
+              let value = r.answerText;
+              try {
+                value = JSON.parse(r.answerText);
+              } catch {
+                // Keep as string if not JSON
+              }
+              
+              // Handle media refs: store presigned URL for display/playback
+              if (typeof value === 'string' && (value.startsWith('media/') || value.startsWith('media:'))) {
+                try {
+                  let mediaId = getMediaIdFromRef(value);
+                  if (!mediaId && value.startsWith('media/')) {
+                    const match = value.match(/media\/(\d+)\//); 
+                    if (match) mediaId = match[1];
+                  }
+
+                  if (mediaId) {
+                    const downloadRes = await api.get(`/media/${mediaId}/download`);
+                    loadedResponses[r.questionId] = downloadRes.data.presignedUrl || value;
+                  } else {
+                    loadedResponses[r.questionId] = value;
                   }
                 } catch (err) {
-                  console.error("Failed to load existing responses", err);
+                  console.error(`Failed to load media for question ${r.questionId}:`, err);
+                  loadedResponses[r.questionId] = value;
                 }
               } else {
-                // Start a new attempt
-                const attemptRes = await api.post('/attempts', { testId: aceTest.id });
-                setAttemptId(attemptRes.data.id);
+                loadedResponses[r.questionId] = value;
               }
-            } catch (attemptError) {
-              console.warn("Failed to start attempt (running in demo mode):", attemptError);
-            }
-          } catch (secError) {
-            console.error("Failed to fetch sections:", secError);
-            alert("Failed to load test content.");
+            }));            setResponses(loadedResponses);
+          } else {
+            // Create new attempt
+            const attemptRes = await api.post('/attempts', { testId: aceTest.id });
+            setAttemptId(attemptRes.data.id);
           }
-        } else {
-          console.warn("ACE-III test not found in backend.");
-          alert("ACE-III test not found.");
+        } catch {
+          console.warn("Running in demo mode - results won't be saved");
         }
       } catch (error) {
         console.error("Failed to initialize test:", error);
+        if (error.message?.includes('microphone')) {
+          setMicPermission('denied');
+        } else {
+          alert("Failed to load test. Please refresh the page.");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     initTest();
-  }, []);
+  }, [navigate]);
 
   // Helper to get translated content
   const getTranslation = (lang, sectionIdx = null, questionIdx = null) => {
@@ -367,89 +530,60 @@ const ACEIIITest = () => {
 
       let answerText = typeof valueToSave === 'string' ? valueToSave : JSON.stringify(valueToSave);
 
-      // Handle Drawing/File Uploads and Audio - upload immediately
+      // Handle media uploads (store `answerText` as `media:<id>`)
       const config = question.config || {};
-      const isDrawing = config.frontend_type === 'drawing' || question.type === 'file_upload';
-      const isAudio = config.frontend_type === 'audio' || question.type === 'audio';
+      const isDrawing = config.frontend_type === 'drawing';
+      const isFileUpload = question.type === 'file_upload' || config.frontend_type === 'file_upload';
 
-      if (isDrawing && typeof valueToSave === 'string' && valueToSave.startsWith('data:')) {
+      if (isDrawing && valueToSave instanceof Blob && !(valueToSave.type || '').startsWith('audio/')) {
         try {
-          const blob = dataURLtoBlob(valueToSave);
-          if (blob) {
-            const formData = new FormData();
-            // Append the blob directly as 'file' - FormData will handle binary conversion
-            formData.append('file', blob, `drawing_q${questionId}.png`);
-            formData.append('type', 'image');
-            formData.append('label', `Drawing for Question ${questionId}`);
-            
-            console.log(`Uploading drawing for question ${questionId}...`);
-            console.log('FormData contents:', { type: 'image', label: `Drawing for Question ${questionId}`, fileSize: blob.size, fileType: blob.type });
-            
-            // Don't set Content-Type header - let the browser set it with proper boundary
-            const mediaRes = await api.post('/media', formData);
-            
-            if (mediaRes.data && mediaRes.data.url) {
-              answerText = mediaRes.data.url;
-              console.log(`Drawing uploaded successfully: ${answerText}`);
-            } else {
-              console.error('Media upload succeeded but no URL returned:', mediaRes.data);
-            }
-          } else {
-            console.error('Failed to convert data URL to blob');
-            return;
-          }
+          answerText = await uploadMediaAndGetAnswerText({
+            questionId: parseInt(questionId),
+            fileOrBlob: valueToSave,
+            type: 'image',
+            label: `Drawing for Question ${questionId}`,
+            attachToQuestion: true,
+          });
         } catch (uploadError) {
-          console.error(`Failed to upload media for question ${questionId}:`, uploadError);
+          console.error(`Failed to upload drawing for question ${questionId}:`, uploadError);
           console.error('Upload error details:', uploadError.response?.data);
-          return; // Don't save response if upload failed
+          alert('Failed to upload drawing. Please try again.');
+          return; // Don't save if upload fails
         }
-      } else if (valueToSave instanceof Blob) {
-        // Handle audio blob upload immediately
-        console.log('Detected Blob for upload:', { 
-          size: valueToSave.size, 
-          type: valueToSave.type,
-          questionId: questionId
-        });
-        
-        // Verify blob has content
-        if (valueToSave.size === 0) {
-          console.error(`Audio blob is empty for question ${questionId}`);
-          alert('Recording is empty. Please try recording again.');
+      }
+
+      if (isFileUpload && valueToSave instanceof File) {
+        try {
+          answerText = await uploadMediaAndGetAnswerText({
+            questionId: parseInt(questionId),
+            fileOrBlob: valueToSave,
+            type: 'image',
+            label: `File upload for Question ${questionId}`,
+            attachToQuestion: true,
+          });
+        } catch (uploadError) {
+          console.error(`Failed to upload file for question ${questionId}:`, uploadError);
+          console.error('Upload error details:', uploadError.response?.data);
+          alert('Failed to upload file. Please try again.');
           return;
         }
-        
+      }
+
+      // Handle Audio Blob uploads
+      if (valueToSave instanceof Blob && (valueToSave.type || '').startsWith('audio/')) {
         try {
-          const formData = new FormData();
-          // Use the original blob directly - don't rewrap it
-          // Append with explicit filename and proper MIME type
-          formData.append('file', valueToSave, `audio_q${questionId}_${Date.now()}.webm`);
-          formData.append('type', 'audio');
-          formData.append('label', `Audio recording for Question ${questionId}`);
-          
-          console.log(`Uploading audio for question ${questionId}...`);
-          console.log('Audio blob details:', { 
-            size: valueToSave.size, 
-            type: valueToSave.type,
-            isBlob: valueToSave instanceof Blob
+          answerText = await uploadMediaAndGetAnswerText({
+            questionId: parseInt(questionId),
+            fileOrBlob: valueToSave,
+            type: 'audio',
+            label: `Audio for Question ${questionId}`,
+            attachToQuestion: true,
           });
-          
-          // Don't set Content-Type header - let the browser set it with proper boundary
-          const mediaRes = await api.post('/media', formData);
-          
-          console.log('Media upload response:', mediaRes.data);
-          
-          if (mediaRes.data && mediaRes.data.url) {
-            answerText = mediaRes.data.url;
-            console.log(`Audio uploaded successfully: ${answerText}`);
-          } else {
-            console.error('Media upload succeeded but no URL returned:', mediaRes.data);
-            return;
-          }
         } catch (uploadError) {
           console.error(`Failed to upload audio for question ${questionId}:`, uploadError);
           console.error('Upload error details:', uploadError.response?.data);
-          console.error('Full error:', uploadError);
-          return; // Don't save response if upload failed
+          alert('Failed to upload audio. Please try again.');
+          return;
         }
       }
 
@@ -466,23 +600,8 @@ const ACEIIITest = () => {
     }
   };
 
-  const handleResponseChange = async (questionId, value, fieldIndex = null) => {
-    // Special handling for Blobs (audio recordings) - upload immediately
-    if (value instanceof Blob) {
-      console.log('Handling audio blob for question', questionId, 'Size:', value.size);
-      
-      // Upload immediately to prevent blob data loss
-      await saveResponseToBackend(questionId, value);
-      
-      // Store a placeholder in state to indicate audio was uploaded
-      setResponses(prev => ({
-        ...prev,
-        [questionId]: `audio_uploaded_q${questionId}` // Placeholder
-      }));
-      return;
-    }
-    
-    // For non-blob values (text, arrays, etc.), use normal flow
+  const handleResponseChange = (questionId, value, fieldIndex = null) => {
+    // Update local state and get the new value
     setResponses(prev => {
       let newValue;
       if (fieldIndex !== null) {
@@ -493,11 +612,20 @@ const ACEIIITest = () => {
       } else {
         newValue = value;
       }
+
+      // For Blob values (drawing/audio), store a preview URL but save the original bytes
+      let valueToSave = newValue;
+      if (fieldIndex === null && newValue instanceof Blob) {
+        const prevVal = prev[questionId];
+        if (typeof prevVal === 'string' && prevVal.startsWith('blob:')) {
+          try { URL.revokeObjectURL(prevVal); } catch { /* ignore */ }
+        }
+        newValue = URL.createObjectURL(newValue);
+      }
       
       // Save to backend after state update
-      // Use setTimeout to ensure state has updated
       setTimeout(() => {
-        saveResponseToBackend(questionId, newValue);
+        saveResponseToBackend(questionId, valueToSave);
       }, 0);
       
       return { ...prev, [questionId]: newValue };
@@ -532,14 +660,14 @@ const ACEIIITest = () => {
     setIsSubmitting(true);
     try {
       if (attemptId) {
-        // Responses are already saved, just finalize the attempt
+        // Responses are already saved, just finalize the attempt (following MoCA pattern)
         await api.post(`/attempts/${attemptId}`, {
           submit_time: new Date().toISOString()
         });
         alert("ACE-III Test submitted successfully!");
       } else {
         console.log("Demo mode submission:", responses);
-        alert("ACE-III Test submitted successfully (Demo Mode)!");
+        alert("ACE-III Test submitted successfully (Demo Mode - Not Saved to Backend)!");
       }
       navigate('/');
     } catch (error) {
@@ -604,9 +732,6 @@ const ACEIIITest = () => {
           />
         );
       case 'memory_registration':
-        const savedAudioReg = responses[q.id] && typeof responses[q.id] === 'string' && responses[q.id].startsWith('http') 
-          ? responses[q.id] 
-          : null;
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
              <div className="p-4 bg-blue-50 text-blue-800 rounded-md text-center font-bold text-xl mb-6">
@@ -617,22 +742,19 @@ const ACEIIITest = () => {
                <AudioRecorder 
                  onRecordingComplete={(blob) => handleResponseChange(q.id, blob)} 
                  label="Record Words"
-                 savedAudioUrl={savedAudioReg}
+                 savedAudioUrl={responses[q.id]}
                />
              </div>
           </QuestionWrapper>
         );
       case 'audio':
-        const savedAudio = responses[q.id] && typeof responses[q.id] === 'string' && responses[q.id].startsWith('http') 
-          ? responses[q.id] 
-          : null;
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
              <div className="flex flex-col items-center py-4">
                <AudioRecorder 
                  onRecordingComplete={(blob) => handleResponseChange(q.id, blob)} 
                  label="Start Recording Answer"
-                 savedAudioUrl={savedAudio}
+                 savedAudioUrl={responses[q.id]}
                />
              </div>
           </QuestionWrapper>
@@ -678,48 +800,145 @@ const ACEIIITest = () => {
             </div>
           </QuestionWrapper>
         );
+      case 'matching':
+        return (
+          <MatchingQuestion
+            key={q.id}
+            title={title}
+            description={description}
+            leftItems={config.leftItems || []}
+            rightItems={config.rightItems || []}
+            value={responses[q.id] || {}}
+            onChange={(matches) => handleResponseChange(q.id, matches)}
+          />
+        );
       case 'naming_grouped':
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-              {(config.items || q.items || []).map((item, idx) => (
-                <div key={idx} className="flex flex-col items-center">
-                  <img src={item.img} alt={item.label} className="w-24 h-24 object-cover rounded-md mb-3 border" />
-                  <input
-                    type="text"
-                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                    value={(responses[q.id] || [])[idx] || ''}
-                    onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
-                    placeholder={item.placeholder}
-                  />
-                </div>
-              ))}
+              {(config.items || q.items || []).map((item, idx) => {
+                const mediaIndex = item.imageIndex !== undefined ? item.imageIndex : idx;
+                const imageUrl = q.media?.[mediaIndex]?.url || item.img;
+
+                return (
+                  <div key={idx} className="flex flex-col items-center">
+                    {imageUrl ? (
+                      <img 
+                        src={imageUrl} 
+                        alt={item.label} 
+                        className="w-32 h-32 object-contain rounded-md mb-3 border bg-white"
+                      />
+                    ) : (
+                      <div className="w-32 h-32 bg-gray-100 rounded-md mb-3 border flex items-center justify-center text-gray-400">
+                        No Image
+                      </div>
+                    )}
+                    <input
+                      type="text"
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                      value={(responses[q.id] || [])[idx] || ''}
+                      onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
+                      placeholder={item.placeholder}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </QuestionWrapper>
         );
-      case 'mcq':
+      case 'mcq': {
+        // Use actual options from backend if available, otherwise fall back to config
+        const optionsToRender = q.options && q.options.length > 0 ? q.options : (config.options || []);
+        const hasImages = optionsToRender.some(o => (o.media && o.media.length > 0) || o.imageIndex !== undefined);
+        
         return (
-          <MultipleChoiceQuestion
-            key={q.id}
-            title={title}
-            description={description}
-            options={config.options || q.options || []}
-            selectedValues={responses[q.id] ? [responses[q.id]] : []}
-            onChange={(val) => handleResponseChange(q.id, val[0])}
-            type="single"
-          />
+          <QuestionWrapper key={q.id} title={title} description={description}>
+            <div className={`${hasImages ? 'grid grid-cols-1 sm:grid-cols-3 gap-4' : 'space-y-3'}`}>
+              {optionsToRender.map((opt, idx) => {
+                  // Get image from option's media (backend) or fallback to imageIndex pattern
+                  const optImage = opt.media?.[0]?.url || 
+                                  (opt.imageIndex !== undefined ? q.media?.[opt.imageIndex]?.url : null);
+                  
+                  // For backend options, use option.id; for config options, use opt.value
+                  const optionValue = opt.id || opt.value || idx;
+                  const optionLabel = opt.text || opt.label || `Option ${idx + 1}`;
+                  const isSelected = responses[q.id] === optionValue;
+                  
+                  return (
+                    <div 
+                      key={opt.id || idx} 
+                      onClick={() => handleResponseChange(q.id, optionValue)}
+                      className={`relative flex ${optImage ? 'flex-col items-center text-center p-4' : 'items-center p-4'} border rounded-lg cursor-pointer transition-all ${
+                        isSelected ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200' : 'border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name={`q_${q.id}`}
+                        checked={isSelected}
+                        onChange={() => handleResponseChange(q.id, optionValue)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 absolute top-4 right-4"
+                      />
+                      
+                      {optImage && (
+                        <img 
+                          src={optImage} 
+                          alt={optionLabel} 
+                          className="w-full h-32 object-contain mb-3 rounded"
+                        />
+                      )}
+                       
+                      <span className={`block font-medium ${isSelected ? 'text-indigo-900' : 'text-gray-900'}`}>
+                        {optionLabel}
+                      </span>
+                    </div>
+                  );
+              })}
+            </div>
+          </QuestionWrapper>
         );
-      case 'drawing':
+      }
+      case 'file_upload':
+        return (
+          <QuestionWrapper key={q.id} title={title} description={description}>
+            <div className="space-y-3">
+              <input
+                type="file"
+                accept="image/*"
+                className="block w-full text-sm text-gray-700"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setResponses(prev => ({ ...prev, [q.id]: URL.createObjectURL(file) }));
+                  saveResponseToBackend(q.id, file);
+                }}
+              />
+              {typeof responses[q.id] === 'string' && (responses[q.id].startsWith('http') || responses[q.id].startsWith('blob:')) && (
+                <img
+                  src={responses[q.id]}
+                  alt="Uploaded"
+                  className="max-h-64 rounded border"
+                />
+              )}
+            </div>
+          </QuestionWrapper>
+        );
+      case 'drawing': {
+        const referenceImage = q.media?.find(m => m.type === 'image')?.url;
+        
         return (
           <DrawingCanvasQuestion
             key={q.id}
             title={title}
             description={description}
-            onSave={(dataUrl) => handleResponseChange(q.id, dataUrl)}
-            backgroundImage={config.backgroundImage || q.backgroundImage}
+            onSave={(blob) => handleResponseChange(q.id, blob)}
+            referenceImage={referenceImage}
             savedImage={responses[q.id] || null}
+            width={referenceImage ? 350 : 500}
+            height={referenceImage ? 280 : 400}
           />
         );
+      }
       default:
         return null;
     }

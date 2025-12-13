@@ -4,7 +4,7 @@
 # Usage: ./createTest.sh
 
 # Configuration
-API_URL="${API_URL:-http://localhost:3000/v1}"
+API_URL="${API_URL:-https://alz.adityaap.tech/v1}"
 DATA_FILE="$(dirname "$0")/data.json"
 
 echo "================================================"

@@ -42,6 +42,10 @@ fi
 
 AUTH_HEADER="Authorization: Bearer $ACCESS_TOKEN"
 
+# Determine script directory
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+echo "Using SCRIPT_DIR = $SCRIPT_DIR"
+
 # Process Data
 echo "Reading $DATA_FILE..."
 
@@ -108,7 +112,16 @@ jq -c '.[]' "$DATA_FILE" | while read -r test_item; do
             Q_TEXT=$(echo "$question_item" | jq -r '.text')
             Q_TYPE=$(echo "$question_item" | jq -r '.type')
             Q_MAX_SCORE=$(echo "$question_item" | jq -r '.maxScore')
+            Q_NEG_SCORE=$(echo "$question_item" | jq -r '.negativeScore // 0')
+            Q_PARTIAL=$(echo "$question_item" | jq -r '.partialMarking // false')
             Q_CONFIG=$(echo "$question_item" | jq -c '.config')
+            
+            # Backend validation: maxScore must be positive (> 0)
+            # If maxScore is 0 or invalid, use default value of 1
+            if [ "$Q_MAX_SCORE" == "0" ] || [ "$Q_MAX_SCORE" == "null" ] || [ -z "$Q_MAX_SCORE" ]; then
+                Q_MAX_SCORE=1
+                echo "    ⚠ Warning: maxScore was 0 or invalid, using default value 1"
+            fi
             
             # Truncate text for display
             Q_DISPLAY="${Q_TEXT:0:30}"
@@ -120,8 +133,10 @@ jq -c '.[]' "$DATA_FILE" | while read -r test_item; do
                 --arg text "$Q_TEXT" \
                 --arg type "$Q_TYPE" \
                 --argjson maxScore "$Q_MAX_SCORE" \
+                --argjson negativeScore "$Q_NEG_SCORE" \
+                --argjson partialMarking "$Q_PARTIAL" \
                 --argjson config "$Q_CONFIG" \
-                '{text: $text, type: $type, maxScore: $maxScore, config: $config}')
+                '{text: $text, type: $type, maxScore: $maxScore, negativeScore: $negativeScore, partialMarking: $partialMarking, config: $config}')
                 
             Q_RESPONSE=$(curl -s -X POST "$API_URL/sections/$SEC_ID/questions" \
                 -H "Content-Type: application/json" \
@@ -133,8 +148,122 @@ jq -c '.[]' "$DATA_FILE" | while read -r test_item; do
             if [ "$Q_ID" == "null" ]; then
                 echo "      Failed to create question."
                 echo "      $Q_RESPONSE"
-            else
-                echo "      Question created with ID: $Q_ID"
+                continue
+            fi
+            
+            echo "      Question created with ID: $Q_ID"
+            
+            # ----------------------------------------------
+            # HANDLE MEDIA UPLOADS (imageFiles in config)
+            # ----------------------------------------------
+            # S3 Presigned URL Flow (per openapi.yaml):
+            # 1. POST /media with JSON { type, label } -> Get presigned URL + media ID
+            # 2. PUT file to presigned URL (direct S3 upload)
+            # 3. POST /questions/{id}/media/{mediaId} to attach
+            # ----------------------------------------------
+            IMAGE_FILES=$(echo "$question_item" | jq -r '.config.imageFiles[]? // empty' 2>/dev/null)
+            
+            if [ -n "$IMAGE_FILES" ]; then
+                echo "      Found image files to upload"
+                
+                # Read imageFiles as JSON array
+                IMAGE_FILES_ARRAY=$(echo "$question_item" | jq -c '.config.imageFiles // []')
+                IMAGE_COUNT=$(echo "$IMAGE_FILES_ARRAY" | jq 'length')
+                
+                for ((img_idx=0; img_idx<$IMAGE_COUNT; img_idx++)); do
+                    IMAGE_FILE=$(echo "$IMAGE_FILES_ARRAY" | jq -r ".[$img_idx]")
+                    
+                    # Resolve file location (check Images/ subdirectory)
+                    if [ -f "$SCRIPT_DIR/Images/$IMAGE_FILE" ]; then
+                        IMAGE_PATH="$SCRIPT_DIR/Images/$IMAGE_FILE"
+                    elif [ -f "$SCRIPT_DIR/$IMAGE_FILE" ]; then
+                        IMAGE_PATH="$SCRIPT_DIR/$IMAGE_FILE"
+                    else
+                        echo "      ⚠ ERROR: Image file not found: $IMAGE_FILE"
+                        echo "      Checked: $SCRIPT_DIR/Images/$IMAGE_FILE"
+                        echo "      Checked: $SCRIPT_DIR/$IMAGE_FILE"
+                        continue
+                    fi
+                    
+                    # Verify the image file is readable
+                    if [ ! -r "$IMAGE_PATH" ]; then
+                        echo "      ⚠ ERROR: Image file exists but is not readable: $IMAGE_PATH"
+                        continue
+                    fi
+                    
+                    # Get file information
+                    FILE_SIZE=$(stat -c%s "$IMAGE_PATH" 2>/dev/null || stat -f%z "$IMAGE_PATH" 2>/dev/null)
+                    FILE_TYPE=$(file -b --mime-type "$IMAGE_PATH" 2>/dev/null || echo "unknown")
+                    FILENAME=$(basename "$IMAGE_PATH")
+                    
+                    echo "      Uploading image $((img_idx+1))/$IMAGE_COUNT: $FILENAME ($FILE_SIZE bytes)"
+                    
+                    # Step 1: Get presigned URL from backend
+                    PRESIGNED_RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
+                        "$API_URL/media" \
+                        -H "$AUTH_HEADER" \
+                        -H "Content-Type: application/json" \
+                        -d "{\"type\":\"image\",\"label\":\"$FILENAME for question $Q_ID\"}")
+                    
+                    # Extract HTTP status and response body
+                    HTTP_STATUS=$(echo "$PRESIGNED_RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
+                    PRESIGNED_BODY=$(echo "$PRESIGNED_RESPONSE" | sed '/HTTP_STATUS:/d')
+                    
+                    if [ "$HTTP_STATUS" != "200" ] && [ "$HTTP_STATUS" != "201" ]; then
+                        echo "      ⚠ Failed to get presigned URL (HTTP $HTTP_STATUS)"
+                        echo "      Response: $PRESIGNED_BODY"
+                        continue
+                    fi
+                    
+                    # Extract presigned URL and media ID
+                    PRESIGNED_URL=$(echo "$PRESIGNED_BODY" | jq -r '.presignedUrl // empty')
+                    MEDIA_ID=$(echo "$PRESIGNED_BODY" | jq -r '.id // empty')
+                    
+                    if [ -z "$PRESIGNED_URL" ] || [ "$PRESIGNED_URL" == "null" ]; then
+                        echo "      ⚠ No presigned URL in response"
+                        echo "      Response: $PRESIGNED_BODY"
+                        continue
+                    fi
+                    
+                    if [ -z "$MEDIA_ID" ] || [ "$MEDIA_ID" == "null" ]; then
+                        echo "      ⚠ No media ID in response"
+                        echo "      Response: $PRESIGNED_BODY"
+                        continue
+                    fi
+                    
+                    echo "      Got presigned URL, media ID: $MEDIA_ID"
+                    
+                    # Step 2: Upload file directly to S3 using presigned URL
+                    S3_RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
+                        -X PUT \
+                        -H "Content-Type: $FILE_TYPE" \
+                        --data-binary "@${IMAGE_PATH}" \
+                        "$PRESIGNED_URL")
+                    
+                    S3_STATUS=$(echo "$S3_RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
+                    
+                    if [ "$S3_STATUS" != "200" ]; then
+                        echo "      ⚠ S3 upload failed (HTTP $S3_STATUS)"
+                        S3_BODY=$(echo "$S3_RESPONSE" | sed '/HTTP_STATUS:/d')
+                        echo "      S3 Response: $S3_BODY"
+                        continue
+                    fi
+                    
+                    echo "      ✓ File uploaded to S3 successfully"
+                    
+                    # Step 3: Attach media to question
+                    ATTACH_RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
+                        -X POST "$API_URL/questions/$Q_ID/media/$MEDIA_ID" \
+                        -H "$AUTH_HEADER")
+                    
+                    ATTACH_STATUS=$(echo "$ATTACH_RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
+                    
+                    if [ "$ATTACH_STATUS" != "204" ]; then
+                        echo "      ⚠ Failed to attach media to question (HTTP $ATTACH_STATUS)"
+                    else
+                        echo "      ✓ Media $MEDIA_ID attached to question"
+                    fi
+                done
             fi
         done
     done

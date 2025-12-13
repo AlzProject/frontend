@@ -4,17 +4,16 @@ import QuestionWrapper from './QuestionWrapper';
 const DrawingCanvasQuestion = ({ 
   title, 
   description, 
-  onSave, // Callback with dataURL
+  onSave, // Callback with Blob
   width = 500,
   height = 400,
   backgroundImage = null,
   referenceImage = null,
-  savedImage = null // Can be data URL or regular URL
+  savedImage = null // URL (blob:, http(s):, etc.)
 }) => {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState(null);
-  const [hasLoadedSaved, setHasLoadedSaved] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -24,36 +23,19 @@ const DrawingCanvasQuestion = ({
     ctx.lineWidth = 2;
     setContext(ctx);
 
-    // Load background image first
+    // Load background image (same-origin recommended; external images can taint the canvas)
     if (backgroundImage) {
       const img = new Image();
+      img.crossOrigin = 'anonymous';
       img.src = backgroundImage;
       img.onload = () => {
+        ctx.clearRect(0, 0, width, height);
         ctx.drawImage(img, 0, 0, width, height);
-        // Load saved image after background if available
-        loadSavedImage(ctx);
       };
     } else {
-      // Load saved image directly if no background
-      loadSavedImage(ctx);
+      ctx.clearRect(0, 0, width, height);
     }
   }, [backgroundImage, width, height]);
-
-  const loadSavedImage = (ctx) => {
-    if (savedImage && !hasLoadedSaved) {
-      const img = new Image();
-      img.crossOrigin = 'anonymous'; // Handle CORS for external URLs
-      img.src = savedImage;
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0, width, height);
-        setHasLoadedSaved(true);
-      };
-      img.onerror = (error) => {
-        console.error('Failed to load saved image:', error);
-        setHasLoadedSaved(true);
-      };
-    }
-  };
 
   const startDrawing = (e) => {
     const canvas = canvasRef.current;
@@ -73,11 +55,18 @@ const DrawingCanvasQuestion = ({
   };
 
   const finishDrawing = () => {
+    if (!isDrawing) return;
     context.closePath();
     setIsDrawing(false);
-    if (onSave) {
-      onSave(canvasRef.current.toDataURL());
-    }
+    if (!onSave) return;
+
+    const canvas = canvasRef.current;
+    canvas.toBlob(
+      (blob) => {
+        if (blob) onSave(blob);
+      },
+      'image/png'
+    );
   };
 
   const draw = (e) => {
@@ -104,6 +93,7 @@ const DrawingCanvasQuestion = ({
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (backgroundImage) {
         const img = new Image();
+        img.crossOrigin = 'anonymous';
         img.src = backgroundImage;
         img.onload = () => {
           ctx.drawImage(img, 0, 0, width, height);
@@ -140,6 +130,18 @@ const DrawingCanvasQuestion = ({
             onMouseLeave={finishDrawing}
             // Add touch support if needed, but mouse events often work for basic touch in some browsers or need mapping
           />
+
+          {savedImage && (
+            <div className="mt-4 w-full">
+              <div className="text-sm text-gray-600 mb-2">Previously saved drawing</div>
+              <img
+                src={savedImage}
+                alt="Saved drawing"
+                className="max-h-64 rounded border bg-white"
+              />
+            </div>
+          )}
+
           <div className="mt-4 flex space-x-4">
             <button
               type="button"

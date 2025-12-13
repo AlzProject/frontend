@@ -2,7 +2,8 @@
 
 # Configuration
 API_URL="${API_URL:-http://localhost:3000/v1}"
-DATA_FILE="data.json"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DATA_FILE="$SCRIPT_DIR/data.json"
 
 # Check requirements
 if ! command -v jq &> /dev/null; then
@@ -42,6 +43,71 @@ fi
 
 AUTH_HEADER="Authorization: Bearer $ACCESS_TOKEN"
 
+# Helper function to get mime type
+get_mime_type() {
+    local filename="$1"
+    case "$filename" in
+        *.jpg|*.jpeg) echo "image/jpeg" ;;
+        *.png) echo "image/png" ;;
+        *.svg) echo "image/svg+xml" ;;
+        *.webp) echo "image/webp" ;;
+        *.avif) echo "image/avif" ;;
+        *) echo "application/octet-stream" ;;
+    esac
+}
+
+# Helper function to upload file using S3 Presigned URL Flow
+upload_file_s3() {
+    local FILE_PATH="$1"
+    local QUESTION_ID="$2"
+    local LABEL="$3"
+    
+    local FILENAME=$(basename "$FILE_PATH")
+    local MIME_TYPE=$(get_mime_type "$FILENAME")
+    
+    echo "        Processing: $FILENAME ($MIME_TYPE)"
+    
+    # Step 1: Get presigned URL
+    local PRESIGNED_RES=$(curl -s -X POST "$API_URL/media" \
+        -H "$AUTH_HEADER" \
+        -H "Content-Type: application/json" \
+        -d "$(jq -n --arg mediatype "image" --arg medialabel "$LABEL" '{type: $mediatype, label: $medialabel}')")
+    
+    local PRESIGNED_URL=$(echo "$PRESIGNED_RES" | jq -r '.presignedUrl')
+    local MEDIA_ID=$(echo "$PRESIGNED_RES" | jq -r '.id')
+    
+    if [ "$PRESIGNED_URL" == "null" ] || [ -z "$PRESIGNED_URL" ]; then
+        echo "        ❌ Failed to get presigned URL"
+        echo "        Response: $PRESIGNED_RES"
+        return 1
+    fi
+    
+    # Step 2: Upload to S3
+    local HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+        -X PUT \
+        -H "Content-Type: $MIME_TYPE" \
+        --data-binary "@$FILE_PATH" \
+        "$PRESIGNED_URL")
+        
+    if [ "$HTTP_CODE" != "200" ]; then
+        echo "        ❌ Failed to upload to S3 (HTTP $HTTP_CODE)"
+        return 1
+    fi
+    
+    # Step 3: Attach to Question
+    local ATTACH_RES=$(curl -s -X POST "$API_URL/questions/$QUESTION_ID/media/$MEDIA_ID" \
+        -H "$AUTH_HEADER")
+        
+    if echo "$ATTACH_RES" | grep -q "error"; then
+        echo "        ❌ Failed to attach media"
+        echo "        Response: $ATTACH_RES"
+        return 1
+    fi
+    
+    echo "        ✅ Uploaded and attached: $FILENAME"
+    return 0
+}
+
 # Process Data
 echo "Reading $DATA_FILE..."
 
@@ -54,7 +120,6 @@ jq -c '.[]' "$DATA_FILE" | while read -r test_item; do
     
     echo "Creating Test: $TITLE ($LANGUAGE)"
     
-    # Create Test Payload
     TEST_PAYLOAD=$(jq -n \
         --arg title "$TITLE" \
         --arg desc "$DESCRIPTION" \
@@ -108,9 +173,15 @@ jq -c '.[]' "$DATA_FILE" | while read -r test_item; do
             Q_TEXT=$(echo "$question_item" | jq -r '.text')
             Q_TYPE=$(echo "$question_item" | jq -r '.type')
             Q_MAX_SCORE=$(echo "$question_item" | jq -r '.maxScore')
+            Q_NEG_SCORE=$(echo "$question_item" | jq -r '.negativeScore // 0')
+            Q_PARTIAL=$(echo "$question_item" | jq -r '.partialMarking // false')
             Q_CONFIG=$(echo "$question_item" | jq -c '.config')
             
-            # Truncate text for display
+            if [ "$Q_MAX_SCORE" == "0" ] || [ "$Q_MAX_SCORE" == "null" ] || [ -z "$Q_MAX_SCORE" ]; then
+                Q_MAX_SCORE=1
+                echo "    ⚠ Warning: maxScore was 0 or invalid, using default value 1"
+            fi
+            
             Q_DISPLAY="${Q_TEXT:0:30}"
             if [ ${#Q_TEXT} -gt 30 ]; then Q_DISPLAY="${Q_DISPLAY}..."; fi
             
@@ -120,8 +191,10 @@ jq -c '.[]' "$DATA_FILE" | while read -r test_item; do
                 --arg text "$Q_TEXT" \
                 --arg type "$Q_TYPE" \
                 --argjson maxScore "$Q_MAX_SCORE" \
+                --argjson negativeScore "$Q_NEG_SCORE" \
+                --argjson partialMarking "$Q_PARTIAL" \
                 --argjson config "$Q_CONFIG" \
-                '{text: $text, type: $type, maxScore: $maxScore, config: $config}')
+                '{text: $text, type: $type, maxScore: $maxScore, negativeScore: $negativeScore, partialMarking: $partialMarking, config: $config}')
                 
             Q_RESPONSE=$(curl -s -X POST "$API_URL/sections/$SEC_ID/questions" \
                 -H "Content-Type: application/json" \
@@ -135,10 +208,127 @@ jq -c '.[]' "$DATA_FILE" | while read -r test_item; do
                 echo "      $Q_RESPONSE"
             else
                 echo "      Question created with ID: $Q_ID"
+                
+                # ----------------------------------------------
+                # HANDLE MEDIA UPLOADS (imageFiles in config)
+                # ----------------------------------------------
+                IMAGE_FILES=$(echo "$question_item" | jq -r '.config.imageFiles[]? // empty' 2>/dev/null)
+                
+                if [ -n "$IMAGE_FILES" ]; then
+                    echo "      Found imageFiles to upload..."
+                    
+                    IMAGE_FILES_ARRAY=$(echo "$question_item" | jq -c '.config.imageFiles // []')
+                    IMAGE_COUNT=$(echo "$IMAGE_FILES_ARRAY" | jq 'length')
+                    
+                    for ((img_idx=0; img_idx<$IMAGE_COUNT; img_idx++)); do
+                        IMAGE_FILE=$(echo "$IMAGE_FILES_ARRAY" | jq -r ".[$img_idx]")
+                        IMAGE_PATH="$SCRIPT_DIR/Images/$IMAGE_FILE"
+                        
+                        if [ -f "$IMAGE_PATH" ]; then
+                            upload_file_s3 "$IMAGE_PATH" "$Q_ID" "Image ${img_idx} for Q${Q_ID}"
+                        else
+                            echo "        ⚠ Error: Image file not found: $IMAGE_PATH"
+                        fi
+                    done
+                fi
+                
+                # ----------------------------------------------
+                # HANDLE MEDIA UPLOADS (referenceImageFile in config)
+                # ----------------------------------------------
+                REF_IMAGE=$(echo "$question_item" | jq -r '.config.referenceImageFile // empty' 2>/dev/null)
+                if [ -n "$REF_IMAGE" ] && [ "$REF_IMAGE" != "null" ]; then
+                    echo "      Found referenceImageFile to upload..."
+                    IMAGE_PATH="$SCRIPT_DIR/Images/$REF_IMAGE"
+                    
+                    if [ -f "$IMAGE_PATH" ]; then
+                        upload_file_s3 "$IMAGE_PATH" "$Q_ID" "Reference Image for Q${Q_ID}"
+                    else
+                         echo "        ⚠ Error: Reference image file not found: $IMAGE_PATH"
+                    fi
+                fi
+                
+                # ----------------------------------------------
+                # HANDLE OPTIONS (for MCQ questions)
+                # ----------------------------------------------
+                OPTIONS=$(echo "$question_item" | jq -c '.config.options // []')
+                OPTIONS_COUNT=$(echo "$OPTIONS" | jq 'length')
+                
+                if [ "$OPTIONS_COUNT" -gt 0 ]; then
+                    echo "      Creating $OPTIONS_COUNT options..."
+                    
+                    for ((opt_idx=0; opt_idx<$OPTIONS_COUNT; opt_idx++)); do
+                        OPTION=$(echo "$OPTIONS" | jq -c ".[$opt_idx]")
+                        OPT_TEXT=$(echo "$OPTION" | jq -r '.text // empty')
+                        OPT_IS_CORRECT=$(echo "$OPTION" | jq -r '.isCorrect // false')
+                        OPT_CONFIG=$(echo "$OPTION" | jq -c '. | {imageFile}')
+                        
+                        OPT_PAYLOAD=$(jq -n \
+                            --arg text "$OPT_TEXT" \
+                            --argjson isCorrect "$OPT_IS_CORRECT" \
+                            --argjson config "$OPT_CONFIG" \
+                            '{text: $text, isCorrect: $isCorrect, config: $config}')
+                        
+                        OPT_RESPONSE=$(curl -s -X POST "$API_URL/questions/$Q_ID/options" \
+                            -H "Content-Type: application/json" \
+                            -H "$AUTH_HEADER" \
+                            -d "$OPT_PAYLOAD")
+                        
+                        OPT_ID=$(echo "$OPT_RESPONSE" | jq -r '.id')
+                        
+                        if [ "$OPT_ID" == "null" ]; then
+                            echo "        ❌ Failed to create option $opt_idx"
+                        else
+                            echo "        ✅ Option $opt_idx created (ID: $OPT_ID)"
+                            
+                            # Upload option image if specified
+                            OPT_IMAGE=$(echo "$OPTION" | jq -r '.imageFile // empty')
+                            if [ -n "$OPT_IMAGE" ] && [ "$OPT_IMAGE" != "null" ]; then
+                                IMAGE_PATH="$SCRIPT_DIR/Images/$OPT_IMAGE"
+                                
+                                if [ -f "$IMAGE_PATH" ]; then
+                                    echo "        Uploading option image: $OPT_IMAGE"
+                                    
+                                    local FILENAME=$(basename "$IMAGE_PATH")
+                                    local MIME_TYPE=$(get_mime_type "$FILENAME")
+                                    
+                                    # Get presigned URL
+                                    local PRESIGNED_RES=$(curl -s -X POST "$API_URL/media" \
+                                        -H "$AUTH_HEADER" \
+                                        -H "Content-Type: application/json" \
+                                        -d "$(jq -n --arg mediatype "image" --arg medialabel "Option ${opt_idx} Image for Q${Q_ID}" '{type: $mediatype, label: $medialabel}')")
+                                    
+                                    local PRESIGNED_URL=$(echo "$PRESIGNED_RES" | jq -r '.presignedUrl')
+                                    local MEDIA_ID=$(echo "$PRESIGNED_RES" | jq -r '.id')
+                                    
+                                    if [ "$PRESIGNED_URL" != "null" ] && [ -n "$PRESIGNED_URL" ]; then
+                                        # Upload to S3
+                                        local HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+                                            -X PUT \
+                                            -H "Content-Type: $MIME_TYPE" \
+                                            --data-binary "@$IMAGE_PATH" \
+                                            "$PRESIGNED_URL")
+                                        
+                                        if [ "$HTTP_CODE" == "200" ]; then
+                                            # Attach to option
+                                            curl -s -X POST "$API_URL/options/$OPT_ID/media/$MEDIA_ID" \
+                                                -H "$AUTH_HEADER" > /dev/null
+                                            echo "          ✅ Uploaded and attached option image"
+                                        else
+                                            echo "          ❌ Failed to upload option image (HTTP $HTTP_CODE)"
+                                        fi
+                                    else
+                                        echo "          ❌ Failed to get presigned URL for option image"
+                                    fi
+                                else
+                                    echo "          ⚠ Option image not found: $IMAGE_PATH"
+                                fi
+                            fi
+                        fi
+                    done
+                fi
             fi
         done
     done
 done
 
 echo "Done."
-

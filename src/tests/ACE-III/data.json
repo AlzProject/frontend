@@ -38,7 +38,7 @@
           {
             "id": 3,
             "text": "Repeat and memorize: LEMON, KEY, BALL.",
-            "type": "text",
+            "type": "file_upload",
             "maxScore": 3,
             "config": {
               "title": "Registration",
@@ -135,7 +135,7 @@
           {
             "id": 8,
             "text": "Name as many words as possible starting with 'P' in 1 minute.",
-            "type": "text",
+            "type": "file_upload",
             "maxScore": 7,
             "config": {
               "title": "Letter Fluency",
@@ -146,7 +146,7 @@
           {
             "id": 9,
             "text": "Name as many animals as possible in 1 minute.",
-            "type": "text",
+            "type": "file_upload",
             "maxScore": 7,
             "config": {
               "title": "Category Fluency",
@@ -165,13 +165,14 @@
             "text": "Follow the command: 'Point to the one that is a fruit'.",
             "type": "scmcq",
             "maxScore": 3,
-            "config": {
-              "title": "Comprehension",
-              "frontend_type": "mcq",
+          "config": {
+            "title": "Comprehension",
+            "frontend_type": "mcq",
+            "imageFiles": ["frog.jpg", "banana.jpg", "car.webp"],
               "options": [
-                { "label": "", "value": "frog", "img": "https://cdn.hswstatic.com/gif/frog-1.jpg" },
-                { "label": "", "value": "banana", "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLWh-E-5rCitwZiTaKzesMB6kupUh0TRu1FQ&s" },
-                { "label": "", "value": "car", "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7bSsO4gPq_R_Z3NMvoIxzpJOWlcR7dB7ejg&s" }
+                { "label": "", "value": "frog", "imageIndex": 0 },
+                { "label": "", "value": "banana", "imageIndex": 1 },
+                { "label": "", "value": "car", "imageIndex": 2 }
               ]
             }
           }
@@ -225,16 +226,17 @@
             "text": "Name the objects shown.",
             "type": "text",
             "maxScore": 12,
-            "config": {
-              "title": "Naming",
-              "frontend_type": "naming_grouped",
+          "config": {
+            "title": "Naming",
+            "frontend_type": "naming_grouped",
+            "imageFiles": ["watch.jpg", "pencil.avif", "penguin.jpg", "anchor.jpg", "giraffe.jpg", "spoon.jpg"],
               "items": [
-                { "label": "Item 1", "img": "https://placehold.co/150?text=Watch", "placeholder": "Name" },
-                { "label": "Item 2", "img": "https://placehold.co/150?text=Pencil", "placeholder": "Name" },
-                { "label": "Item 3", "img": "https://placehold.co/150?text=Penguin", "placeholder": "Name" },
-                { "label": "Item 4", "img": "https://placehold.co/150?text=Anchor", "placeholder": "Name" },
-                { "label": "Item 5", "img": "https://placehold.co/150?text=Giraffe", "placeholder": "Name" },
-                { "label": "Item 6", "img": "https://placehold.co/150?text=Spoon", "placeholder": "Name" }
+                { "label": "Item 1", "imageIndex": 0, "placeholder": "Name" },
+                { "label": "Item 2", "imageIndex": 1, "placeholder": "Name" },
+                { "label": "Item 3", "imageIndex": 2, "placeholder": "Name" },
+                { "label": "Item 4", "imageIndex": 3, "placeholder": "Name" },
+                { "label": "Item 5", "imageIndex": 4, "placeholder": "Name" },
+                { "label": "Item 6", "imageIndex": 5, "placeholder": "Name" }
               ]
             }
           }
@@ -247,7 +249,7 @@
           {
             "id": 14,
             "text": "Read the following words aloud: 'Sew', 'Pint', 'Soot', 'Dough', 'Height'.",
-            "type": "text",
+            "type": "file_upload",
             "maxScore": 1,
             "config": {
               "title": "Reading (1 point)",
@@ -257,16 +259,30 @@
           },
           {
             "id": 15,
-            "text": "Match the word to the picture (simulated).",
-            "type": "scmcq",
+            "text": "Match each word to the correct picture by selecting pairs.",
+            "type": "text",
             "maxScore": 4,
             "config": {
               "title": "Comprehension Association (4 points)",
-              "frontend_type": "mcq",
-              "options": [
-                { "label": "Correct Matches", "value": "correct", "img": "https://placehold.co/150?text=Correct" },
-                { "label": "Incorrect", "value": "incorrect", "img": "https://placehold.co/150?text=Incorrect" }
-              ]
+              "frontend_type": "matching",
+              "leftItems": [
+                { "id": "word1", "label": "Apple", "type": "text" },
+                { "id": "word2", "label": "Dog", "type": "text" },
+                { "id": "word3", "label": "Car", "type": "text" },
+                { "id": "word4", "label": "Tree", "type": "text" }
+              ],
+              "rightItems": [
+                { "id": "pic1", "label": "Picture of Apple", "type": "text" },
+                { "id": "pic2", "label": "Picture of Dog", "type": "text" },
+                { "id": "pic3", "label": "Picture of Car", "type": "text" },
+                { "id": "pic4", "label": "Picture of Tree", "type": "text" }
+              ],
+              "correctMatches": {
+                "word1": "pic1",
+                "word2": "pic2",
+                "word3": "pic3",
+                "word4": "pic4"
+              }
             }
           }
         ]
@@ -283,7 +299,7 @@
             "config": {
               "title": "Infinity Diagram",
               "frontend_type": "drawing",
-              "backgroundImage": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNIDUwIDUwIEMgMjAgMjAgMjAgODAgNTAgNTAgQyA4MCAyMCAxMjAgMjAgMTUwIDUwIEMgMTgwIDgwIDE4MCAyMCAxNTAgNTAgQyAxMjAgODAgODAgODAgNTAgNTAiIHN0cm9rZT0iYmxhY2siIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMyIvPjwvc3ZnPg=="
+              "referenceImageFile": "infinity.jpg"
             }
           },
           {
@@ -294,7 +310,7 @@
             "config": {
               "title": "Wire Cube",
               "frontend_type": "drawing",
-              "backgroundImage": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSI1MCIgeT0iNTAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIi8+PHJlY3QgeD0iODAiIHk9IjIwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI1MCIgeTE9IjUwIiB4Mj0iODAiIHkyPSIyMCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIi8+PHxpbmUgeDE9IjEzMCIgeTE9IjUwIiB4Mj0iMTYwIiB5Mj0iMjAiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI1MCIgeTE9IjEzMCIgeDI9IjgwIiB5Mj0iMTAwIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMTMwIiB5MT0iMTMwIiB4Mj0iMTYwIiB5Mj0iMTAwIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4="
+              "referenceImageFile": "wire_cube.svg"
             }
           },
           {

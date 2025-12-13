@@ -220,7 +220,8 @@
             "config": {
               "title": "Copying",
               "frontend_type": "drawing",
-              "description": "Copy the design of two intersecting pentagons."
+              "description": "Copy the design of two intersecting pentagons.",
+              "referenceImageFile": "IntersectingPentagons.png"
             }
           }
         ]
@@ -401,7 +402,8 @@
                   "text": "दोन छेदणाऱ्या पंचकोनांची रचना पाहून काढा.",
                   "config": {
                     "title": "प्रतिकृती (Copying)",
-                    "description": "दोन छेदणाऱ्या पंचकोनांची रचना पाहून काढा."
+                    "description": "दोन छेदणाऱ्या पंचकोनांची रचना पाहून काढा.",
+                    "referenceImageFile": "IntersectingPentagons.png"
                   }
                 }
               ]

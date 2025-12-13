@@ -133,21 +133,90 @@ const CDRTest = () => {
 
             const fullSections = await Promise.all(sectionsData.map(async (section) => {
               const qRes = await api.get(`/sections/${section.id}/questions`);
-              return {
-                ...section,
-                questions: Array.isArray(qRes.data) ? qRes.data.map(q => {
-                  // Parse config from ans field
+              
+              // Fetch detailed question data with media and options
+              const questionsWithMedia = await Promise.all(qRes.data.map(async (q) => {
+                try {
+                  const detailRes = await api.get(`/questions/${q.id}`);
+                  const questionDetail = detailRes.data;
+                  
+                  // Parse config from ans field or use q.config
+                  let config = {};
+                  try {
+                    config = JSON.parse(questionDetail.ans || '{}');
+                  } catch (e) {
+                    config = questionDetail.config || {};
+                  }
+                  
+                  // Fetch presigned URLs for question media
+                  let questionMedia = [];
+                  if (questionDetail.media && Array.isArray(questionDetail.media)) {
+                    questionMedia = await Promise.all(questionDetail.media.map(async (m) => {
+                      try {
+                        const downloadRes = await api.get(`/media/${m.id}/download`);
+                        return {
+                          ...m,
+                          url: downloadRes.data.presignedUrl
+                        };
+                      } catch (err) {
+                        console.error(`Failed to fetch media ${m.id}:`, err);
+                        return m;
+                      }
+                    }));
+                  }
+                  
+                  // Fetch options with their media
+                  let options = [];
+                  if (questionDetail.options && Array.isArray(questionDetail.options)) {
+                    options = await Promise.all(questionDetail.options.map(async (opt) => {
+                      // Fetch media for each option if it has any
+                      let optionMedia = [];
+                      if (opt.media && Array.isArray(opt.media)) {
+                        optionMedia = await Promise.all(opt.media.map(async (m) => {
+                          try {
+                            const downloadRes = await api.get(`/media/${m.id}/download`);
+                            return {
+                              ...m,
+                              url: downloadRes.data.presignedUrl
+                            };
+                          } catch (err) {
+                            console.error(`Failed to fetch option media ${m.id}:`, err);
+                            return m;
+                          }
+                        }));
+                      }
+                      return {
+                        ...opt,
+                        media: optionMedia
+                      };
+                    }));
+                  }
+                  
+                  return {
+                    ...q,
+                    config: config,
+                    media: questionMedia,
+                    options: options
+                  };
+                } catch (err) {
+                  console.error(`Failed to fetch details for question ${q.id}:`, err);
+                  // Fallback to basic config parsing
                   let config = {};
                   try {
                     config = JSON.parse(q.ans || '{}');
                   } catch (e) {
-                    console.warn(`Failed to parse config for question ${q.id}:`, e);
+                    config = {};
                   }
                   return {
                     ...q,
                     config: config
                   };
-                }) : []
+                }
+              }));
+              
+              return {
+                ...section,
+                questions: questionsWithMedia
               };
             }));
 
@@ -366,14 +435,25 @@ const CDRTest = () => {
           </QuestionWrapper>
         );
       
-      case 'mcq':
+      case 'mcq': {
         const isMultiselect = config.multiselect || false;
+        
+        // Use actual options from backend if available, otherwise fall back to config
+        const rawOptions = q.options && q.options.length > 0 ? q.options : (config.options || []);
+        
+        // Transform backend options to component format
+        const transformedOptions = rawOptions.map(opt => ({
+          value: opt.id || opt.value,
+          label: opt.text || opt.label,
+          img: opt.media?.[0]?.url || opt.img
+        }));
+        
         return (
           <MultipleChoiceQuestion
             key={q.id}
             title={title}
             description={description}
-            options={config.options || []}
+            options={transformedOptions}
             selectedValues={
               isMultiselect
                 ? (Array.isArray(responses[q.id]) ? responses[q.id] : [])
@@ -389,6 +469,7 @@ const CDRTest = () => {
             type={isMultiselect ? "multiple" : "single"}
           />
         );
+      }
       
       case 'text':
         return (
@@ -415,15 +496,24 @@ const CDRTest = () => {
           />
         );
       
-      default:
+      default: {
         // For scmcq, numerical, and any other type, render as MCQ or text based on config
-        if (config.options && Array.isArray(config.options)) {
+        const rawOptions = q.options && q.options.length > 0 ? q.options : (config.options || []);
+        
+        if (rawOptions.length > 0) {
+          // Transform backend options to component format
+          const transformedOptions = rawOptions.map(opt => ({
+            value: opt.id || opt.value,
+            label: opt.text || opt.label,
+            img: opt.media?.[0]?.url || opt.img
+          }));
+          
           return (
             <MultipleChoiceQuestion
               key={q.id}
               title={title}
               description={description}
-              options={config.options}
+              options={transformedOptions}
               selectedValues={responses[q.id] ? [responses[q.id]] : []}
               onChange={(vals) => handleResponseChange(q.id, vals[0] || '')}
               type="single"
@@ -441,6 +531,7 @@ const CDRTest = () => {
             />
           );
         }
+      }
     }
   };
 
