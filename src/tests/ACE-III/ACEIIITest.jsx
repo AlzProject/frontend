@@ -39,14 +39,6 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
     }
   };
 
-  const clearMatch = (leftId) => {
-    const leftItem = leftItems.find(item => item.id === leftId);
-    const newMatches = { ...matches };
-    delete newMatches[leftItem.label];
-    setMatches(newMatches);
-    onChange(newMatches);
-  };
-
   // Update connecting lines when matches change
   useEffect(() => {
     const updateLines = () => {
@@ -96,7 +88,7 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
       window.removeEventListener('resize', updateLines);
       clearTimeout(timer);
     };
-  }, [matches]);
+  }, [matches, leftItems, rightItems]);
 
   return (
     <QuestionWrapper title={title} description={description}>
@@ -107,7 +99,7 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
       </div>
       <div className="relative">
         <svg 
-          className="absolute inset-0 pointer-events-none" 
+          className="absolute inset-0 pointer-events-none text-indigo-500" 
           style={{ width: '100%', height: '100%', zIndex: 1 }}
         >
           {lines.map(line => (
@@ -117,7 +109,7 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
               y1={line.y1}
               x2={line.x2}
               y2={line.y2}
-              stroke="#10b981"
+              stroke="currentColor"
               strokeWidth="3"
               strokeLinecap="round"
             />
@@ -140,22 +132,12 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
                       isSelected
                         ? 'border-indigo-600 bg-indigo-50 shadow-md'
                         : isMatched
-                        ? 'border-green-500 bg-green-50'
+                        ? 'border-indigo-300 bg-indigo-50'
                         : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
                     }`}
                   >
                     {item.label}
-                    {isMatched && <span className="ml-2 text-green-600">✓</span>}
                   </button>
-                  {isMatched && (
-                    <button
-                      onClick={() => clearMatch(item.id)}
-                      className="px-3 py-2 text-red-600 hover:bg-red-50 rounded"
-                      title="Clear match"
-                    >
-                      ✕
-                    </button>
-                  )}
                 </div>
               );
             })}
@@ -165,7 +147,7 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
           <div className="space-y-3" ref={rightColumnRef}>
             <h3 className="text-lg font-semibold mb-3 text-gray-700">Pictures</h3>
             {rightItems.map((item) => {
-              const isTargetOfSelected = selectedLeft && !matches[leftItems.find(l => l.id === selectedLeft)?.label];
+              const isTargetOfSelected = !!selectedLeft;
               // Find which left label matches this right label
               const matchedLeftLabel = Object.entries(matches).find(([, rightLabel]) => rightLabel === item.label)?.[0];
               const matchedByLeft = leftItems.find(l => l.label === matchedLeftLabel);
@@ -186,11 +168,9 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
                   disabled={!selectedLeft}
                   className={`w-full p-4 rounded-lg border-2 transition-all ${
                     matchedByLeft
-                      ? 'border-green-500 bg-green-50 shadow-md'
+                      ? 'border-indigo-300 bg-indigo-50'
                       : isTargetOfSelected
                       ? 'border-indigo-400 bg-indigo-50 cursor-pointer hover:border-indigo-600 hover:shadow-md'
-                      : selectedLeft
-                      ? 'border-gray-200 cursor-not-allowed opacity-50'
                       : 'border-gray-300 cursor-not-allowed opacity-50'
                   }`}
                 >
@@ -205,20 +185,10 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
                           e.target.alt = 'Image not available';
                         }}
                       />
-                      {matchedByLeft && (
-                        <span className="text-green-600 text-sm font-medium">
-                          ✓ Matched with: {matchedByLeft.label}
-                        </span>
-                      )}
                     </div>
                   ) : (
                     <>
                       {item.label}
-                      {matchedByLeft && (
-                        <span className="ml-2 text-green-600 text-sm">
-                          ← {matchedByLeft.label}
-                        </span>
-                      )}
                     </>
                   )}
                 </button>
@@ -230,7 +200,7 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
       <div className="mt-4 text-sm text-gray-600">
         Matched: {Object.keys(matches).length} / {leftItems.length}
         {Object.keys(matches).length === leftItems.length && (
-          <span className="ml-2 text-green-600 font-medium">✓ All matched!</span>
+          <span className="ml-2 text-indigo-600 font-medium">All matched</span>
         )}
       </div>
     </QuestionWrapper>
