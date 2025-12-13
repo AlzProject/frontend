@@ -26,7 +26,7 @@
             "config": {
               "title": "Place Orientation",
               "frontend_type": "text_grouped",
-              "fields": ["Building", "Floor", "Town", "County", "Country"]
+              "fields": ["Building", "Floor", "City", "State", "Country"]
             }
           }
         ]
@@ -88,13 +88,13 @@
         "questions": [
           {
             "id": 6,
-            "text": "Learn the name and address: Harry Barnes, 73 Orchard Close, Kingsbridge, Devon.",
+            "text": "Learn the name and address: Rajesh Kumar, 42 MG Road, Andheri, Mumbai.",
             "type": "text",
             "maxScore": 7,
             "config": {
               "title": "Name and Address Learning",
               "frontend_type": "name_address_learning",
-              "address": "Harry Barnes • 73 Orchard Close • Kingsbridge • Devon",
+              "address": "Rajesh Kumar • 42 MG Road • Andheri • Mumbai",
               "instructionText": "I will show you a name and address. Read it and try to remember it.",
               "memorizeText": "Memorize this address.",
               "hidingText": "Hiding in",
@@ -119,10 +119,10 @@
               "title": "Retrograde Memory",
               "frontend_type": "text_grouped",
               "fields": [
-                "Name of current Prime Minister/President",
-                "Name of a woman who was PM/President",
-                "Name of the US President",
-                "Name of US President assassinated in the 1960s"
+                "Name of current Prime Minister of India",
+                "Name of a woman who was Prime Minister of India",
+                "Name of the first Prime Minister of India",
+                "Name of Indian leader assassinated in 1948"
               ]
             }
           }
@@ -168,11 +168,10 @@
           "config": {
             "title": "Comprehension",
             "frontend_type": "mcq",
-            "imageFiles": ["frog.jpg", "banana.jpg", "car.webp"],
               "options": [
-                { "label": "", "value": "frog", "imageIndex": 0 },
-                { "label": "", "value": "banana", "imageIndex": 1 },
-                { "label": "", "value": "car", "imageIndex": 2 }
+                { "text": "Frog", "value": "frog", "imageFile": "frog.jpg" },
+                { "text": "Banana", "value": "banana", "imageFile": "banana.jpg", "isCorrect": true },
+                { "text": "Car", "value": "car", "imageFile": "car.webp" }
               ]
             }
           }
@@ -229,7 +228,7 @@
           "config": {
             "title": "Naming",
             "frontend_type": "naming_grouped",
-            "imageFiles": ["watch.jpg", "pencil.avif", "penguin.jpg", "anchor.jpg", "giraffe.jpg", "spoon.jpg"],
+            "imageFiles": ["watch.jpg", "pencil.png", "penguin.jpg", "anchor.jpg", "giraffe.jpg", "spoon.jpg"],
               "items": [
                 { "label": "Item 1", "imageIndex": 0, "placeholder": "Name" },
                 { "label": "Item 2", "imageIndex": 1, "placeholder": "Name" },
@@ -265,17 +264,18 @@
             "config": {
               "title": "Comprehension Association (4 points)",
               "frontend_type": "matching",
+              "imageFiles": ["mango.jpeg", "elephant.png", "rickshaw.jpg", "tree.jpg"],
               "leftItems": [
-                { "id": "word1", "label": "Apple", "type": "text" },
-                { "id": "word2", "label": "Dog", "type": "text" },
-                { "id": "word3", "label": "Car", "type": "text" },
-                { "id": "word4", "label": "Tree", "type": "text" }
+                { "id": "word1", "label": "Mango", "type": "text" },
+                { "id": "word2", "label": "Elephant", "type": "text" },
+                { "id": "word3", "label": "Rickshaw", "type": "text" },
+                { "id": "word4", "label": "Banyan Tree", "type": "text" }
               ],
               "rightItems": [
-                { "id": "pic1", "label": "Picture of Apple", "type": "text" },
-                { "id": "pic2", "label": "Picture of Dog", "type": "text" },
-                { "id": "pic3", "label": "Picture of Car", "type": "text" },
-                { "id": "pic4", "label": "Picture of Tree", "type": "text" }
+                { "id": "pic3", "label": "Rickshaw", "type": "image", "imageIndex": 2 },
+                { "id": "pic1", "label": "Mango", "type": "image", "imageIndex": 0 },
+                { "id": "pic4", "label": "Banyan Tree", "type": "image", "imageIndex": 3 },
+                { "id": "pic2", "label": "Elephant", "type": "image", "imageIndex": 1 }
               ],
               "correctMatches": {
                 "word1": "pic1",
@@ -359,7 +359,7 @@
             "config": {
               "title": "Delayed Recall (7 points)",
               "frontend_type": "text_grouped",
-              "fields": ["Name", "Street", "Town", "County"]
+              "fields": ["Name", "Street Number", "Street Name", "Area", "City"]
             }
           },
           {
@@ -371,9 +371,9 @@
               "title": "Recognition (5 points)",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Jerry Barnes", "value": "wrong1" },
-                { "label": "Harry Barnes", "value": "correct" },
-                { "label": "Harry Bond", "value": "wrong2" }
+                { "label": "Ramesh Kumar", "value": "wrong1" },
+                { "label": "Rajesh Kumar", "value": "correct", "isCorrect": true },
+                { "label": "Rajesh Sharma", "value": "wrong2" }
               ]
             }
           }
@@ -447,10 +447,10 @@
               "title": "स्मृती - नवीन माहिती (7 गुण)",
               "questions": [
                 {
-                  "text": "नाव आणि पत्ता शिका: हरी बर्वे, ७३ सदाशिव पेठ, पुणे, महाराष्ट्र.",
+                  "text": "नाव आणि पत्ता शिका: राजेश कुमार, ४२ एमजी रोड, अंधेरी, मुंबई.",
                   "config": {
                     "title": "नाव आणि पत्ता शिकणे",
-                    "address": "हरी बर्वे • ७३ सदाशिव पेठ • पुणे • महाराष्ट्र",
+                    "address": "राजेश कुमार • ४२ एमजी रोड • अंधेरी • मुंबई",
                     "instructionText": "मी तुम्हाला एक नाव आणि पत्ता दाखवेन. ते वाचा आणि लक्षात ठेवण्याचा प्रयत्न करा.",
                     "memorizeText": "हा पत्ता लक्षात ठेवा.",
                     "hidingText": "लपवत आहे",
@@ -470,10 +470,10 @@
                   "config": {
                     "title": "जुनी स्मृती",
                     "fields": [
-                      "सध्याच्या पंतप्रधानांचे/राष्ट्राध्यक्षांचे नाव",
-                      "पंतप्रधान/राष्ट्राध्यक्ष राहिलेल्या महिलेचे नाव",
-                      "अमेरिकेच्या राष्ट्राध्यक्षांचे नाव",
-                      "1960 च्या दशकात हत्या झालेल्या अमेरिकन राष्ट्राध्यक्षांचे नाव"
+                      "भारताच्या सध्याच्या पंतप्रधानांचे नाव",
+                      "भारताच्या पंतप्रधान झालेल्या महिलेचे नाव",
+                      "भारताच्या पहिल्या पंतप्रधानांचे नाव",
+                      "१९४८ मध्ये हत्या झालेल्या भारतीय नेत्याचे नाव"
                     ]
                   }
                 }
