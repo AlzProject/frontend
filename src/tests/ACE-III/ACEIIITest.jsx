@@ -14,9 +14,12 @@ const getMediaIdFromRef = (value) => (isMediaRef(value) ? value.slice('media:'.l
 
 // --- Helper Components ---
 
-const MatchingQuestion = ({ title, description, leftItems, rightItems, value, onChange }) => {
+const MatchingQuestion = ({ title, description, leftItems, rightItems, value, onChange, questionMedia = [] }) => {
   const [matches, setMatches] = useState(value || {});
   const [selectedLeft, setSelectedLeft] = useState(null);
+  const [lines, setLines] = useState([]);
+  const leftColumnRef = React.useRef(null);
+  const rightColumnRef = React.useRef(null);
 
   const handleLeftClick = (leftId) => {
     setSelectedLeft(leftId);
@@ -24,7 +27,12 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
 
   const handleRightClick = (rightId) => {
     if (selectedLeft) {
-      const newMatches = { ...matches, [selectedLeft]: rightId };
+      // Find labels for both left and right items
+      const leftItem = leftItems.find(item => item.id === selectedLeft);
+      const rightItem = rightItems.find(item => item.id === rightId);
+      
+      // Save as label-to-label mapping
+      const newMatches = { ...matches, [leftItem.label]: rightItem.label };
       setMatches(newMatches);
       onChange(newMatches);
       setSelectedLeft(null);
@@ -32,11 +40,63 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
   };
 
   const clearMatch = (leftId) => {
+    const leftItem = leftItems.find(item => item.id === leftId);
     const newMatches = { ...matches };
-    delete newMatches[leftId];
+    delete newMatches[leftItem.label];
     setMatches(newMatches);
     onChange(newMatches);
   };
+
+  // Update connecting lines when matches change
+  useEffect(() => {
+    const updateLines = () => {
+      if (!leftColumnRef.current || !rightColumnRef.current) return;
+      
+      const newLines = [];
+      // Convert label-based matches back to ID-based for DOM queries
+      Object.entries(matches).forEach(([leftLabel, rightLabel]) => {
+        const leftItem = leftItems.find(item => item.label === leftLabel);
+        const rightItem = rightItems.find(item => item.label === rightLabel);
+        if (!leftItem || !rightItem) return;
+        
+        const leftButton = leftColumnRef.current?.querySelector(`[data-item-id="${leftItem.id}"]`);
+        const rightButton = rightColumnRef.current?.querySelector(`[data-item-id="${rightItem.id}"]`);
+        
+        if (leftButton && rightButton) {
+          const leftRect = leftButton.getBoundingClientRect();
+          const rightRect = rightButton.getBoundingClientRect();
+          const containerRect = leftColumnRef.current.parentElement.getBoundingClientRect();
+          
+          const x1 = leftRect.right - containerRect.left;
+          const y1 = leftRect.top + leftRect.height / 2 - containerRect.top;
+          const x2 = rightRect.left - containerRect.left;
+          const y2 = rightRect.top + rightRect.height / 2 - containerRect.top;
+          
+          newLines.push({
+            key: `${leftItem.id}-${rightItem.id}`,
+            x1,
+            y1,
+            x2,
+            y2
+          });
+        }
+      });
+      
+      setLines(newLines);
+    };
+
+    // Update immediately and on window resize
+    updateLines();
+    window.addEventListener('resize', updateLines);
+    
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(updateLines, 100);
+    
+    return () => {
+      window.removeEventListener('resize', updateLines);
+      clearTimeout(timer);
+    };
+  }, [matches]);
 
   return (
     <QuestionWrapper title={title} description={description}>
@@ -45,78 +105,133 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
           <strong>Instructions:</strong> Click on a word on the left, then click on the matching picture on the right to connect them.
         </p>
       </div>
-      <div className="grid grid-cols-2 gap-8">
-        {/* Left Column - Words */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold mb-3 text-gray-700">Words</h3>
-          {leftItems.map((item) => {
-            const isSelected = selectedLeft === item.id;
-            const isMatched = matches[item.id];
-            
-            return (
-              <div key={item.id} className="flex items-center gap-2">
+      <div className="relative">
+        <svg 
+          className="absolute inset-0 pointer-events-none" 
+          style={{ width: '100%', height: '100%', zIndex: 1 }}
+        >
+          {lines.map(line => (
+            <line
+              key={line.key}
+              x1={line.x1}
+              y1={line.y1}
+              x2={line.x2}
+              y2={line.y2}
+              stroke="#10b981"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          ))}
+        </svg>
+        <div className="grid grid-cols-2 gap-8" style={{ position: 'relative', zIndex: 2 }}>
+          {/* Left Column - Words */}
+          <div className="space-y-3" ref={leftColumnRef}>
+            <h3 className="text-lg font-semibold mb-3 text-gray-700">Words</h3>
+            {leftItems.map((item) => {
+              const isSelected = selectedLeft === item.id;
+              const isMatched = matches[item.label]; // Check by label
+              
+              return (
+                <div key={item.id} className="flex items-center gap-2">
+                  <button
+                    data-item-id={item.id}
+                    onClick={() => handleLeftClick(item.id)}
+                    className={`flex-1 p-3 rounded-lg border-2 font-medium text-left transition-all ${
+                      isSelected
+                        ? 'border-indigo-600 bg-indigo-50 shadow-md'
+                        : isMatched
+                        ? 'border-green-500 bg-green-50'
+                        : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+                    }`}
+                  >
+                    {item.label}
+                    {isMatched && <span className="ml-2 text-green-600">✓</span>}
+                  </button>
+                  {isMatched && (
+                    <button
+                      onClick={() => clearMatch(item.id)}
+                      className="px-3 py-2 text-red-600 hover:bg-red-50 rounded"
+                      title="Clear match"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Right Column - Pictures */}
+          <div className="space-y-3" ref={rightColumnRef}>
+            <h3 className="text-lg font-semibold mb-3 text-gray-700">Pictures</h3>
+            {rightItems.map((item) => {
+              const isTargetOfSelected = selectedLeft && !matches[leftItems.find(l => l.id === selectedLeft)?.label];
+              // Find which left label matches this right label
+              const matchedLeftLabel = Object.entries(matches).find(([, rightLabel]) => rightLabel === item.label)?.[0];
+              const matchedByLeft = leftItems.find(l => l.label === matchedLeftLabel);
+              
+              // Get image URL: first try questionMedia
+              let imageUrl = null;
+              if (item.type === 'image' && item.imageIndex !== undefined) {
+                if (questionMedia && questionMedia[item.imageIndex]) {
+                  imageUrl = questionMedia[item.imageIndex].url;
+                }
+              }
+              
+              return (
                 <button
-                  onClick={() => handleLeftClick(item.id)}
-                  className={`flex-1 p-3 rounded-lg border-2 font-medium text-left transition-all ${
-                    isSelected
-                      ? 'border-indigo-600 bg-indigo-50 shadow-md'
-                      : isMatched
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+                  key={item.id}
+                  data-item-id={item.id}
+                  onClick={() => handleRightClick(item.id)}
+                  disabled={!selectedLeft}
+                  className={`w-full p-4 rounded-lg border-2 transition-all ${
+                    matchedByLeft
+                      ? 'border-green-500 bg-green-50 shadow-md'
+                      : isTargetOfSelected
+                      ? 'border-indigo-400 bg-indigo-50 cursor-pointer hover:border-indigo-600 hover:shadow-md'
+                      : selectedLeft
+                      ? 'border-gray-200 cursor-not-allowed opacity-50'
+                      : 'border-gray-300 cursor-not-allowed opacity-50'
                   }`}
                 >
-                  {item.label}
-                  {isMatched && <span className="ml-2 text-green-600">✓</span>}
+                  {imageUrl ? (
+                    <div className="flex flex-col items-center">
+                      <img 
+                        src={imageUrl} 
+                        alt={item.label || 'Match option'} 
+                        className="w-full h-40 object-contain rounded mb-2"
+                        onError={(e) => {
+                          console.error('Failed to load matching image:', imageUrl);
+                          e.target.alt = 'Image not available';
+                        }}
+                      />
+                      {matchedByLeft && (
+                        <span className="text-green-600 text-sm font-medium">
+                          ✓ Matched with: {matchedByLeft.label}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      {item.label}
+                      {matchedByLeft && (
+                        <span className="ml-2 text-green-600 text-sm">
+                          ← {matchedByLeft.label}
+                        </span>
+                      )}
+                    </>
+                  )}
                 </button>
-                {isMatched && (
-                  <button
-                    onClick={() => clearMatch(item.id)}
-                    className="px-3 py-2 text-red-600 hover:bg-red-50 rounded"
-                    title="Clear match"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Right Column - Pictures */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold mb-3 text-gray-700">Pictures</h3>
-          {rightItems.map((item) => {
-            const isTargetOfSelected = selectedLeft && !matches[selectedLeft];
-            const matchedByLeft = Object.entries(matches).find(([, right]) => right === item.id)?.[0];
-            
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleRightClick(item.id)}
-                disabled={!selectedLeft}
-                className={`w-full p-3 rounded-lg border-2 font-medium text-left transition-all ${
-                  matchedByLeft
-                    ? 'border-green-500 bg-green-50'
-                    : isTargetOfSelected
-                    ? 'border-indigo-400 bg-indigo-50 cursor-pointer hover:border-indigo-600'
-                    : selectedLeft
-                    ? 'border-gray-200 cursor-not-allowed opacity-50'
-                    : 'border-gray-300 cursor-not-allowed opacity-50'
-                }`}
-              >
-                {item.label}
-                {matchedByLeft && (
-                  <span className="ml-2 text-green-600 text-sm">
-                    ← {leftItems.find(l => l.id === matchedByLeft)?.label}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
       <div className="mt-4 text-sm text-gray-600">
         Matched: {Object.keys(matches).length} / {leftItems.length}
+        {Object.keys(matches).length === leftItems.length && (
+          <span className="ml-2 text-green-600 font-medium">✓ All matched!</span>
+        )}
       </div>
     </QuestionWrapper>
   );
@@ -365,6 +480,20 @@ const ACEIIITest = () => {
             try {
               const detailRes = await api.get(`/questions/${q.id}`);
               const questionDetail = detailRes.data;
+
+              const isLanguageComprehension =
+                (section.title || '').toLowerCase().includes('language - comprehension') ||
+                ((questionDetail.text || '').toLowerCase().includes('point to the one that is a fruit'));
+
+              if (import.meta?.env?.DEV && isLanguageComprehension) {
+                // Helpful when diagnosing frog/banana/car option media
+                console.log('[ACE-III] Language Comprehension question detail', {
+                  sectionTitle: section.title,
+                  questionId: q.id,
+                  questionText: questionDetail.text,
+                  options: questionDetail.options,
+                });
+              }
               
               // Fetch presigned URLs for question media
               let questionMedia = [];
@@ -385,6 +514,7 @@ const ACEIIITest = () => {
               
               // Fetch options with their media
               let options = [];
+              console.log("Below Fetching Options")
               if (questionDetail.options && Array.isArray(questionDetail.options)) {
                 options = await Promise.all(questionDetail.options.map(async (opt) => {
                   // Fetch media for each option if it has any
@@ -392,17 +522,52 @@ const ACEIIITest = () => {
                   if (opt.media && Array.isArray(opt.media)) {
                     optionMedia = await Promise.all(opt.media.map(async (m) => {
                       try {
-                        const downloadRes = await api.get(`/media/${m.id}/download`);
+                        const mediaId =
+                          (typeof m === 'number' ? m : null) ??
+                          (typeof m === 'string' ? (getMediaIdFromRef(m) ?? null) : null) ??
+                          (m?.mediaId ?? null) ??
+                          (m?.id ?? null);
+
+                        if (!mediaId) {
+                          if (import.meta?.env?.DEV && isLanguageComprehension) {
+                            console.warn('[ACE-III] Option media missing id', { optionId: opt.id, media: m });
+                          }
+                          return m;
+                        }
+
+                        const downloadRes = await api.get(`/media/${mediaId}/download`);
+                        const presignedUrl =
+                          downloadRes.data?.presignedUrl ||
+                          downloadRes.data?.url ||
+                          downloadRes.data?.presigned_url;
+
                         return {
-                          ...m,
-                          url: downloadRes.data.presignedUrl
+                          ...(typeof m === 'object' && m !== null ? m : {}),
+                          url: presignedUrl
                         };
                       } catch (err) {
-                        console.error(`Failed to fetch option media ${m.id}:`, err);
+                        if (import.meta?.env?.DEV && isLanguageComprehension) {
+                          console.error('[ACE-III] Failed to fetch option media presigned URL', {
+                            optionId: opt.id,
+                            media: m,
+                            error: err,
+                          });
+                        } else {
+                          console.error('Failed to fetch option media:', err);
+                        }
                         return m;
                       }
                     }));
                   }
+
+                  if (import.meta?.env?.DEV && isLanguageComprehension) {
+                    console.log('[ACE-III] Language Comprehension option media resolved', {
+                      optionId: opt.id,
+                      optionText: opt.text,
+                      optionMedia,
+                    });
+                  }
+
                   return {
                     ...opt,
                     media: optionMedia
@@ -810,6 +975,7 @@ const ACEIIITest = () => {
             rightItems={config.rightItems || []}
             value={responses[q.id] || {}}
             onChange={(matches) => handleResponseChange(q.id, matches)}
+            questionMedia={q.media || []}
           />
         );
       case 'naming_grouped':
@@ -818,7 +984,7 @@ const ACEIIITest = () => {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
               {(config.items || q.items || []).map((item, idx) => {
                 const mediaIndex = item.imageIndex !== undefined ? item.imageIndex : idx;
-                const imageUrl = q.media?.[mediaIndex]?.url || item.img;
+                const imageUrl = q.media?.[mediaIndex]?.url;
 
                 return (
                   <div key={idx} className="flex flex-col items-center">
@@ -848,16 +1014,24 @@ const ACEIIITest = () => {
         );
       case 'mcq': {
         // Use actual options from backend if available, otherwise fall back to config
-        const optionsToRender = q.options && q.options.length > 0 ? q.options : (config.options || []);
-        const hasImages = optionsToRender.some(o => (o.media && o.media.length > 0) || o.imageIndex !== undefined);
+        const configOptions = config.options || [];
+        const optionsToRender = q.options && q.options.length > 0 ? q.options : configOptions;
+        
+        const hasImages = optionsToRender.some(o => (o.media && o.media.length > 0) || (o.imageIndex !== undefined && q.media && q.media[o.imageIndex]));
         
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
-            <div className={`${hasImages ? 'grid grid-cols-1 sm:grid-cols-3 gap-4' : 'space-y-3'}`}>
+            <div className={`${hasImages ? 'grid grid-cols-1 sm:grid-cols-3 gap-6' : 'space-y-3'}`}>
               {optionsToRender.map((opt, idx) => {
-                  // Get image from option's media (backend) or fallback to imageIndex pattern
-                  const optImage = opt.media?.[0]?.url || 
-                                  (opt.imageIndex !== undefined ? q.media?.[opt.imageIndex]?.url : null);
+                  // Get image from multiple sources:
+                  // 1. Option's media from backend
+                  // 2. Question media mapped via imageIndex from config
+                  let optImage = null;
+                  if (opt.media && opt.media.length > 0) {
+                    optImage = opt.media[0].url;
+                  } else if (opt.imageIndex !== undefined && q.media && q.media[opt.imageIndex]) {
+                    optImage = q.media[opt.imageIndex].url;
+                  }
                   
                   // For backend options, use option.id; for config options, use opt.value
                   const optionValue = opt.id || opt.value || idx;
@@ -868,8 +1042,8 @@ const ACEIIITest = () => {
                     <div 
                       key={opt.id || idx} 
                       onClick={() => handleResponseChange(q.id, optionValue)}
-                      className={`relative flex ${optImage ? 'flex-col items-center text-center p-4' : 'items-center p-4'} border rounded-lg cursor-pointer transition-all ${
-                        isSelected ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200' : 'border-gray-300 hover:bg-gray-50'
+                      className={`relative flex ${optImage ? 'flex-col items-center text-center p-4' : 'items-center p-4'} border-2 rounded-lg cursor-pointer transition-all ${
+                        isSelected ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 shadow-md' : 'border-gray-300 hover:border-indigo-300 hover:bg-gray-50'
                       }`}
                     >
                       <input
@@ -877,20 +1051,26 @@ const ACEIIITest = () => {
                         name={`q_${q.id}`}
                         checked={isSelected}
                         onChange={() => handleResponseChange(q.id, optionValue)}
-                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 absolute top-4 right-4"
+                        className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 absolute top-3 right-3"
                       />
                       
                       {optImage && (
                         <img 
                           src={optImage} 
-                          alt={optionLabel} 
-                          className="w-full h-32 object-contain mb-3 rounded"
+                          alt={optionLabel || 'Option image'} 
+                          className="w-full h-40 object-contain mb-3 rounded"
+                          onError={(e) => {
+                            console.error('Failed to load image:', optImage);
+                            e.target.style.display = 'none';
+                          }}
                         />
                       )}
                        
-                      <span className={`block font-medium ${isSelected ? 'text-indigo-900' : 'text-gray-900'}`}>
-                        {optionLabel}
-                      </span>
+                      {optionLabel && (
+                        <span className={`block font-medium ${isSelected ? 'text-indigo-900' : 'text-gray-900'}`}>
+                          {optionLabel}
+                        </span>
+                      )}
                     </div>
                   );
               })}

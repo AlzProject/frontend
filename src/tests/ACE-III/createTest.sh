@@ -288,33 +288,33 @@ jq -c '.[]' "$DATA_FILE" | while read -r test_item; do
                                 if [ -f "$IMAGE_PATH" ]; then
                                     echo "        Uploading option image: $OPT_IMAGE"
                                     
-                                    local FILENAME=$(basename "$IMAGE_PATH")
-                                    local MIME_TYPE=$(get_mime_type "$FILENAME")
+                                    OPT_FILENAME=$(basename "$IMAGE_PATH")
+                                    OPT_MIME_TYPE=$(get_mime_type "$OPT_FILENAME")
                                     
                                     # Get presigned URL
-                                    local PRESIGNED_RES=$(curl -s -X POST "$API_URL/media" \
+                                    OPT_PRESIGNED_RES=$(curl -s -X POST "$API_URL/media" \
                                         -H "$AUTH_HEADER" \
                                         -H "Content-Type: application/json" \
                                         -d "$(jq -n --arg mediatype "image" --arg medialabel "Option ${opt_idx} Image for Q${Q_ID}" '{type: $mediatype, label: $medialabel}')")
                                     
-                                    local PRESIGNED_URL=$(echo "$PRESIGNED_RES" | jq -r '.presignedUrl')
-                                    local MEDIA_ID=$(echo "$PRESIGNED_RES" | jq -r '.id')
+                                    OPT_PRESIGNED_URL=$(echo "$OPT_PRESIGNED_RES" | jq -r '.presignedUrl')
+                                    OPT_MEDIA_ID=$(echo "$OPT_PRESIGNED_RES" | jq -r '.id')
                                     
-                                    if [ "$PRESIGNED_URL" != "null" ] && [ -n "$PRESIGNED_URL" ]; then
+                                    if [ "$OPT_PRESIGNED_URL" != "null" ] && [ -n "$OPT_PRESIGNED_URL" ]; then
                                         # Upload to S3
-                                        local HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+                                        OPT_HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
                                             -X PUT \
-                                            -H "Content-Type: $MIME_TYPE" \
+                                            -H "Content-Type: $OPT_MIME_TYPE" \
                                             --data-binary "@$IMAGE_PATH" \
-                                            "$PRESIGNED_URL")
+                                            "$OPT_PRESIGNED_URL")
                                         
-                                        if [ "$HTTP_CODE" == "200" ]; then
+                                        if [ "$OPT_HTTP_CODE" == "200" ]; then
                                             # Attach to option
-                                            curl -s -X POST "$API_URL/options/$OPT_ID/media/$MEDIA_ID" \
+                                            curl -s -X POST "$API_URL/options/$OPT_ID/media/$OPT_MEDIA_ID" \
                                                 -H "$AUTH_HEADER" > /dev/null
                                             echo "          ✅ Uploaded and attached option image"
                                         else
-                                            echo "          ❌ Failed to upload option image (HTTP $HTTP_CODE)"
+                                            echo "          ❌ Failed to upload option image (HTTP $OPT_HTTP_CODE)"
                                         fi
                                     else
                                         echo "          ❌ Failed to get presigned URL for option image"
