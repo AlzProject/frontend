@@ -548,11 +548,195 @@ const ACEIIITest = () => {
   const [language, setLanguage] = useState('en');
   const [micPermission, setMicPermission] = useState(null); // null, granted, denied
   const [sections, setSections] = useState([]);
+  const [loadedSections, setLoadedSections] = useState(new Set()); // Track which sections have loaded questions
+  const [loadingSections, setLoadingSections] = useState(new Set()); // Track which sections are currently loading
   const [testTitle, setTestTitle] = useState('ACE-III Assessment');
   const [testSpecificInfo, setTestSpecificInfo] = useState({});
   
   // Ref to prevent duplicate attempt creation
   const attemptInitializedRef = React.useRef(false);
+  const sectionsMetadataRef = React.useRef(null); // Store section metadata for lazy loading
+
+  // Load a specific section's questions and media
+  const loadSection = async (sectionIndex, testId) => {
+    // Don't reload if already loaded or currently loading
+    if (loadedSections.has(sectionIndex) || loadingSections.has(sectionIndex)) {
+      return;
+    }
+
+    setLoadingSections(prev => new Set(prev).add(sectionIndex));
+
+    try {
+      const section = sectionsMetadataRef.current[sectionIndex];
+      if (!section) return;
+
+      const qRes = await api.get(`/sections/${section.id}/questions`);
+      
+      // Fetch detailed question data with media and options
+      const questionsWithMedia = await Promise.all(qRes.data.map(async (q) => {
+        try {
+          const detailRes = await api.get(`/questions/${q.id}`);
+          const questionDetail = detailRes.data;
+
+          const isLanguageComprehension =
+            (section.title || '').toLowerCase().includes('language - comprehension') ||
+            ((questionDetail.text || '').toLowerCase().includes('point to the one that is a fruit'));
+
+          if (import.meta?.env?.DEV && isLanguageComprehension) {
+            console.log('[ACE-III] Language Comprehension question detail', {
+              sectionTitle: section.title,
+              questionId: q.id,
+              questionText: questionDetail.text,
+              options: questionDetail.options,
+            });
+          }
+          
+          // Fetch presigned URLs for question media
+          let questionMedia = [];
+          if (questionDetail.media && Array.isArray(questionDetail.media)) {
+            questionMedia = await Promise.all(questionDetail.media.map(async (m) => {
+              try {
+                const downloadRes = await api.get(`/media/${m.id}/download`);
+                return {
+                  ...m,
+                  url: downloadRes.data.presignedUrl
+                };
+              } catch (err) {
+                console.error(`Failed to fetch media ${m.id}:`, err);
+                return m;
+              }
+            }));
+          }
+          
+          // Fetch options with their media
+          let options = [];
+          if (questionDetail.options && Array.isArray(questionDetail.options)) {
+            options = await Promise.all(questionDetail.options.map(async (opt) => {
+              let optionMedia = [];
+              
+              if (opt.media && Array.isArray(opt.media) && opt.media.length > 0) {
+                optionMedia = await Promise.all(opt.media.map(async (m) => {
+                  try {
+                    const mediaId =
+                      (typeof m === 'number' ? m : null) ??
+                      (typeof m === 'string' ? (getMediaIdFromRef(m) ?? null) : null) ??
+                      (m?.mediaId ?? null) ??
+                      (m?.id ?? null);
+
+                    if (!mediaId) {
+                      if (import.meta?.env?.DEV && isLanguageComprehension) {
+                        console.warn('[ACE-III] Option media missing id', { optionId: opt.id, media: m });
+                      }
+                      return m;
+                    }
+
+                    const downloadRes = await api.get(`/media/${mediaId}/download`);
+                    const presignedUrl =
+                      downloadRes.data?.presignedUrl ||
+                      downloadRes.data?.url ||
+                      downloadRes.data?.presigned_url;
+
+                    return {
+                      ...(typeof m === 'object' && m !== null ? m : {}),
+                      url: presignedUrl
+                    };
+                  } catch (err) {
+                    if (import.meta?.env?.DEV && isLanguageComprehension) {
+                      console.error('[ACE-III] Failed to fetch option media presigned URL', {
+                        optionId: opt.id,
+                        media: m,
+                        error: err,
+                      });
+                    } else {
+                      console.error('Failed to fetch option media:', err);
+                    }
+                    return m;
+                  }
+                }));
+              } else if (opt.config?.mediaId) {
+                try {
+                  const downloadRes = await api.get(`/media/${opt.config.mediaId}/download`);
+                  const presignedUrl =
+                    downloadRes.data?.presignedUrl ||
+                    downloadRes.data?.url ||
+                    downloadRes.data?.presigned_url;
+                  
+                  optionMedia = [{
+                    id: opt.config.mediaId,
+                    url: presignedUrl
+                  }];
+                  
+                  if (import.meta?.env?.DEV && isLanguageComprehension) {
+                    console.log('[ACE-III] Fetched option media via config.mediaId', {
+                      optionId: opt.id,
+                      mediaId: opt.config.mediaId,
+                      url: presignedUrl
+                    });
+                  }
+                } catch (err) {
+                  if (import.meta?.env?.DEV && isLanguageComprehension) {
+                    console.error('[ACE-III] Failed to fetch option media via config.mediaId', {
+                      optionId: opt.id,
+                      mediaId: opt.config.mediaId,
+                      error: err,
+                    });
+                  } else {
+                    console.error('Failed to fetch option config media:', err);
+                  }
+                }
+              }
+
+              if (import.meta?.env?.DEV && isLanguageComprehension) {
+                console.log('[ACE-III] Language Comprehension option media resolved', {
+                  optionId: opt.id,
+                  optionText: opt.text,
+                  optionMedia,
+                });
+              }
+
+              return {
+                ...opt,
+                media: optionMedia
+              };
+            }));
+          }
+          
+          return {
+            ...q,
+            config: q.config || q.test_specific_info || {},
+            media: questionMedia,
+            options: options
+          };
+        } catch (err) {
+          console.error(`Failed to fetch details for question ${q.id}:`, err);
+          return {
+            ...q,
+            config: q.config || q.test_specific_info || {}
+          };
+        }
+      }));
+      
+      // Update the section with loaded questions
+      setSections(prevSections => {
+        const newSections = [...prevSections];
+        newSections[sectionIndex] = {
+          ...section,
+          questions: questionsWithMedia
+        };
+        return newSections;
+      });
+
+      setLoadedSections(prev => new Set(prev).add(sectionIndex));
+    } catch (err) {
+      console.error(`Failed to load section ${sectionIndex}:`, err);
+    } finally {
+      setLoadingSections(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(sectionIndex);
+        return newSet;
+      });
+    }
+  };
 
   useEffect(() => {
     const initTest = async () => {
@@ -585,171 +769,32 @@ const ACEIIITest = () => {
         setTestTitle(aceTest.title);
         setTestSpecificInfo(aceTest.test_specific_info || {});
 
-        // Fetch sections & questions
+        // Fetch sections metadata only (no questions yet)
         const sectionsRes = await api.get(`/tests/${aceTest.id}/sections`);
         const sectionsData = Array.isArray(sectionsRes.data) ? sectionsRes.data : [];
         sectionsData.sort((a, b) => a.orderIndex - b.orderIndex);
 
-        const fullSections = await Promise.all(sectionsData.map(async (section) => {
-          const qRes = await api.get(`/sections/${section.id}/questions`);
-          
-          // Fetch detailed question data with media and options
-          const questionsWithMedia = await Promise.all(qRes.data.map(async (q) => {
-            try {
-              const detailRes = await api.get(`/questions/${q.id}`);
-              const questionDetail = detailRes.data;
+        // Store metadata for lazy loading
+        sectionsMetadataRef.current = sectionsData;
 
-              const isLanguageComprehension =
-                (section.title || '').toLowerCase().includes('language - comprehension') ||
-                ((questionDetail.text || '').toLowerCase().includes('point to the one that is a fruit'));
-
-              if (import.meta?.env?.DEV && isLanguageComprehension) {
-                // Helpful when diagnosing frog/banana/car option media
-                console.log('[ACE-III] Language Comprehension question detail', {
-                  sectionTitle: section.title,
-                  questionId: q.id,
-                  questionText: questionDetail.text,
-                  options: questionDetail.options,
-                });
-              }
-              
-              // Fetch presigned URLs for question media
-              let questionMedia = [];
-              if (questionDetail.media && Array.isArray(questionDetail.media)) {
-                questionMedia = await Promise.all(questionDetail.media.map(async (m) => {
-                  try {
-                    const downloadRes = await api.get(`/media/${m.id}/download`);
-                    return {
-                      ...m,
-                      url: downloadRes.data.presignedUrl
-                    };
-                  } catch (err) {
-                    console.error(`Failed to fetch media ${m.id}:`, err);
-                    return m;
-                  }
-                }));
-              }
-              
-              // Fetch options with their media
-              let options = [];
-              console.log("Below Fetching Options")
-              if (questionDetail.options && Array.isArray(questionDetail.options)) {
-                options = await Promise.all(questionDetail.options.map(async (opt) => {
-                  // Fetch media for each option if it has any
-                  let optionMedia = [];
-                  
-                  // Strategy 1: If backend populated opt.media array, fetch those
-                  if (opt.media && Array.isArray(opt.media) && opt.media.length > 0) {
-                    optionMedia = await Promise.all(opt.media.map(async (m) => {
-                      try {
-                        const mediaId =
-                          (typeof m === 'number' ? m : null) ??
-                          (typeof m === 'string' ? (getMediaIdFromRef(m) ?? null) : null) ??
-                          (m?.mediaId ?? null) ??
-                          (m?.id ?? null);
-
-                        if (!mediaId) {
-                          if (import.meta?.env?.DEV && isLanguageComprehension) {
-                            console.warn('[ACE-III] Option media missing id', { optionId: opt.id, media: m });
-                          }
-                          return m;
-                        }
-
-                        const downloadRes = await api.get(`/media/${mediaId}/download`);
-                        const presignedUrl =
-                          downloadRes.data?.presignedUrl ||
-                          downloadRes.data?.url ||
-                          downloadRes.data?.presigned_url;
-
-                        return {
-                          ...(typeof m === 'object' && m !== null ? m : {}),
-                          url: presignedUrl
-                        };
-                      } catch (err) {
-                        if (import.meta?.env?.DEV && isLanguageComprehension) {
-                          console.error('[ACE-III] Failed to fetch option media presigned URL', {
-                            optionId: opt.id,
-                            media: m,
-                            error: err,
-                          });
-                        } else {
-                          console.error('Failed to fetch option media:', err);
-                        }
-                        return m;
-                      }
-                    }));
-                  }
-                  // Strategy 2: Fallback to opt.config.mediaId if backend didn't populate opt.media
-                  else if (opt.config?.mediaId) {
-                    try {
-                      const downloadRes = await api.get(`/media/${opt.config.mediaId}/download`);
-                      const presignedUrl =
-                        downloadRes.data?.presignedUrl ||
-                        downloadRes.data?.url ||
-                        downloadRes.data?.presigned_url;
-                      
-                      optionMedia = [{
-                        id: opt.config.mediaId,
-                        url: presignedUrl
-                      }];
-                      
-                      if (import.meta?.env?.DEV && isLanguageComprehension) {
-                        console.log('[ACE-III] Fetched option media via config.mediaId', {
-                          optionId: opt.id,
-                          mediaId: opt.config.mediaId,
-                          url: presignedUrl
-                        });
-                      }
-                    } catch (err) {
-                      if (import.meta?.env?.DEV && isLanguageComprehension) {
-                        console.error('[ACE-III] Failed to fetch option media via config.mediaId', {
-                          optionId: opt.id,
-                          mediaId: opt.config.mediaId,
-                          error: err,
-                        });
-                      } else {
-                        console.error('Failed to fetch option config media:', err);
-                      }
-                    }
-                  }
-
-                  if (import.meta?.env?.DEV && isLanguageComprehension) {
-                    console.log('[ACE-III] Language Comprehension option media resolved', {
-                      optionId: opt.id,
-                      optionText: opt.text,
-                      optionMedia,
-                    });
-                  }
-
-                  return {
-                    ...opt,
-                    media: optionMedia
-                  };
-                }));
-              }
-              
-              return {
-                ...q,
-                config: q.config || q.test_specific_info || {},
-                media: questionMedia,
-                options: options
-              };
-            } catch (err) {
-              console.error(`Failed to fetch details for question ${q.id}:`, err);
-              return {
-                ...q,
-                config: q.config || q.test_specific_info || {}
-              };
-            }
-          }));
-          
-          return {
-            ...section,
-            questions: questionsWithMedia
-          };
+        // Initialize sections with empty questions arrays
+        const sectionsWithoutQuestions = sectionsData.map(section => ({
+          ...section,
+          questions: []
         }));
+        setSections(sectionsWithoutQuestions);
 
-        setSections(fullSections);
+        // Load first section immediately (blocking)
+        if (sectionsData.length > 0) {
+          await loadSection(0, aceTest.id);
+        }
+
+        // Load remaining sections in parallel (non-blocking)
+        if (sectionsData.length > 1) {
+          Promise.all(
+            sectionsData.slice(1).map((_, idx) => loadSection(idx + 1, aceTest.id))
+          ).catch(err => console.error('Error loading remaining sections:', err));
+        }
 
         // Check for existing attempt or create new one
         try {
@@ -826,6 +871,16 @@ const ACEIIITest = () => {
 
     initTest();
   }, [navigate]);
+
+  // Load section when navigating to it
+  useEffect(() => {
+    if (sections.length > 0 && sectionsMetadataRef.current && attemptId) {
+      const testId = sectionsMetadataRef.current[0]?.testId;
+      if (testId) {
+        loadSection(currentSection, testId);
+      }
+    }
+  }, [currentSection, attemptId]);
 
   // Helper to get translated content
   const getTranslation = (lang, sectionIdx = null, questionIdx = null) => {
@@ -1398,7 +1453,16 @@ const ACEIIITest = () => {
         <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
           <h2 className="text-xl font-medium text-gray-900 mb-4">{currentSectionTitle}</h2>
           <div className="space-y-6">
-            {sections[currentSection].questions.map((q, idx) => renderQuestion(q, idx))}
+            {loadingSections.has(currentSection) && !loadedSections.has(currentSection) ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading questions...</p>
+                </div>
+              </div>
+            ) : (
+              sections[currentSection]?.questions?.map((q, idx) => renderQuestion(q, idx))
+            )}
           </div>
         </div>
 
