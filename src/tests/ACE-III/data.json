@@ -92,7 +92,7 @@
         "questions": [
           {
             "id": 5,
-            "text": "Recall the 3 words learned in the Attention section (Lemon, Key, Ball).",
+            "text": "Recall the 3 words learned in the Attention section.",
             "type": "text",
             "maxScore": 3,
             "config": {
@@ -763,24 +763,28 @@
               "title": "दृश्य आणि अवकाश ज्ञान (16 गुण)",
               "questions": [
                 {
+                  "id": 16,
                   "text": "शेजारील आकृती पाहून तशीच आकृती काढा (अनंत लूप).",
                   "config": {
                     "title": "अनंत आकृती"
                   }
                 },
                 {
+                  "id": 17,
                   "text": "शेजारील आकृती पाहून तशीच आकृती काढा (घन).",
                   "config": {
                     "title": "घन (Cube)"
                   }
                 },
                 {
+                  "id": 18,
                   "text": "एक घड्याळ काढा. त्यात सर्व अंक लिहा आणि ५ वाजून १० मिनिटे ही वेळ दाखवा.",
                   "config": {
                     "title": "घड्याळ काढणे"
                   }
                 },
                 {
+                  "id": 19,
                   "text": "चौकोनांमधील ठिपके मोजा.",
                   "config": {
                     "title": "ठिपके मोजणे",
@@ -794,6 +798,7 @@
                   }
                 },
                 {
+                  "id": 20,
                   "text": "तुटक अक्षरे ओळखा.",
                   "config": {
                     "title": "अक्षरे ओळखणे",
