@@ -325,23 +325,25 @@
           },
           {
             "id": 19,
-            "text": "Count the dots in the squares shown (simulated).",
+            "text": "Count the dots in the squares shown.",
             "type": "text",
             "maxScore": 4,
             "config": {
               "title": "Dot Counting",
               "frontend_type": "text_grouped",
+              "imageFiles": ["dotCounting/d1.png", "dotCounting/d2.png", "dotCounting/d3.png", "dotCounting/d4.png"],
               "fields": ["Square 1", "Square 2", "Square 3", "Square 4"]
             }
           },
           {
             "id": 20,
-            "text": "Identify the fragmented letters shown (simulated).",
+            "text": "Identify the fragmented letters shown.",
             "type": "text",
             "maxScore": 4,
             "config": {
               "title": "Identifying Letters",
               "frontend_type": "text_grouped",
+              "imageFiles": ["fragmentedLetters/fragA.png", "fragmentedLetters/fragK.png", "fragmentedLetters/fragM.png", "fragmentedLetters/fragT.png"],
               "fields": ["Letter 1", "Letter 2", "Letter 3", "Letter 4"]
             }
           }
@@ -364,16 +366,56 @@
           },
           {
             "id": 22,
-            "text": "If recall was incomplete, identify the correct parts.",
-            "type": "scmcq",
+            "text": "Recognition Test: Choose whether recall was complete or incomplete.",
+            "type": "text",
             "maxScore": 5,
             "config": {
               "title": "Recognition (5 points)",
-              "frontend_type": "mcq",
-              "options": [
-                { "label": "Ramesh Kumar", "value": "wrong1" },
-                { "label": "Rajesh Kumar", "value": "correct", "isCorrect": true },
-                { "label": "Rajesh Sharma", "value": "wrong2" }
+              "frontend_type": "recognition_with_choice",
+              "recallCompleteText": "Recall was complete",
+              "recallIncompleteText": "Recall was incomplete - Show hints",
+              "hintsLabel": "Select the correct options from the hints below:",
+              "hintQuestions": [
+                {
+                  "label": "Name:",
+                  "options": [
+                    { "text": "Ramesh Kumar", "value": "wrong1", "isCorrect": false },
+                    { "text": "Rajesh Kumar", "value": "correct1", "isCorrect": true },
+                    { "text": "Rajesh Sharma", "value": "wrong2", "isCorrect": false }
+                  ]
+                },
+                {
+                  "label": "Street Number:",
+                  "options": [
+                    { "text": "32", "value": "wrong3", "isCorrect": false },
+                    { "text": "42", "value": "correct2", "isCorrect": true },
+                    { "text": "52", "value": "wrong4", "isCorrect": false }
+                  ]
+                },
+                {
+                  "label": "Street Name:",
+                  "options": [
+                    { "text": "FC Road", "value": "wrong5", "isCorrect": false },
+                    { "text": "MG Road", "value": "correct3", "isCorrect": true },
+                    { "text": "SB Road", "value": "wrong6", "isCorrect": false }
+                  ]
+                },
+                {
+                  "label": "Area:",
+                  "options": [
+                    { "text": "Bandra", "value": "wrong7", "isCorrect": false },
+                    { "text": "Andheri", "value": "correct4", "isCorrect": true },
+                    { "text": "Dadar", "value": "wrong8", "isCorrect": false }
+                  ]
+                },
+                {
+                  "label": "City:",
+                  "options": [
+                    { "text": "Pune", "value": "wrong9", "isCorrect": false },
+                    { "text": "Mumbai", "value": "correct5", "isCorrect": true },
+                    { "text": "Delhi", "value": "wrong10", "isCorrect": false }
+                  ]
+                }
               ]
             }
           }

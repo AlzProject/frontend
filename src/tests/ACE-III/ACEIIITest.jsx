@@ -388,6 +388,91 @@ const NameAddressLearning = ({ title, description, onComplete, address, instruct
   );
 };
 
+// Component for Recognition with Choice
+const RecognitionWithChoice = ({ title, description, config, value, onChange }) => {
+  const [showHints, setShowHints] = useState(value?.recallComplete === false || false);
+  const [hintResponses, setHintResponses] = useState(value?.hints || {});
+  
+  const handleRecallComplete = () => {
+    setShowHints(false);
+    onChange({ recallComplete: true });
+  };
+  
+  const handleRecallIncomplete = () => {
+    setShowHints(true);
+    onChange({ recallComplete: false, hints: {} });
+    setHintResponses({});
+  };
+  
+  const handleHintChange = (hintIndex, selectedValue) => {
+    const newHintResponses = { ...hintResponses, [hintIndex]: selectedValue };
+    setHintResponses(newHintResponses);
+    onChange({ recallComplete: false, hints: newHintResponses });
+  };
+  
+  return (
+    <QuestionWrapper title={title} description={description}>
+      <div className="space-y-6">
+        <div className="flex gap-4 justify-center">
+          <button
+            onClick={handleRecallComplete}
+            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-md transition-colors"
+          >
+            {config.recallCompleteText || "Recall was complete"}
+          </button>
+          <button
+            onClick={handleRecallIncomplete}
+            className="px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-lg shadow-md transition-colors"
+          >
+            {config.recallIncompleteText || "Recall was incomplete"}
+          </button>
+        </div>
+        
+        {showHints && config.hintQuestions && (
+          <div className="mt-6 p-6 bg-amber-50 border-2 border-amber-200 rounded-lg">
+            <h3 className="text-lg font-semibold text-amber-900 mb-4">
+              {config.hintsLabel || "Select the correct options from the hints below:"}
+            </h3>
+            <div className="space-y-4">
+              {config.hintQuestions.map((hint, hintIdx) => (
+                <div key={hintIdx} className="bg-white p-4 rounded-md shadow-sm">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {hint.label}
+                  </label>
+                  <div className="space-y-2">
+                    {hint.options.map((option, optIdx) => (
+                      <label
+                        key={optIdx}
+                        className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          name={`hint-${hintIdx}`}
+                          value={option.value}
+                          checked={hintResponses[hintIdx] === option.value}
+                          onChange={() => handleHintChange(hintIdx, option.value)}
+                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                        />
+                        <span className="ml-3 text-sm text-gray-700">{option.text}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {!showHints && value?.recallComplete === true && (
+          <div className="p-4 bg-green-50 border-2 border-green-200 rounded-lg">
+            <p className="text-green-800 font-medium">✓ Recall marked as complete</p>
+          </div>
+        )}
+      </div>
+    </QuestionWrapper>
+  );
+};
+
 // --- Main Component ---
 
 const ACEIIITest = () => {
@@ -952,7 +1037,48 @@ const ACEIIITest = () => {
             multiline={true}
           />
         );
-      case 'text_grouped':
+      case 'text_grouped': {
+        // Check if this question has images (similar to naming_grouped)
+        const hasGroupedImages = config.imageFiles && config.imageFiles.length > 0 && q.media && q.media.length > 0;
+        
+        if (hasGroupedImages) {
+          // Render with images (like naming_grouped)
+          return (
+            <QuestionWrapper key={q.id} title={title} description={description}>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                {(config.fields || q.fields || []).map((field, idx) => {
+                  const imageUrl = q.media?.[idx]?.url;
+
+                  return (
+                    <div key={idx} className="flex flex-col items-center">
+                      {imageUrl ? (
+                        <img 
+                          src={imageUrl} 
+                          alt={field} 
+                          className="w-32 h-32 object-contain rounded-md mb-3 border bg-white"
+                        />
+                      ) : (
+                        <div className="w-32 h-32 bg-gray-100 rounded-md mb-3 border flex items-center justify-center text-gray-400">
+                          No Image
+                        </div>
+                      )}
+                      <label className="block text-sm font-medium text-gray-700 mb-1 text-center">{field}</label>
+                      <input
+                        type="text"
+                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                        value={(responses[q.id] || [])[idx] || ''}
+                        onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
+                        placeholder={`Enter ${field}`}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </QuestionWrapper>
+          );
+        }
+        
+        // Original text_grouped without images
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -970,6 +1096,7 @@ const ACEIIITest = () => {
             </div>
           </QuestionWrapper>
         );
+      }
       case 'matching':
         return (
           <MatchingQuestion
@@ -1124,6 +1251,17 @@ const ACEIIITest = () => {
           />
         );
       }
+      case 'recognition_with_choice':
+        return (
+          <RecognitionWithChoice
+            key={q.id}
+            title={title}
+            description={description}
+            config={config}
+            value={responses[q.id] || {}}
+            onChange={(value) => handleResponseChange(q.id, value)}
+          />
+        );
       default:
         return null;
     }
