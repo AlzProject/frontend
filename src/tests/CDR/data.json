@@ -101,7 +101,17 @@
             "config": {
               "title": "Date",
               "frontend_type": "text",
-              "placeholder": "DD/MM/YYYY"
+              "placeholder": "DD/MM/YYYY",
+              "suggestions": [
+                "01/01/2024",
+                "15/03/2024",
+                "20/06/2024",
+                "10/09/2024",
+                "25/12/2024",
+                "01/01/2025",
+                "14/02/2025",
+                "30/04/2025"
+              ]
             }
           },
           {
@@ -155,7 +165,16 @@
             "config": {
               "title": "Year",
               "frontend_type": "text",
-              "placeholder": "YYYY"
+              "placeholder": "YYYY",
+              "suggestions": [
+                "2020",
+                "2021",
+                "2022",
+                "2023",
+                "2024",
+                "2025",
+                "2026"
+              ]
             }
           },
           {
@@ -219,7 +238,15 @@
             "config": {
               "title": "Problem Solving",
               "frontend_type": "text_multiline",
-              "placeholder": "Describe what you would do..."
+              "placeholder": "Describe what you would do...",
+              "suggestions": [
+                "I would retrace my steps to find them",
+                "I would call a locksmith to make new keys",
+                "I would check all my pockets and bags",
+                "I would ask family members if they have seen them",
+                "I would look in the last place I remember having them",
+                "I would use my spare keys"
+              ]
             }
           },
           {
@@ -247,7 +274,15 @@
               "title": "Basic Math",
               "frontend_type": "text",
               "placeholder": "Enter amount",
-              "correctAnswer": "25"
+              "correctAnswer": "25",
+              "suggestions": [
+                "25",
+                "20",
+                "30",
+                "15",
+                "50",
+                "10"
+              ]
             }
           },
           {

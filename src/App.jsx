@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import MMSETest from './tests/MMSE/MMSETest';
 import MOCATest from './tests/MoCA/MOCATest';
@@ -15,6 +15,18 @@ import AttemptList from './components/Admin/AttemptList';
 import EvaluationView from './components/Admin/EvaluationView';
 import api from './api';
 import './App.css'
+
+// Protected Route Component - requires login
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    // Redirect to login if no token
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
+};
 
 const translations = {
   en: {
@@ -301,11 +313,11 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<ParticipantLogin />} />
         <Route path="/signup" element={<ParticipantSignup />} />
-        <Route path="/test/mmse" element={<MMSETest />} />
-        <Route path="/test/moca" element={<MOCATest />} />
-        <Route path="/test/ace-iii" element={<ACEIIITest />} />
-        <Route path="/test/cdr" element={<CDRTest />} />
-        <Route path="/test/clinical-dementia-rating" element={<CDRTest />} />
+        <Route path="/test/mmse" element={<ProtectedRoute><MMSETest /></ProtectedRoute>} />
+        <Route path="/test/moca" element={<ProtectedRoute><MOCATest /></ProtectedRoute>} />
+        <Route path="/test/ace-iii" element={<ProtectedRoute><ACEIIITest /></ProtectedRoute>} />
+        <Route path="/test/cdr" element={<ProtectedRoute><CDRTest /></ProtectedRoute>} />
+        <Route path="/test/clinical-dementia-rating" element={<ProtectedRoute><CDRTest /></ProtectedRoute>} />
         
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   TextResponseQuestion,
@@ -6,6 +6,55 @@ import {
   QuestionWrapper
 } from '../../components/QuestionTypes';
 import api from '../../api';
+
+// AutocompleteInput Component with dropdown suggestions
+const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = '', className = '' }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  // Filter suggestions based on current input value using useMemo
+  const filteredSuggestions = useMemo(() => {
+    if (!value || !Array.isArray(suggestions)) return suggestions;
+    const lowerValue = value.toLowerCase();
+    return suggestions.filter(s => 
+      s.toLowerCase().includes(lowerValue)
+    );
+  }, [value, suggestions]);
+
+  const handleSelect = (suggestion) => {
+    onChange(suggestion);
+    setIsFocused(false);
+  };
+
+  return (
+    <div className="relative">
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+        placeholder={placeholder}
+        className={className}
+      />
+      {isFocused && filteredSuggestions.length > 0 && (
+        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+          {filteredSuggestions.map((suggestion, idx) => (
+            <div
+              key={idx}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleSelect(suggestion);
+              }}
+              className="px-4 py-2 cursor-pointer hover:bg-indigo-50 text-sm text-gray-700 border-b border-gray-100 last:border-b-0"
+            >
+              {suggestion}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Helper component for memory words display
 const MemoryWordsDisplay = ({ words, instruction, onContinue, onComplete }) => {
@@ -264,7 +313,10 @@ const CDRTest = () => {
                 setAttemptId(attemptRes.data.id);
               }
             } catch (attemptError) {
-              console.warn("Failed to start attempt (running in demo mode):", attemptError);
+              console.error("Failed to create attempt:", attemptError);
+              alert("Failed to start test. Please login again.");
+              navigate('/login');
+              return;
             }
           } catch (secError) {
             console.error("Failed to fetch sections:", secError);
@@ -473,27 +525,44 @@ const CDRTest = () => {
       
       case 'text':
         return (
-          <TextResponseQuestion
-            key={q.id}
-            title={title}
-            description={description}
-            value={responses[q.id] || ''}
-            onChange={(val) => handleResponseChange(q.id, val)}
-            placeholder={config.placeholder || 'Enter your answer...'}
-          />
+          <QuestionWrapper key={q.id} title={title} description={description}>
+            <AutocompleteInput
+              value={responses[q.id] || ''}
+              onChange={(val) => handleResponseChange(q.id, val)}
+              suggestions={config.suggestions || []}
+              placeholder={config.placeholder || 'Enter your answer...'}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </QuestionWrapper>
         );
       
       case 'text_multiline':
         return (
-          <TextResponseQuestion
-            key={q.id}
-            title={title}
-            description={description}
-            value={responses[q.id] || ''}
-            onChange={(val) => handleResponseChange(q.id, val)}
-            placeholder={config.placeholder || 'Enter your answer...'}
-            multiline={true}
-          />
+          <QuestionWrapper key={q.id} title={title} description={description}>
+            <div className="space-y-2">
+              {config.suggestions && config.suggestions.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {config.suggestions.map((suggestion, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleResponseChange(q.id, suggestion)}
+                      className="px-3 py-1 text-sm bg-indigo-50 text-indigo-700 rounded-md hover:bg-indigo-100 border border-indigo-200"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <textarea
+                value={responses[q.id] || ''}
+                onChange={(e) => handleResponseChange(q.id, e.target.value)}
+                placeholder={config.placeholder || 'Enter your answer...'}
+                rows={4}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </QuestionWrapper>
         );
       
       default: {
@@ -546,13 +615,6 @@ const CDRTest = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      {!attemptId && !loading && (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
-          <p className="font-bold">Demo Mode</p>
-          <p>You are not logged in or could not start a session. Your results will NOT be saved.</p>
-        </div>
-      )}
-      
       <div className="mb-8">
         <div className="flex justify-between items-start">
           <div>

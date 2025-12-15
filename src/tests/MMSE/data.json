@@ -23,6 +23,13 @@
                 "Date",
                 "Day",
                 "Month"
+              ],
+              "suggestions": [
+                ["2020", "2021", "2022", "2023", "2024", "2025", "2026"],
+                ["Spring", "Summer", "Fall", "Winter", "Autumn"],
+                ["1", "5", "10", "15", "20", "25", "30"],
+                ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
               ]
             }
           },
@@ -41,6 +48,13 @@
                 "Town",
                 "Hospital/Building",
                 "Floor"
+              ],
+              "suggestions": [
+                ["Maharashtra", "Delhi", "Karnataka", "Tamil Nadu", "Gujarat"],
+                ["Pune", "Mumbai", "Bangalore", "Chennai", "Delhi"],
+                ["Pune", "Mumbai", "Bangalore", "Chennai", "Hyderabad", "Kolkata"],
+                ["City Hospital", "General Hospital", "Medical Center", "Clinic", "Home"],
+                ["Ground Floor", "1st Floor", "2nd Floor", "3rd Floor", "4th Floor"]
               ]
             }
           }
@@ -92,6 +106,13 @@
                 "-7 (or Letter 3)",
                 "-7 (or Letter 4)",
                 "-7 (or Letter 5)"
+              ],
+              "suggestions": [
+                ["93", "D", "90", "95"],
+                ["86", "L", "83", "85"],
+                ["79", "R", "76", "80"],
+                ["72", "O", "69", "75"],
+                ["65", "W", "62", "70"]
               ]
             }
           }
@@ -114,6 +135,11 @@
                 "Object 1",
                 "Object 2",
                 "Object 3"
+              ],
+              "suggestions": [
+                ["Apple", "Ball", "Car", "Dog", "Flag"],
+                ["Penny", "Table", "Chair", "Book", "Key"],
+                ["Table", "River", "House", "Tree", "Flower"]
               ]
             }
           }
@@ -135,6 +161,10 @@
               "fields": [
                 "Object 1 (Used for writing)",
                 "Object 2 (Used for telling time)"
+              ],
+              "suggestions": [
+                ["Pen", "Pencil", "Marker", "Crayon"],
+                ["Watch", "Clock", "Wristwatch", "Timer"]
               ]
             }
           },
@@ -147,7 +177,12 @@
               "title": "Repetition",
               "frontend_type": "text",
               "description": "Repeat the phrase exactly: 'No ifs, ands, or buts.'",
-              "placeholder": "Type the phrase exactly"
+              "placeholder": "Type the phrase exactly",
+              "suggestions": [
+                "No ifs, ands, or buts",
+                "No ifs, ands, or buts.",
+                "No if, and, or but"
+              ]
             }
           },
           {
@@ -209,7 +244,14 @@
               "title": "Writing",
               "frontend_type": "text_multiline",
               "description": "Write a complete sentence (must contain a subject and a verb).",
-              "placeholder": "Type a sentence here..."
+              "placeholder": "Type a sentence here...",
+              "suggestions": [
+                "The sun is shining today.",
+                "I am feeling well.",
+                "The weather is nice.",
+                "I enjoy reading books.",
+                "The cat is sleeping."
+              ]
             }
           },
           {
@@ -227,7 +269,6 @@
         ]
       }
     ],
-    "language": "en",
     "test_specific_info": {
       "slug": "mmse",
       "translations": {

@@ -806,8 +806,11 @@ const ACEIIITest = () => {
             const attemptRes = await api.post('/attempts', { testId: aceTest.id });
             setAttemptId(attemptRes.data.id);
           }
-        } catch {
-          console.warn("Running in demo mode - results won't be saved");
+        } catch (attemptError) {
+          console.error("Failed to create attempt:", attemptError);
+          alert("Failed to start test. Please login again.");
+          navigate('/login');
+          return;
         }
       } catch (error) {
         console.error("Failed to initialize test:", error);
@@ -1371,12 +1374,6 @@ const ACEIIITest = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      {!attemptId && !loading && (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
-          <p className="font-bold">Demo Mode</p>
-          <p>You are not logged in or could not start a session. Your results will NOT be saved.</p>
-        </div>
-      )}
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{currentTestTitle}</h1>
