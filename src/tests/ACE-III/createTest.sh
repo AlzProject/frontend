@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-API_URL="${API_URL:-https://alz.adityaap.tech/v1}"
+API_URL="${API_URL:-http://localhost:3000/v1}"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATA_FILE="$SCRIPT_DIR/data.json"
 
@@ -260,7 +260,57 @@ jq -c '.[]' "$DATA_FILE" | while read -r test_item; do
                         OPTION=$(echo "$OPTIONS" | jq -c ".[$opt_idx]")
                         OPT_TEXT=$(echo "$OPTION" | jq -r '.text // empty')
                         OPT_IS_CORRECT=$(echo "$OPTION" | jq -r '.isCorrect // false')
-                        OPT_CONFIG=$(echo "$OPTION" | jq -c '. | {imageFile}')
+                        OPT_IMAGE=$(echo "$OPTION" | jq -r '.imageFile // empty')
+                        
+                        # Upload option image FIRST if specified, then include mediaId in config
+                        OPT_MEDIA_ID=""
+                        if [ -n "$OPT_IMAGE" ] && [ "$OPT_IMAGE" != "null" ]; then
+                            IMAGE_PATH="$SCRIPT_DIR/Images/$OPT_IMAGE"
+                            
+                            if [ -f "$IMAGE_PATH" ]; then
+                                echo "        Pre-uploading option image: $OPT_IMAGE"
+                                
+                                OPT_FILENAME=$(basename "$IMAGE_PATH")
+                                OPT_MIME_TYPE=$(get_mime_type "$OPT_FILENAME")
+                                
+                                # Get presigned URL
+                                OPT_PRESIGNED_RES=$(curl -s -X POST "$API_URL/media" \
+                                    -H "$AUTH_HEADER" \
+                                    -H "Content-Type: application/json" \
+                                    -d "$(jq -n --arg mediatype "image" --arg medialabel "Option ${opt_idx} Image for Q${Q_ID}" '{type: $mediatype, label: $medialabel}')")
+                                
+                                OPT_PRESIGNED_URL=$(echo "$OPT_PRESIGNED_RES" | jq -r '.presignedUrl')
+                                OPT_MEDIA_ID=$(echo "$OPT_PRESIGNED_RES" | jq -r '.id')
+                                
+                                if [ "$OPT_PRESIGNED_URL" != "null" ] && [ -n "$OPT_PRESIGNED_URL" ]; then
+                                    # Upload to S3
+                                    OPT_HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+                                        -X PUT \
+                                        -H "Content-Type: $OPT_MIME_TYPE" \
+                                        --data-binary "@$IMAGE_PATH" \
+                                        "$OPT_PRESIGNED_URL")
+                                    
+                                    if [ "$OPT_HTTP_CODE" == "200" ]; then
+                                        echo "          ✅ Uploaded option image (mediaId: $OPT_MEDIA_ID)"
+                                    else
+                                        echo "          ❌ Failed to upload option image (HTTP $OPT_HTTP_CODE)"
+                                        OPT_MEDIA_ID=""
+                                    fi
+                                else
+                                    echo "          ❌ Failed to get presigned URL for option image"
+                                    OPT_MEDIA_ID=""
+                                fi
+                            else
+                                echo "          ⚠ Option image not found: $IMAGE_PATH"
+                            fi
+                        fi
+                        
+                        # Build config object with imageFile AND mediaId (if uploaded)
+                        if [ -n "$OPT_MEDIA_ID" ]; then
+                            OPT_CONFIG=$(echo "$OPTION" | jq -c --argjson mediaId "$OPT_MEDIA_ID" '. + {mediaId: $mediaId} | {imageFile, mediaId}')
+                        else
+                            OPT_CONFIG=$(echo "$OPTION" | jq -c '. | {imageFile}')
+                        fi
                         
                         OPT_PAYLOAD=$(jq -n \
                             --arg text "$OPT_TEXT" \
@@ -280,48 +330,11 @@ jq -c '.[]' "$DATA_FILE" | while read -r test_item; do
                         else
                             echo "        ✅ Option $opt_idx created (ID: $OPT_ID)"
                             
-                            # Upload option image if specified
-                            OPT_IMAGE=$(echo "$OPTION" | jq -r '.imageFile // empty')
-                            if [ -n "$OPT_IMAGE" ] && [ "$OPT_IMAGE" != "null" ]; then
-                                IMAGE_PATH="$SCRIPT_DIR/Images/$OPT_IMAGE"
-                                
-                                if [ -f "$IMAGE_PATH" ]; then
-                                    echo "        Uploading option image: $OPT_IMAGE"
-                                    
-                                    OPT_FILENAME=$(basename "$IMAGE_PATH")
-                                    OPT_MIME_TYPE=$(get_mime_type "$OPT_FILENAME")
-                                    
-                                    # Get presigned URL
-                                    OPT_PRESIGNED_RES=$(curl -s -X POST "$API_URL/media" \
-                                        -H "$AUTH_HEADER" \
-                                        -H "Content-Type: application/json" \
-                                        -d "$(jq -n --arg mediatype "image" --arg medialabel "Option ${opt_idx} Image for Q${Q_ID}" '{type: $mediatype, label: $medialabel}')")
-                                    
-                                    OPT_PRESIGNED_URL=$(echo "$OPT_PRESIGNED_RES" | jq -r '.presignedUrl')
-                                    OPT_MEDIA_ID=$(echo "$OPT_PRESIGNED_RES" | jq -r '.id')
-                                    
-                                    if [ "$OPT_PRESIGNED_URL" != "null" ] && [ -n "$OPT_PRESIGNED_URL" ]; then
-                                        # Upload to S3
-                                        OPT_HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-                                            -X PUT \
-                                            -H "Content-Type: $OPT_MIME_TYPE" \
-                                            --data-binary "@$IMAGE_PATH" \
-                                            "$OPT_PRESIGNED_URL")
-                                        
-                                        if [ "$OPT_HTTP_CODE" == "200" ]; then
-                                            # Attach to option
-                                            curl -s -X POST "$API_URL/options/$OPT_ID/media/$OPT_MEDIA_ID" \
-                                                -H "$AUTH_HEADER" > /dev/null
-                                            echo "          ✅ Uploaded and attached option image"
-                                        else
-                                            echo "          ❌ Failed to upload option image (HTTP $OPT_HTTP_CODE)"
-                                        fi
-                                    else
-                                        echo "          ❌ Failed to get presigned URL for option image"
-                                    fi
-                                else
-                                    echo "          ⚠ Option image not found: $IMAGE_PATH"
-                                fi
+                            # Attach media to option if we uploaded it
+                            if [ -n "$OPT_MEDIA_ID" ]; then
+                                curl -s -X POST "$API_URL/options/$OPT_ID/media/$OPT_MEDIA_ID" \
+                                    -H "$AUTH_HEADER" > /dev/null
+                                echo "          ✅ Attached media to option"
                             fi
                         fi
                     done

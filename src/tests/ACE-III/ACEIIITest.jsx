@@ -489,7 +489,9 @@ const ACEIIITest = () => {
                 options = await Promise.all(questionDetail.options.map(async (opt) => {
                   // Fetch media for each option if it has any
                   let optionMedia = [];
-                  if (opt.media && Array.isArray(opt.media)) {
+                  
+                  // Strategy 1: If backend populated opt.media array, fetch those
+                  if (opt.media && Array.isArray(opt.media) && opt.media.length > 0) {
                     optionMedia = await Promise.all(opt.media.map(async (m) => {
                       try {
                         const mediaId =
@@ -528,6 +530,39 @@ const ACEIIITest = () => {
                         return m;
                       }
                     }));
+                  }
+                  // Strategy 2: Fallback to opt.config.mediaId if backend didn't populate opt.media
+                  else if (opt.config?.mediaId) {
+                    try {
+                      const downloadRes = await api.get(`/media/${opt.config.mediaId}/download`);
+                      const presignedUrl =
+                        downloadRes.data?.presignedUrl ||
+                        downloadRes.data?.url ||
+                        downloadRes.data?.presigned_url;
+                      
+                      optionMedia = [{
+                        id: opt.config.mediaId,
+                        url: presignedUrl
+                      }];
+                      
+                      if (import.meta?.env?.DEV && isLanguageComprehension) {
+                        console.log('[ACE-III] Fetched option media via config.mediaId', {
+                          optionId: opt.id,
+                          mediaId: opt.config.mediaId,
+                          url: presignedUrl
+                        });
+                      }
+                    } catch (err) {
+                      if (import.meta?.env?.DEV && isLanguageComprehension) {
+                        console.error('[ACE-III] Failed to fetch option media via config.mediaId', {
+                          optionId: opt.id,
+                          mediaId: opt.config.mediaId,
+                          error: err,
+                        });
+                      } else {
+                        console.error('Failed to fetch option config media:', err);
+                      }
+                    }
                   }
 
                   if (import.meta?.env?.DEV && isLanguageComprehension) {
