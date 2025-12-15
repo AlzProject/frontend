@@ -388,6 +388,69 @@ const NameAddressLearning = ({ title, description, onComplete, address, instruct
   );
 };
 
+// Component for Autocomplete Input with Suggestions
+const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = "", className = "" }) => {
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = React.useRef(null);
+  
+  // Calculate filtered suggestions based on current value
+  const filteredSuggestions = React.useMemo(() => {
+    if (value && suggestions.length > 0) {
+      return suggestions.filter(s => 
+        s.toLowerCase().includes(value.toLowerCase())
+      );
+    }
+    return suggestions;
+  }, [value, suggestions]);
+  
+  const handleInputChange = (e) => {
+    onChange(e.target.value);
+    setShowSuggestions(true);
+  };
+  
+  const handleSelectSuggestion = (suggestion) => {
+    onChange(suggestion);
+    setShowSuggestions(false);
+  };
+  
+  const handleFocus = () => {
+    setShowSuggestions(true);
+  };
+  
+  const handleBlur = () => {
+    // Delay to allow click on suggestion
+    setTimeout(() => setShowSuggestions(false), 200);
+  };
+  
+  return (
+    <div className="relative">
+      <input
+        ref={inputRef}
+        type="text"
+        className={className}
+        value={value}
+        onChange={handleInputChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        placeholder={placeholder}
+      />
+      {showSuggestions && filteredSuggestions.length > 0 && (
+        <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
+          {filteredSuggestions.map((suggestion, idx) => (
+            <li
+              key={idx}
+              className="px-4 py-2 hover:bg-indigo-50 cursor-pointer text-sm"
+              onMouseDown={() => handleSelectSuggestion(suggestion)}
+            >
+              {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
 // Component for Recognition with Choice
 const RecognitionWithChoice = ({ title, description, config, value, onChange }) => {
   const [showHints, setShowHints] = useState(value?.recallComplete === false || false);
@@ -1025,21 +1088,43 @@ const ACEIIITest = () => {
             placeholder={config.placeholder || q.placeholder}
           />
         );
-      case 'text_multiline':
+      case 'text_multiline': {
+        const suggestions = config.suggestions || [];
         return (
-          <TextResponseQuestion
-            key={q.id}
-            title={title}
-            description={description}
-            value={responses[q.id] || ''}
-            onChange={(val) => handleResponseChange(q.id, val)}
-            placeholder={config.placeholder || q.placeholder}
-            multiline={true}
-          />
+          <QuestionWrapper key={q.id} title={title} description={description}>
+            <div className="space-y-2">
+              {suggestions.length > 0 && (
+                <div className="mb-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Suggestions (click to use):</label>
+                  <div className="space-y-1">
+                    {suggestions.map((suggestion, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleResponseChange(q.id, suggestion)}
+                        className="block w-full text-left px-3 py-2 text-sm bg-indigo-50 hover:bg-indigo-100 text-gray-700 rounded-md border border-indigo-200 transition-colors"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <textarea
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                rows={4}
+                value={responses[q.id] || ''}
+                onChange={(e) => handleResponseChange(q.id, e.target.value)}
+                placeholder={config.placeholder || q.placeholder}
+              />
+            </div>
+          </QuestionWrapper>
         );
+      }
       case 'text_grouped': {
         // Check if this question has images (similar to naming_grouped)
         const hasGroupedImages = config.imageFiles && config.imageFiles.length > 0 && q.media && q.media.length > 0;
+        const suggestions = config.suggestions || [];
         
         if (hasGroupedImages) {
           // Render with images (like naming_grouped)
@@ -1048,6 +1133,7 @@ const ACEIIITest = () => {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
                 {(config.fields || q.fields || []).map((field, idx) => {
                   const imageUrl = q.media?.[idx]?.url;
+                  const fieldSuggestions = suggestions[idx] || [];
 
                   return (
                     <div key={idx} className="flex flex-col items-center">
@@ -1063,12 +1149,12 @@ const ACEIIITest = () => {
                         </div>
                       )}
                       <label className="block text-sm font-medium text-gray-700 mb-1 text-center">{field}</label>
-                      <input
-                        type="text"
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                      <AutocompleteInput
                         value={(responses[q.id] || [])[idx] || ''}
-                        onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
+                        onChange={(val) => handleResponseChange(q.id, val, idx)}
+                        suggestions={fieldSuggestions}
                         placeholder={`Enter ${field}`}
+                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
                       />
                     </div>
                   );
@@ -1082,17 +1168,21 @@ const ACEIIITest = () => {
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {(config.fields || q.fields || []).map((field, idx) => (
-                <div key={idx}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{field}</label>
-                  <input
-                    type="text"
-                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
-                    value={(responses[q.id] || [])[idx] || ''}
-                    onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
-                  />
-                </div>
-              ))}
+              {(config.fields || q.fields || []).map((field, idx) => {
+                const fieldSuggestions = suggestions[idx] || [];
+                return (
+                  <div key={idx}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{field}</label>
+                    <AutocompleteInput
+                      value={(responses[q.id] || [])[idx] || ''}
+                      onChange={(val) => handleResponseChange(q.id, val, idx)}
+                      suggestions={fieldSuggestions}
+                      placeholder={`Enter ${field}`}
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                    />
+                  </div>
+                );
+              })}
             </div>
           </QuestionWrapper>
         );
@@ -1110,13 +1200,15 @@ const ACEIIITest = () => {
             questionMedia={q.media || []}
           />
         );
-      case 'naming_grouped':
+      case 'naming_grouped': {
+        const suggestions = config.suggestions || [];
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
               {(config.items || q.items || []).map((item, idx) => {
                 const mediaIndex = item.imageIndex !== undefined ? item.imageIndex : idx;
                 const imageUrl = q.media?.[mediaIndex]?.url;
+                const fieldSuggestions = suggestions[idx] || [];
 
                 return (
                   <div key={idx} className="flex flex-col items-center">
@@ -1131,12 +1223,12 @@ const ACEIIITest = () => {
                         No Image
                       </div>
                     )}
-                    <input
-                      type="text"
-                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                    <AutocompleteInput
                       value={(responses[q.id] || [])[idx] || ''}
-                      onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
+                      onChange={(val) => handleResponseChange(q.id, val, idx)}
+                      suggestions={fieldSuggestions}
                       placeholder={item.placeholder}
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
                     />
                   </div>
                 );
@@ -1144,6 +1236,7 @@ const ACEIIITest = () => {
             </div>
           </QuestionWrapper>
         );
+      }
       case 'mcq': {
         // Use actual options from backend if available, otherwise fall back to config
         const configOptions = config.options || [];
