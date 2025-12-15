@@ -435,7 +435,7 @@ const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = ""
         placeholder={placeholder}
       />
       {showSuggestions && filteredSuggestions.length > 0 && (
-        <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
+        <ul className="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
           {filteredSuggestions.map((suggestion, idx) => (
             <li
               key={idx}
