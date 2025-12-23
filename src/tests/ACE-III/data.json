@@ -373,7 +373,8 @@
             "maxScore": 5,
             "config": {
               "title": "Clock Drawing",
-              "frontend_type": "drawing"
+              "frontend_type": "drawing",
+              "referenceImageFile": "cdt.png"
             }
           },
           {
