@@ -38,7 +38,7 @@ const translations = {
     signup: "Sign Up",
     logout: "Logout",
     onlineAssessment: "Online Assessment",
-    heroTitle: "Comprehensive Mental Health Screening",
+    heroTitle: "Comprehensive Cognitive Screening",
     heroSubtitle: "Accessible and professional cognitive assessments to help identify potential concerns early.",
     startAssessment: "Start Assessment",
     footer: "© 2025 Smriti (स्मृति). All rights reserved.",
