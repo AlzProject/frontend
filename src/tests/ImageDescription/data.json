@@ -1,0 +1,53 @@
+{
+  "testId": "image-description",
+  "title": "Image Description Test",
+  "description": "Describe a randomly shown image verbally for 1 minute",
+  "duration": 120,
+  "sections": [
+    {
+      "id": "image-description-section",
+      "title": "Image Description",
+      "description": "Look at the image and describe what you see in detail for 1 minute",
+      "questions": [
+        {
+          "id": "img-desc-1",
+          "type": "voice_recording",
+          "text": "Please look at the image shown below and describe it in as much detail as possible. You have 1 minute to speak.",
+          "duration": 60,
+          "config": {
+            "recordingDuration": 60,
+            "imagePool": [
+              "image1.jpg",
+              "image2.jpg",
+              "image3.jpg",
+              "image4.jpg",
+              "image5.jpg"
+            ],
+            "randomImage": true,
+            "instructions": "Click 'Start Recording' and describe everything you see in the image. Speak clearly and continuously for up to 1 minute."
+          }
+        }
+      ]
+    }
+  ],
+  "translations": {
+    "mr": {
+      "title": "चित्र वर्णन चाचणी",
+      "description": "यादृच्छिकपणे दाखवलेल्या चित्राचे १ मिनिट मौखिक वर्णन करा",
+      "sections": [
+        {
+          "title": "चित्र वर्णन",
+          "description": "चित्र पहा आणि तुम्हाला काय दिसते याचे तपशीलवार वर्णन १ मिनिटासाठी करा",
+          "questions": [
+            {
+              "text": "कृपया खाली दाखवलेले चित्र पहा आणि शक्य तितके तपशीलवार वर्णन करा. तुमच्याकडे बोलण्यासाठी १ मिनिट आहे.",
+              "config": {
+                "instructions": "'रेकॉर्डिंग सुरू करा' वर क्लिक करा आणि चित्रात तुम्हाला दिसणाऱ्या सर्व गोष्टींचे वर्णन करा. स्पष्टपणे आणि सतत १ मिनिटापर्यंत बोला."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
