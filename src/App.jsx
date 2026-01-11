@@ -4,6 +4,7 @@ import MMSETest from './tests/MMSE/MMSETest';
 import MOCATest from './tests/MoCA/MOCATest';
 import ACEIIITest from './tests/ACE-III/ACEIIITest';
 import CDRTest from './tests/CDR/CDRTest';
+import ImageDescriptionTest from './tests/ImageDescription/ImageDescriptionTest';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import ParticipantLogin from './pages/ParticipantLogin';
@@ -351,6 +352,7 @@ function App() {
         <Route path="/test/ace-iii" element={<ProtectedRoute><ACEIIITest /></ProtectedRoute>} />
         <Route path="/test/cdr" element={<ProtectedRoute><CDRTest /></ProtectedRoute>} />
         <Route path="/test/clinical-dementia-rating" element={<ProtectedRoute><CDRTest /></ProtectedRoute>} />
+        <Route path="/test/image-description" element={<ProtectedRoute><ImageDescriptionTest /></ProtectedRoute>} />
         
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
