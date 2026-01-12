@@ -17,14 +17,33 @@ function ImageDescriptionTest() {
   const [submitting, setSubmitting] = useState(false);
   
   // Image pool and selection
-  const [imagePool] = useState(() => {
-    const question = testData.sections[0].questions[0];
-    return question.config.imagePool || [];
-  });
-  
+  const [imagePool, setImagePool] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImageUrl, setCurrentImageUrl] = useState(null);
 
-  const selectedImage = imagePool[currentImageIndex];
+  const selectedMedia = imagePool[currentImageIndex];
+
+  // Fetch image URL when selection changes
+  useEffect(() => {
+    const fetchImageUrl = async () => {
+      if (selectedMedia && selectedMedia.id) {
+        try {
+          // If we already have a presigned url in the media object (sometimes API might return it), use it
+          // But based on openapi, we usually need to call /media/{id}/download
+          const res = await api.get(`/media/${selectedMedia.id}/download`);
+          if (res.data && res.data.presignedUrl) {
+            setCurrentImageUrl(res.data.presignedUrl);
+          }
+        } catch (err) {
+          console.error("Failed to fetch image url", err);
+          setCurrentImageUrl(null);
+        }
+      } else {
+        setCurrentImageUrl(null);
+      }
+    };
+    fetchImageUrl();
+  }, [selectedMedia]);
   
   const handleNextImage = () => {
     if (imagePool.length > 0) {
@@ -84,9 +103,21 @@ function ImageDescriptionTest() {
           throw new Error('No questions found for Image Description test');
         }
         
-        const question = questions[0];
+        const questionListItem = questions[0];
         
-        setQuestionId(question.id);
+        // Fetch full question details to get media attachments
+        const fullQuestionResponse = await api.get(`/questions/${questionListItem.id}`);
+        const fullQuestion = fullQuestionResponse.data;
+        
+        setQuestionId(fullQuestion.id);
+
+        if (fullQuestion.media && Array.isArray(fullQuestion.media)) {
+          // Use attached media images
+          const images = fullQuestion.media
+            .filter(m => m.type === 'image')
+            .sort((a, b) => (a.label || '').localeCompare(b.label || ''));
+          setImagePool(images);
+        }
         
         // Create attempt
         const attemptResponse = await api.post('/attempts', {
@@ -276,139 +307,187 @@ function ImageDescriptionTest() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+      <main className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden ring-1 ring-slate-900/5">
+          
           {/* Section Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
-            <h2 className="text-xl font-bold text-white">{section.title}</h2>
-            <p className="text-blue-100 text-sm mt-1">{section.description}</p>
+          <div className="bg-slate-900 px-8 py-6 border-b border-slate-800">
+            <h2 className="text-2xl font-bold text-white mb-2">{section.title}</h2>
+            <p className="text-slate-300">{section.description}</p>
           </div>
 
-          {/* Question Content */}
-          <div className="p-6 space-y-6">
+          <div className="p-6 sm:p-8 space-y-8">
             {/* Instructions */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-slate-700 font-medium">{question.text}</p>
-              <p className="text-sm text-slate-600 mt-2">{config.instructions}</p>
+            <div className="bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg p-5 shadow-sm">
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 mt-0.5">
+                  <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-bold text-indigo-900 text-lg mb-1">Instructions</h3>
+                  <p className="text-indigo-800 font-medium mb-2">{question.text}</p>
+                  <p className="text-indigo-700 text-sm leading-relaxed max-w-3xl">
+                    {config.instructions || "Please observe the image below carefully. Navigate through the images using the arrows if multiple images are provided. When you are ready, press the 'Start Recording' button and describe everything you see in detail. You have 1 minute to record your response."}
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Image Display */}
-            {selectedImage && (
-              <div className="flex flex-col items-center space-y-4">
-                <div className="text-lg font-medium text-slate-700">
-                  Image {currentImageIndex + 1} of {imagePool.length}
-                </div>
-                
-                <div className="flex justify-center items-center gap-6 w-full">
-                  <button
-                    onClick={handlePrevImage}
-                    className="flex flex-col items-center justify-center p-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg shadow border border-slate-200 hover:border-blue-300 transition-all min-w-[5rem]"
-                    title="Previous Image"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <span className="text-xs font-semibold">Previous</span>
-                  </button>
-
-                  <div className="border-4 border-slate-200 rounded-lg overflow-hidden shadow-md">
-                    <img 
-                      src={`/src/tests/ImageDescription/Images/${selectedImage}`}
-                      alt={`Description prompt ${currentImageIndex + 1}`}
-                      className="object-contain bg-slate-100"
-                      style={{ width: '60vh', height: '60vh' }}
-                      onError={(e) => {
-                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="400"%3E%3Crect fill="%23e2e8f0" width="600" height="400"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%2394a3b8"%3EImage: ' + selectedImage + '%3C/text%3E%3C/svg%3E';
-                      }}
-                    />
+            {selectedMedia && (
+              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-inner">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-200 text-sm font-semibold text-slate-600 tracking-wide">
+                    Image {currentImageIndex + 1} of {imagePool.length}
                   </div>
                   
-                  <button
-                    onClick={handleNextImage}
-                    className="flex flex-col items-center justify-center p-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg shadow border border-slate-200 hover:border-blue-300 transition-all min-w-[5rem]"
-                    title="Next Image"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                    </svg>
-                    <span className="text-xs font-semibold">Next</span>
-                  </button>
+                  <div className="flex justify-center items-center gap-6 w-full">
+                    <button
+                      onClick={handlePrevImage}
+                      className="group flex flex-col items-center justify-center p-4 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-600 hover:text-blue-600 rounded-xl shadow-sm border border-slate-200 hover:border-blue-300 transition-all duration-200 min-w-[5.5rem]"
+                      title="Previous Image"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mb-1 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                      <span className="text-xs font-bold uppercase tracking-wider">Prev</span>
+                    </button>
+
+                    <div className="relative border-2 border-slate-200 rounded-lg overflow-hidden shadow-lg bg-white" style={{ width: '60vh', height: '60vh' }}>
+                      {currentImageUrl ? (
+                        <img 
+                          src={currentImageUrl}
+                          alt={`Description prompt ${currentImageIndex + 1}`}
+                          className="object-contain w-full h-full"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-400 gap-3">
+                          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+                          <span className="text-sm font-medium">Loading image...</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <button
+                      onClick={handleNextImage}
+                      className="group flex flex-col items-center justify-center p-4 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-600 hover:text-blue-600 rounded-xl shadow-sm border border-slate-200 hover:border-blue-300 transition-all duration-200 min-w-[5.5rem]"
+                      title="Next Image"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mb-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                      <span className="text-xs font-bold uppercase tracking-wider">Next</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
 
             {/* Recording Controls */}
-            <div className="bg-slate-50 rounded-lg p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className={`w-4 h-4 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-slate-300'}`}></div>
-                  <span className="text-2xl font-mono font-bold text-slate-900">
+            <div className="bg-white rounded-xl border-2 border-slate-100 p-6 sm:p-8 space-y-6">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center space-x-4 bg-slate-100 px-5 py-3 rounded-full">
+                  <div className={`w-3 h-3 rounded-full shadow-sm ${isRecording ? 'bg-red-500 animate-pulse ring-4 ring-red-200' : 'bg-slate-400'}`}></div>
+                  <span className={`text-xl font-mono font-bold ${isRecording ? 'text-slate-900' : 'text-slate-500'}`}>
                     {formatTime(recordingTime)} / 1:00
                   </span>
                 </div>
                 
-                <div className="text-sm text-slate-600">
-                  {isRecording ? 'Recording...' : hasStarted ? 'Recording stopped' : 'Ready to record'}
-                </div>
+                <span className={`text-sm font-medium px-3 py-1 rounded-full ${
+                  isRecording 
+                    ? 'bg-red-100 text-red-700' 
+                    : hasStarted 
+                      ? 'bg-amber-100 text-amber-700' 
+                      : 'bg-green-100 text-green-700'
+                }`}>
+                  {isRecording ? '• Recording in progress' : hasStarted ? 'Recording paused/finished' : 'Ready to start'}
+                </span>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <button
                   onClick={startRecording}
                   disabled={isRecording || audioBlob}
-                  className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-lg transition-all transform active:scale-[0.98] ${
                     isRecording || audioBlob
-                      ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                      : 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg'
+                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                      : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-green-200/50'
                   }`}
                 >
-                  {audioBlob ? '✓ Recorded' : 'Start Recording'}
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                  {audioBlob ? 'Recording Saved' : 'Start Recording'}
                 </button>
 
                 <button
                   onClick={stopRecording}
                   disabled={!isRecording}
-                  className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-lg transition-all transform active:scale-[0.98] ${
                     !isRecording
-                      ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                      : 'bg-red-600 hover:bg-red-700 text-white shadow-md hover:shadow-lg'
+                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                      : 'bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-red-200/50'
                   }`}
                 >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                  </svg>
                   Stop Recording
                 </button>
               </div>
 
               {/* Audio Playback */}
               {audioBlob && (
-                <div className="pt-4 border-t border-slate-200">
-                  <p className="text-sm text-slate-600 mb-2">Preview your recording:</p>
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="font-semibold text-slate-700">Review Response</p>
+                  </div>
                   <audio 
                     src={URL.createObjectURL(audioBlob)} 
                     controls 
-                    className="w-full"
+                    className="w-full h-10"
                   />
                 </div>
               )}
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-slate-100">
               <button
                 onClick={() => navigate('/')}
-                className="px-6 py-2.5 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-all"
+                className="px-6 py-3 border border-slate-300 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 transition-all text-center"
               >
-                Cancel
+                Cancel Test
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={!audioBlob || submitting}
-                className={`px-6 py-2.5 font-semibold rounded-lg transition-all ${
+                className={`px-8 py-3 font-bold rounded-xl transition-all shadow-md transform active:scale-[0.98] flex items-center justify-center gap-2 ${
                   audioBlob && !submitting
-                    ? 'bg-blue-700 hover:bg-blue-800 text-white shadow-md hover:shadow-lg'
-                    : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg'
+                    : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
                 }`}
               >
-                {submitting ? 'Submitting...' : 'Submit Test'}
+                {submitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Submit Evaluation</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </>
+                )}
               </button>
             </div>
           </div>
