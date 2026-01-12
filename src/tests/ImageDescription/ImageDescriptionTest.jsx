@@ -16,13 +16,27 @@ function ImageDescriptionTest() {
   const [questionId, setQuestionId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   
-  // Select random image on mount
-  const [selectedImage] = useState(() => {
+  // Image pool and selection
+  const [imagePool] = useState(() => {
     const question = testData.sections[0].questions[0];
-    const images = question.config.imagePool;
-    const randomIndex = Math.floor(Math.random() * images.length);
-    return images[randomIndex];
+    return question.config.imagePool || [];
   });
+  
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const selectedImage = imagePool[currentImageIndex];
+  
+  const handleNextImage = () => {
+    if (imagePool.length > 0) {
+      setCurrentImageIndex(prev => (prev + 1) % imagePool.length);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (imagePool.length > 0) {
+      setCurrentImageIndex(prev => (prev - 1 + imagePool.length) % imagePool.length);
+    }
+  };
   
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -280,16 +294,45 @@ function ImageDescriptionTest() {
 
             {/* Image Display */}
             {selectedImage && (
-              <div className="flex justify-center">
-                <div className="border-4 border-slate-200 rounded-lg overflow-hidden shadow-md max-w-2xl">
-                  <img 
-                    src={`/src/tests/ImageDescription/Images/${selectedImage}`}
-                    alt="Description prompt"
-                    className="w-full h-auto"
-                    onError={(e) => {
-                      e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="400"%3E%3Crect fill="%23e2e8f0" width="600" height="400"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%2394a3b8"%3EImage: ' + selectedImage + '%3C/text%3E%3C/svg%3E';
-                    }}
-                  />
+              <div className="flex flex-col items-center space-y-4">
+                <div className="text-lg font-medium text-slate-700">
+                  Image {currentImageIndex + 1} of {imagePool.length}
+                </div>
+                
+                <div className="flex justify-center items-center gap-6 w-full">
+                  <button
+                    onClick={handlePrevImage}
+                    className="flex flex-col items-center justify-center p-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg shadow border border-slate-200 hover:border-blue-300 transition-all min-w-[5rem]"
+                    title="Previous Image"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span className="text-xs font-semibold">Previous</span>
+                  </button>
+
+                  <div className="border-4 border-slate-200 rounded-lg overflow-hidden shadow-md">
+                    <img 
+                      src={`/src/tests/ImageDescription/Images/${selectedImage}`}
+                      alt={`Description prompt ${currentImageIndex + 1}`}
+                      className="object-contain bg-slate-100"
+                      style={{ width: '60vh', height: '60vh' }}
+                      onError={(e) => {
+                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="400"%3E%3Crect fill="%23e2e8f0" width="600" height="400"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%2394a3b8"%3EImage: ' + selectedImage + '%3C/text%3E%3C/svg%3E';
+                      }}
+                    />
+                  </div>
+                  
+                  <button
+                    onClick={handleNextImage}
+                    className="flex flex-col items-center justify-center p-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg shadow border border-slate-200 hover:border-blue-300 transition-all min-w-[5rem]"
+                    title="Next Image"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span className="text-xs font-semibold">Next</span>
+                  </button>
                 </div>
               </div>
             )}
