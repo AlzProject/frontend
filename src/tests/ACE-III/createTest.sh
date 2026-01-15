@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-API_URL="${API_URL:-https://alz.adityaap.tech/v1}"
+API_URL="${API_URL:-http://localhost:3000/v1}"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATA_FILE="$SCRIPT_DIR/data.json"
 

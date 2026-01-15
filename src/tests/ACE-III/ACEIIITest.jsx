@@ -824,26 +824,30 @@ const ACEIIITest = () => {
               }
               
               // Handle media refs: store presigned URL for display/playback
-              if (typeof value === 'string' && (value.startsWith('media/') || value.startsWith('media:'))) {
-                try {
-                  let mediaId = getMediaIdFromRef(value);
-                  if (!mediaId && value.startsWith('media/')) {
-                    const match = value.match(/media\/(\d+)\//); 
-                    if (match) mediaId = match[1];
-                  }
+              const resolveMedia = async (val) => {
+                if (typeof val === 'string' && (val.startsWith('media/') || val.startsWith('media:'))) {
+                  try {
+                    let mediaId = getMediaIdFromRef(val);
+                    if (!mediaId && val.startsWith('media/')) {
+                      const match = val.match(/media\/(\d+)\//); 
+                      if (match) mediaId = match[1];
+                    }
 
-                  if (mediaId) {
-                    const downloadRes = await api.get(`/media/${mediaId}/download`);
-                    loadedResponses[r.questionId] = downloadRes.data.presignedUrl || value;
-                  } else {
-                    loadedResponses[r.questionId] = value;
+                    if (mediaId) {
+                      const downloadRes = await api.get(`/media/${mediaId}/download`);
+                      return downloadRes.data.presignedUrl || val;
+                    }
+                  } catch (err) {
+                    console.error(`Failed to load media:`, err);
                   }
-                } catch (err) {
-                  console.error(`Failed to load media for question ${r.questionId}:`, err);
-                  loadedResponses[r.questionId] = value;
                 }
+                return val;
+              };
+
+              if (Array.isArray(value)) {
+                loadedResponses[r.questionId] = await Promise.all(value.map(v => resolveMedia(v)));
               } else {
-                loadedResponses[r.questionId] = value;
+                loadedResponses[r.questionId] = await resolveMedia(value);
               }
             }));            setResponses(loadedResponses);
           } else {
@@ -1179,6 +1183,42 @@ const ACEIIITest = () => {
           </QuestionWrapper>
         );
       }
+      case 'audio_grouped': {
+        const fields = config.fields || [];
+        return (
+          <QuestionWrapper key={q.id} title={title} description={description}>
+            <div className="space-y-6">
+              {fields.map((field, idx) => (
+                <div key={idx} className="flex flex-col items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <span className="mb-2 font-medium text-lg text-gray-700">{field}</span>
+                  <AudioRecorder 
+                    onRecordingComplete={async (blob) => {
+                      try {
+                        // Upload media
+                        const mediaRef = await uploadMediaAndGetAnswerText({
+                          questionId: q.id,
+                          fileOrBlob: blob,
+                          type: 'audio',
+                          label: `${field} - Repetition`,
+                          attachToQuestion: true
+                        });
+                        
+                        // Update state with media ref string
+                        handleResponseChange(q.id, mediaRef, idx);
+                      } catch (err) {
+                        console.error("Failed to upload audio:", err);
+                        alert("Failed to upload recording. Please try again.");
+                      }
+                    }}
+                    label={`Record`}
+                    savedAudioUrl={(responses[q.id] || [])[idx]}
+                  />
+                </div>
+              ))}
+            </div>
+          </QuestionWrapper>
+        );
+      }
       case 'text_grouped': {
         // Check if this question has images (similar to naming_grouped)
         const hasGroupedImages = config.imageFiles && config.imageFiles.length > 0 && q.media && q.media.length > 0;
@@ -1387,7 +1427,9 @@ const ACEIIITest = () => {
           </QuestionWrapper>
         );
       case 'drawing': {
-        const referenceImage = q.media?.find(m => m.type === 'image')?.url;
+        // Hide reference image for Clock Drawing as per requirements
+        const isClockDrawing = title === 'Clock Drawing' || config.title === 'Clock Drawing';
+        const referenceImage = isClockDrawing ? null : q.media?.find(m => m.type === 'image')?.url;
         
         return (
           <DrawingCanvasQuestion

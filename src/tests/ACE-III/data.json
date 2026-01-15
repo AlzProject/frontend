@@ -71,6 +71,7 @@
             "text": "Subtract 7 from 100 five times.",
             "type": "text",
             "maxScore": 5,
+            "correctAnswer": ["93", "86", "79", "72", "65"],
             "config": {
               "title": "Serial 7s",
               "frontend_type": "text_grouped",
@@ -95,6 +96,7 @@
             "text": "Recall the 3 words learned in the Attention section.",
             "type": "text",
             "maxScore": 3,
+            "correctAnswer": ["Lemon", "Key", "Ball"],
             "config": {
               "title": "Recall of 3 Words",
               "frontend_type": "text_grouped",
@@ -141,6 +143,7 @@
             "text": "Answer the following questions.",
             "type": "text",
             "maxScore": 4,
+            "correctAnswer": ["Narendra Modi", "Indira Gandhi", "Jawaharlal Nehru", "Mahatma Gandhi"],
             "config": {
               "title": "Retrograde Memory",
               "frontend_type": "text_grouped",
@@ -197,8 +200,9 @@
             "text": "Follow the command: 'Point to the one that is a fruit'.",
             "type": "scmcq",
             "maxScore": 3,
-          "config": {
-            "title": "Comprehension",
+            "correctAnswer": "banana",
+            "config": {
+              "title": "Comprehension",
             "frontend_type": "mcq",
               "options": [
                 { "text": "Frog", "value": "frog", "imageFile": "frog.jpg" },
@@ -221,14 +225,7 @@
             "config": {
               "title": "Writing",
               "frontend_type": "text_multiline",
-              "placeholder": "Write here...",
-              "suggestions": [
-                "I went to the beach last summer. It was very relaxing.",
-                "My hobby is reading books. I enjoy mystery novels.",
-                "We visited our relatives during the holidays. The food was delicious.",
-                "I like gardening in my free time. Growing flowers makes me happy.",
-                "Last weekend we went hiking. The mountain views were beautiful."
-              ]
+              "placeholder": "Write here..."
             }
           }
         ]
@@ -244,7 +241,7 @@
             "maxScore": 4,
             "config": {
               "title": "Repetition",
-              "frontend_type": "text_grouped",
+              "frontend_type": "audio_grouped",
               "fields": [
                 "Hippopotamus",
                 "Eccentricity",
@@ -270,8 +267,9 @@
             "text": "Name the objects shown.",
             "type": "text",
             "maxScore": 12,
-          "config": {
-            "title": "Naming",
+            "correctAnswer": ["Watch", "Pencil", "Penguin", "Anchor", "Giraffe", "Spoon"],
+            "config": {
+              "title": "Naming",
             "frontend_type": "naming_grouped",
             "imageFiles": ["watch.jpg", "pencil.png", "penguin.jpg", "anchor.jpg", "giraffe.jpg", "spoon.jpg"],
               "items": [
@@ -314,6 +312,12 @@
             "text": "Match each word to the correct picture by selecting pairs.",
             "type": "text",
             "maxScore": 4,
+            "correctAnswer": {
+              "word1": "pic1",
+              "word2": "pic2",
+              "word3": "pic3",
+              "word4": "pic4"
+            },
             "config": {
               "title": "Comprehension Association (4 points)",
               "frontend_type": "matching",
@@ -373,8 +377,7 @@
             "maxScore": 5,
             "config": {
               "title": "Clock Drawing",
-              "frontend_type": "drawing",
-              "referenceImageFile": "cdt.png"
+              "frontend_type": "drawing"
             }
           },
           {
@@ -382,6 +385,7 @@
             "text": "Count the dots in the squares shown.",
             "type": "text",
             "maxScore": 4,
+            "correctAnswer": ["7", "9", "8", "6"],
             "config": {
               "title": "Dot Counting",
               "frontend_type": "text_grouped",
@@ -400,6 +404,7 @@
             "text": "Identify the fragmented letters shown.",
             "type": "text",
             "maxScore": 4,
+            "correctAnswer": ["A", "K", "M", "T"],
             "config": {
               "title": "Identifying Letters",
               "frontend_type": "text_grouped",
@@ -424,6 +429,7 @@
             "text": "Recall the Name and Address learned earlier.",
             "type": "text",
             "maxScore": 7,
+            "correctAnswer": ["Rajesh Kumar", "42", "MG Road", "Andheri", "Mumbai"],
             "config": {
               "title": "Delayed Recall (7 points)",
               "frontend_type": "text_grouped",
@@ -553,6 +559,7 @@
               "questions": [
                 {
                   "text": "१०० मधून ७ वजा करा. येणाऱ्या उत्तरातून पुन्हा ७ वजा करा. असे ५ वेळा करा.",
+                  "correctAnswer": ["९३", "८६", "७९", "७२", "६५"],
                   "config": {
                     "title": "७ ची वजाबाकी",
                     "fields": ["100-7", "-7", "-7", "-7", "-7"],
@@ -572,6 +579,7 @@
               "questions": [
                 {
                   "text": "मगाशी सांगितलेले ३ शब्द आठवून सांगा.",
+                  "correctAnswer": ["लिंबू", "चावी", "चेंडू"],
                   "config": {
                     "title": "३ शब्दांची आठवण",
                     "fields": ["शब्द 1", "शब्द 2", "शब्द 3"],
@@ -608,6 +616,7 @@
               "questions": [
                 {
                   "text": "खालील प्रश्नांची उत्तरे द्या.",
+                  "correctAnswer": ["नरेंद्र मोदी", "इंदिरा गांधी", "जवाहरलाल नेहरू", "महात्मा गांधी"],
                   "config": {
                     "title": "सामान्य ज्ञान",
                     "fields": [
@@ -650,6 +659,7 @@
               "questions": [
                 {
                   "text": "खालीलपैकी फळाचे चित्र कोणते आहे?",
+                  "correctAnswer": "banana",
                   "config": {
                     "title": "आकलन",
                     "options": [
@@ -668,14 +678,7 @@
                   "text": "तुमची नुकतीच झालेली सहल किंवा तुमच्या छंदाबद्दल दोन वाक्ये लिहा.",
                   "config": {
                     "title": "लेखन",
-                    "placeholder": "येथे लिहा...",
-                    "suggestions": [
-                      "मी गेल्या उन्हाळ्यात समुद्रकिनाऱ्यावर गेलो होतो. ते खूप आरामदायक होते.",
-                      "माझा छंद पुस्तके वाचणे आहे. मला गूढ कथा आवडतात.",
-                      "आम्ही सुट्टीत आमच्या नातेवाईकांना भेटायला गेलो होतो. जेवण खूप चविष्ट होते.",
-                      "मला माझ्या मोकळ्या वेळात बागकाम करायला आवडते. फुले वाढवताना मला आनंद होतो.",
-                      "गेल्या आठवड्यात आम्ही डोंगर चढायला गेलो होतो. डोंगराचे दृश्य सुंदर होते."
-                    ]
+                    "placeholder": "येथे लिहा..."
                   }
                 }
               ]
@@ -708,6 +711,7 @@
               "questions": [
                 {
                   "text": "खालील चित्रांमधील वस्तूंची नावे सांगा.",
+                  "correctAnswer": ["घड्याळ", "पेन्सिल", "पेंग्विन", "नांगर", "जिराफ", "चमचा"],
                   "config": {
                     "title": "वस्तू ओळख",
                     "items": [
@@ -742,6 +746,12 @@
                 },
                 {
                   "text": "शब्दांची योग्य चित्रांशी जोडी लावा.",
+                  "correctAnswer": {
+                    "word1": "pic1",
+                    "word2": "pic2",
+                    "word3": "pic3",
+                    "word4": "pic4"
+                  },
                   "config": {
                     "title": "अर्थबोध आणि जोड्या (4 गुण)",
                     "leftItems": [
@@ -787,6 +797,7 @@
                 {
                   "id": 19,
                   "text": "चौकोनांमधील ठिपके मोजा.",
+                  "correctAnswer": ["७", "९", "८", "६"],
                   "config": {
                     "title": "ठिपके मोजणे",
                     "fields": ["चौकोन 1", "चौकोन 2", "चौकोन 3", "चौकोन 4"],
@@ -801,6 +812,7 @@
                 {
                   "id": 20,
                   "text": "तुटक अक्षरे ओळखा.",
+                  "correctAnswer": ["A", "K", "M", "T"],
                   "config": {
                     "title": "अक्षरे ओळखणे",
                     "fields": ["अक्षर 1", "अक्षर 2", "अक्षर 3", "अक्षर 4"],
@@ -819,6 +831,7 @@
               "questions": [
                 {
                   "text": "मगाशी पाठ केलेले नाव आणि पत्ता आठवून सांगा.",
+                  "correctAnswer": ["राजेश कुमार", "४२", "एमजी रोड", "अंधेरी", "मुंबई"],
                   "config": {
                     "title": "उशिराने आठवण (7 गुण)",
                     "fields": ["नाव", "रस्त्याचा क्रमांक", "रस्त्याचे नाव", "भाग", "शहर"],
