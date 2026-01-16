@@ -12,6 +12,7 @@
             "text": "Please remember these three words. You will be asked to recall them later.",
             "type": "text",
             "maxScore": 1,
+            "ans": "",
             "config": {
               "title": "Memory Registration",
               "frontend_type": "memory_words_display",
@@ -25,6 +26,7 @@
             "text": "Please tell me the three words I asked you to remember.",
             "type": "scmcq",
             "maxScore": 3,
+            "ans": "apple;chair;river",
             "config": {
               "title": "Delayed Recall",
               "frontend_type": "mcq",
@@ -44,6 +46,7 @@
             "text": "How often do you forget recent conversations?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "never",
             "config": {
               "title": "Conversation Memory",
               "frontend_type": "mcq",
@@ -60,6 +63,7 @@
             "text": "How often do you misplace objects (keys, phone, wallet, etc.)?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "never",
             "config": {
               "title": "Object Misplacement",
               "frontend_type": "mcq",
@@ -76,6 +80,7 @@
             "text": "Do you repeat the same questions or stories without realizing it?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "never",
             "config": {
               "title": "Repetition",
               "frontend_type": "mcq",
@@ -98,6 +103,7 @@
             "text": "What is today's date?",
             "type": "text",
             "maxScore": 1,
+            "ans": "15/01/2026",
             "config": {
               "title": "Date",
               "frontend_type": "text",
@@ -119,6 +125,7 @@
             "text": "What day of the week is it?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "thursday",
             "config": {
               "title": "Day of Week",
               "frontend_type": "mcq",
@@ -138,6 +145,7 @@
             "text": "What month is it right now?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "january",
             "config": {
               "title": "Month",
               "frontend_type": "mcq",
@@ -162,6 +170,7 @@
             "text": "What year is it?",
             "type": "numerical",
             "maxScore": 1,
+            "ans": "2026",
             "config": {
               "title": "Year",
               "frontend_type": "text",
@@ -182,6 +191,7 @@
             "text": "Where are you right now?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "home",
             "config": {
               "title": "Location",
               "frontend_type": "mcq",
@@ -198,6 +208,7 @@
             "text": "Do you ever feel confused about where you are?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "never",
             "config": {
               "title": "Location Confusion",
               "frontend_type": "mcq",
@@ -219,6 +230,7 @@
             "text": "If you smelled smoke in your home, what would you do?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "call_help;leave",
             "config": {
               "title": "Emergency Response",
               "frontend_type": "mcq",
@@ -235,6 +247,7 @@
             "text": "If you lost your house keys, what would you do next?",
             "type": "text",
             "maxScore": 1,
+            "ans": "I would retrace my steps to find them",
             "config": {
               "title": "Problem Solving",
               "frontend_type": "text_multiline",
@@ -254,6 +267,7 @@
             "text": "If a medicine bottle says 'Take two tablets daily', how would you take it?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "split",
             "config": {
               "title": "Medication Understanding",
               "frontend_type": "mcq",
@@ -270,11 +284,11 @@
             "text": "If you need ₹75 and you have ₹100, how much change will you get?",
             "type": "numerical",
             "maxScore": 1,
+            "ans": "25",
             "config": {
               "title": "Basic Math",
               "frontend_type": "text",
               "placeholder": "Enter amount",
-              "correctAnswer": "25",
               "suggestions": [
                 "25",
                 "20",
@@ -290,6 +304,7 @@
             "text": "When plans change suddenly, is it hard for you to adjust?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "easy",
             "config": {
               "title": "Adaptability",
               "frontend_type": "mcq",
@@ -311,6 +326,7 @@
             "text": "Do you manage your appointments on your own?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "always",
             "config": {
               "title": "Appointment Management",
               "frontend_type": "mcq",
@@ -326,6 +342,7 @@
             "text": "Do you go shopping by yourself?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "yes",
             "config": {
               "title": "Shopping Independence",
               "frontend_type": "mcq",
@@ -341,6 +358,7 @@
             "text": "Do you handle your own money (payments, banking, bills)?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "yes",
             "config": {
               "title": "Financial Management",
               "frontend_type": "mcq",
@@ -356,6 +374,7 @@
             "text": "Do you use transportation on your own?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "independent",
             "config": {
               "title": "Transportation",
               "frontend_type": "mcq",
@@ -371,6 +390,7 @@
             "text": "Do you get confused in busy public places?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "never",
             "config": {
               "title": "Public Places",
               "frontend_type": "mcq",
@@ -392,6 +412,7 @@
             "text": "Do you take care of small tasks at home (cooking, cleaning, organizing)?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "easy",
             "config": {
               "title": "Home Tasks",
               "frontend_type": "mcq",
@@ -407,6 +428,7 @@
             "text": "Do you still enjoy your hobbies? (Reading, gardening, TV, singing, games)",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "yes",
             "config": {
               "title": "Hobbies",
               "frontend_type": "mcq",
@@ -423,6 +445,7 @@
             "text": "Do you complete tasks you start?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "yes",
             "config": {
               "title": "Task Completion",
               "frontend_type": "mcq",
@@ -438,6 +461,7 @@
             "text": "Do you lose track of what you're doing in the middle of a task?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "never",
             "config": {
               "title": "Task Focus",
               "frontend_type": "mcq",
@@ -459,6 +483,7 @@
             "text": "Do you bathe or shower without assistance?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "yes",
             "config": {
               "title": "Bathing",
               "frontend_type": "mcq",
@@ -474,6 +499,7 @@
             "text": "Do you dress yourself fully?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "yes",
             "config": {
               "title": "Dressing",
               "frontend_type": "mcq",
@@ -489,6 +515,7 @@
             "text": "Do you eat meals without help?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "yes",
             "config": {
               "title": "Eating",
               "frontend_type": "mcq",
@@ -504,6 +531,7 @@
             "text": "Do you need reminders to brush your teeth or comb your hair?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "no",
             "config": {
               "title": "Hygiene Reminders",
               "frontend_type": "mcq",
@@ -519,6 +547,7 @@
             "text": "Do you ever forget to change clothes or maintain hygiene?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "never",
             "config": {
               "title": "Hygiene Maintenance",
               "frontend_type": "mcq",

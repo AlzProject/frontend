@@ -6,18 +6,25 @@ import {
   QuestionWrapper
 } from '../../components/QuestionTypes';
 import api from '../../api';
+import { checkFeedbackAndRedirect } from '../../utils';
 
 // AutocompleteInput Component with dropdown suggestions
 const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = '', className = '' }) => {
   const [isFocused, setIsFocused] = useState(false);
 
-  // Filter suggestions based on current input value using useMemo
+  // Filter suggestions based on current input value using useMemo with random ordering
   const filteredSuggestions = useMemo(() => {
-    if (!value || !Array.isArray(suggestions)) return suggestions;
-    const lowerValue = value.toLowerCase();
-    return suggestions.filter(s => 
-      s.toLowerCase().includes(lowerValue)
-    );
+    let result = [];
+    if (!value || !Array.isArray(suggestions)) {
+      result = [...suggestions];
+    } else {
+      const lowerValue = value.toLowerCase();
+      result = suggestions.filter(s => 
+        s.toLowerCase().includes(lowerValue)
+      );
+    }
+    // Randomize the order
+    return result.sort(() => Math.random() - 0.5);
   }, [value, suggestions]);
 
   const handleSelect = (suggestion) => {
@@ -37,7 +44,7 @@ const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = ''
         className={className}
       />
       {isFocused && filteredSuggestions.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+        <div className="absolute z-[9999] w-full mt-1 bg-white border border-gray-300 rounded-md shadow-2xl max-h-60 overflow-auto">
           {filteredSuggestions.map((suggestion, idx) => (
             <div
               key={idx}
@@ -360,7 +367,18 @@ const CDRTest = () => {
     if (!attemptId) return;
     
     try {
-      const answerText = typeof valueToSave === 'string' ? valueToSave : JSON.stringify(valueToSave);
+      let answerText;
+
+      if (Array.isArray(valueToSave)) {
+        // Grouped question - concatenate answers with ';' separator
+        answerText = valueToSave.join(';');
+      } else if (typeof valueToSave === 'object' && valueToSave !== null) {
+        // Objects (like matching questions) - stringify
+        answerText = JSON.stringify(valueToSave);
+      } else {
+        // Simple string/number answer
+        answerText = String(valueToSave);
+      }
 
       const payload = {
         attemptId: attemptId,
@@ -425,7 +443,7 @@ const CDRTest = () => {
         console.log("Demo mode submission:", responses);
         alert("CDR Assessment submitted successfully (Demo Mode)!");
       }
-      navigate('/');
+      await checkFeedbackAndRedirect(navigate);
     } catch (error) {
       console.error("Submission failed:", error);
       alert("Failed to submit assessment. Please try again.");

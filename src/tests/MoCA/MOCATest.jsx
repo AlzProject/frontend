@@ -164,6 +164,8 @@ const VigilanceQuestion = ({ title, description, sequence, onChange, value }) =>
   );
 };
 
+import { checkFeedbackAndRedirect } from '../../utils';
+
 const MOCATest = () => {
   const navigate = useNavigate();
   const [currentSection, setCurrentSection] = useState(0);
@@ -427,13 +429,13 @@ const MOCATest = () => {
       const question = findQuestion(questionId);
       if (!question) return;
 
-      let answerText = typeof valueToSave === 'string' ? valueToSave : JSON.stringify(valueToSave);
-
-      // Handle Drawing/File Uploads - upload immediately
       const config = question.config || {};
       const isDrawing = config.frontend_type === 'drawing';
       const isFileUpload = question.type === 'file_upload' || config.frontend_type === 'file_upload';
 
+      let answerText;
+
+      // Handle Blob/File uploads (drawing, audio, file_upload)
       if (isDrawing && valueToSave instanceof Blob && !(valueToSave.type || '').startsWith('audio/')) {
         try {
           answerText = await uploadMediaAndGetAnswerText({
@@ -446,11 +448,10 @@ const MOCATest = () => {
         } catch (uploadError) {
           console.error(`Failed to upload drawing for question ${questionId}:`, uploadError);
           console.error('Upload error details:', uploadError.response?.data);
-          return; // Don't save if upload fails
+          alert('Failed to upload drawing. Please try again.');
+          return;
         }
-      }
-
-      if (isFileUpload && valueToSave instanceof File) {
+      } else if (isFileUpload && valueToSave instanceof File) {
         try {
           answerText = await uploadMediaAndGetAnswerText({
             questionId: parseInt(questionId),
@@ -462,8 +463,33 @@ const MOCATest = () => {
         } catch (uploadError) {
           console.error(`Failed to upload file for question ${questionId}:`, uploadError);
           console.error('Upload error details:', uploadError.response?.data);
+          alert('Failed to upload file. Please try again.');
           return;
         }
+      } else if (valueToSave instanceof Blob && (valueToSave.type || '').startsWith('audio/')) {
+        try {
+          answerText = await uploadMediaAndGetAnswerText({
+            questionId: parseInt(questionId),
+            fileOrBlob: valueToSave,
+            type: 'audio',
+            label: `Audio for Question ${questionId}`,
+            attachToQuestion: true,
+          });
+        } catch (uploadError) {
+          console.error(`Failed to upload audio for question ${questionId}:`, uploadError);
+          console.error('Upload error details:', uploadError.response?.data);
+          alert('Failed to upload audio. Please try again.');
+          return;
+        }
+      } else if (Array.isArray(valueToSave)) {
+        // Grouped question - concatenate answers with ';' separator
+        answerText = valueToSave.join(';');
+      } else if (typeof valueToSave === 'object' && valueToSave !== null) {
+        // Objects (like matching questions) - stringify
+        answerText = JSON.stringify(valueToSave);
+      } else {
+        // Simple string/number answer
+        answerText = String(valueToSave);
       }
 
       const payload = {
@@ -541,7 +567,7 @@ const MOCATest = () => {
         console.log("Demo mode submission:", responses);
         alert("MoCA Test submitted successfully (Demo Mode - Not Saved to Backend)!");
       }
-      navigate('/');
+      await checkFeedbackAndRedirect(navigate);
     } catch (error) {
       console.error("Submission failed:", error);
       alert("Failed to submit test. Please try again.");

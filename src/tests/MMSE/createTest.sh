@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-API_URL="${API_URL:-http://localhost:3000/v1}"
+API_URL="${API_URL:-https://alz.adityaap.tech/v1}"
 DATA_FILE="data.json"
 
 # Check requirements

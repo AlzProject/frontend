@@ -12,6 +12,7 @@
             "text": "Draw a line from a number to a letter in ascending order (1-A-2-B-3-C-4-D-5-E). End at E.",
             "type": "file_upload",
             "maxScore": 1,
+            "ans": "",
             "config": {
               "title": "Trail Making",
               "frontend_type": "drawing",
@@ -23,6 +24,7 @@
             "text": "Copy the drawing of the cube as accurately as possible.",
             "type": "file_upload",
             "maxScore": 1,
+            "ans": "",
             "config": {
               "title": "Copy Cube",
               "frontend_type": "drawing",
@@ -34,6 +36,7 @@
             "text": "Draw a clock. Put in all the numbers and set the time to 10 past 11.",
             "type": "file_upload",
             "maxScore": 3,
+            "ans": "",
             "config": {
               "title": "Draw Clock",
               "frontend_type": "drawing"
@@ -50,6 +53,7 @@
             "text": "Identify the animals shown below.",
             "type": "text",
             "maxScore": 3,
+            "ans": "Lion;Rhinoceros;Camel",
             "config": {
               "title": "Naming",
               "frontend_type": "naming_grouped",
@@ -90,6 +94,7 @@
             "text": "Read the list of words. You will have 10 seconds to memorize them.",
             "type": "text",
             "maxScore": 1,
+            "ans": "",
             "config": {
               "title": "Memory Registration",
               "frontend_type": "memory_registration",
@@ -114,6 +119,7 @@
             "text": "Read the sequence of numbers displayed one by one. Then enter them in the exact order.",
             "type": "text",
             "maxScore": 1,
+            "ans": "21854",
             "config": {
               "title": "Digit Span Forward",
               "frontend_type": "digit_span",
@@ -132,6 +138,7 @@
             "text": "Read the sequence of numbers displayed one by one. Then enter them in BACKWARD order.",
             "type": "text",
             "maxScore": 1,
+            "ans": "247",
             "config": {
               "title": "Digit Span Backward",
               "frontend_type": "digit_span",
@@ -148,6 +155,7 @@
             "text": "Tap on every letter 'A' in the sequence below.",
             "type": "text",
             "maxScore": 1,
+            "ans": "",
             "config": {
               "title": "Vigilance",
               "frontend_type": "vigilance",
@@ -159,6 +167,7 @@
             "text": "Subtract 7 from 100 five times.",
             "type": "text",
             "maxScore": 3,
+            "ans": "93;86;79;72;65",
             "config": {
               "title": "Serial 7s",
               "frontend_type": "dropdown_grouped",
@@ -182,6 +191,7 @@
             "text": "Read the following sentence, then type it exactly as shown: 'I only know that John is the one to help today.'",
             "type": "text",
             "maxScore": 1,
+            "ans": "I only know that John is the one to help today.",
             "config": {
               "title": "Sentence Repetition 1",
               "frontend_type": "text",
@@ -193,6 +203,7 @@
             "text": "Read the following sentence, then type it exactly as shown: 'The cat always hid under the couch when dogs were in the room.'",
             "type": "text",
             "maxScore": 1,
+            "ans": "The cat always hid under the couch when dogs were in the room.",
             "config": {
               "title": "Sentence Repetition 2",
               "frontend_type": "text",
@@ -204,6 +215,7 @@
             "text": "Name as many words as possible starting with 'F' in 1 minute. (Target >= 11)",
             "type": "text",
             "maxScore": 1,
+            "ans": "11",
             "config": {
               "title": "Verbal Fluency",
               "frontend_type": "text",
@@ -221,6 +233,7 @@
             "text": "What is the similarity between these pairs?",
             "type": "text",
             "maxScore": 2,
+            "ans": "Means of transportation;Measuring instruments",
             "config": {
               "title": "Abstraction",
               "frontend_type": "dropdown_grouped",
@@ -241,6 +254,7 @@
             "text": "What were the 5 words from earlier?",
             "type": "text",
             "maxScore": 5,
+            "ans": "Face;Velvet;Church;Daisy;Red",
             "config": {
               "title": "Delayed Recall",
               "frontend_type": "dropdown_grouped",
@@ -264,6 +278,7 @@
             "text": "Enter the current date and place details.",
             "type": "text",
             "maxScore": 6,
+            "ans": "15;January;2026;Thursday;Home;Mumbai",
             "config": {
               "title": "Orientation",
               "frontend_type": "dropdown_grouped",

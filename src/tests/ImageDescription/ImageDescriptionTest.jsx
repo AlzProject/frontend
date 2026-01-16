@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import testData from './data.json';
 import api from '../../api';
 import { uploadMediaAndGetAnswerText } from '../../media';
+import { checkFeedbackAndRedirect } from '../../utils';
 
 function ImageDescriptionTest() {
   const navigate = useNavigate();
@@ -236,7 +237,7 @@ function ImageDescriptionTest() {
       });
       
       alert('Test completed successfully!');
-      navigate('/');
+      await checkFeedbackAndRedirect(navigate);
     } catch (err) {
       console.error('Error submitting test:', err);
       alert('Failed to submit test. Please try again.');

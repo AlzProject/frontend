@@ -9,6 +9,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import ParticipantLogin from './pages/ParticipantLogin';
 import ParticipantSignup from './pages/ParticipantSignup';
+import Feedback from './pages/Feedback';
 import TestList from './components/Admin/TestList';
 import CreateTest from './components/Admin/CreateTest';
 import TestDetails from './components/Admin/TestDetails';
@@ -43,7 +44,8 @@ const translations = {
     heroSubtitle: "Accessible and professional cognitive assessments to help identify potential concerns early.",
     startAssessment: "Start Assessment",
     footer: "© 2025 Smriti (स्मृति). All rights reserved.",
-    switchLang: "मराठी"
+    switchLang: "मराठी",
+    feedback: "Feedback"
   },
   mr: {
     title: "स्मृति (Smriti)",
@@ -58,7 +60,8 @@ const translations = {
     heroSubtitle: "संभाव्य चिंता लवकर ओळखण्यासाठी सुलभ आणि व्यावसायिक संज्ञानात्मक मूल्यांकन.",
     startAssessment: "चाचणी सुरू करा",
     footer: "© २०२५ स्मृति (Smriti). सर्व हक्क राखीव.",
-    switchLang: "English"
+    switchLang: "English",
+    feedback: "अभिप्राय"
   }
 };
 
@@ -167,6 +170,12 @@ function LandingPage() {
           <nav className="flex items-center space-x-4 sm:space-x-6">
             {user ? (
               <>
+                <Link 
+                  to="/feedback"
+                  className="text-slate-300 hover:text-white px-2 sm:px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  {t.feedback}
+                </Link>
                 <span className="text-slate-300 px-2 sm:px-3 py-2 text-sm font-medium hidden sm:inline">
                   {user.name}
                 </span>
@@ -347,6 +356,9 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<ParticipantLogin />} />
         <Route path="/signup" element={<ParticipantSignup />} />
+        <Route path="/feedback" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
+        
+        {/* Test Routes */}
         <Route path="/test/mmse" element={<ProtectedRoute><MMSETest /></ProtectedRoute>} />
         <Route path="/test/moca" element={<ProtectedRoute><MOCATest /></ProtectedRoute>} />
         <Route path="/test/ace-iii" element={<ProtectedRoute><ACEIIITest /></ProtectedRoute>} />

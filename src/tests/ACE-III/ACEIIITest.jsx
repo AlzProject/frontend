@@ -7,6 +7,7 @@ import {
   QuestionWrapper
 } from '../../components/QuestionTypes';
 import api from '../../api';
+import { checkFeedbackAndRedirect } from '../../utils';
 import { uploadMediaAndGetAnswerText } from '../../media';
 
 const isMediaRef = (value) => typeof value === 'string' && value.toLowerCase().startsWith('media:');
@@ -393,14 +394,19 @@ const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = ""
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = React.useRef(null);
   
-  // Calculate filtered suggestions based on current value
+  // Calculate filtered suggestions based on current value with random ordering
   const filteredSuggestions = React.useMemo(() => {
+    let result = [];
     if (value && suggestions.length > 0) {
-      return suggestions.filter(s => 
+      result = suggestions.filter(s => 
         s.toLowerCase().includes(value.toLowerCase())
       );
+    } else {
+      result = [...suggestions];
     }
-    return suggestions;
+    
+    // Randomize the order
+    return result.sort(() => Math.random() - 0.5);
   }, [value, suggestions]);
   
   const handleInputChange = (e) => {
@@ -435,7 +441,7 @@ const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = ""
         placeholder={placeholder}
       />
       {showSuggestions && filteredSuggestions.length > 0 && (
-        <ul className="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
+        <ul className="absolute z-[9999] w-full bg-white border border-gray-300 rounded-md shadow-2xl mt-1 max-h-60 overflow-auto">
           {filteredSuggestions.map((suggestion, idx) => (
             <li
               key={idx}
@@ -908,13 +914,13 @@ const ACEIIITest = () => {
       const question = findQuestion(questionId);
       if (!question) return;
 
-      let answerText = typeof valueToSave === 'string' ? valueToSave : JSON.stringify(valueToSave);
-
-      // Handle media uploads (store `answerText` as `media:<id>`)
       const config = question.config || {};
       const isDrawing = config.frontend_type === 'drawing';
       const isFileUpload = question.type === 'file_upload' || config.frontend_type === 'file_upload';
 
+      let answerText;
+
+      // Handle Blob/File uploads (drawing, audio, file_upload)
       if (isDrawing && valueToSave instanceof Blob && !(valueToSave.type || '').startsWith('audio/')) {
         try {
           answerText = await uploadMediaAndGetAnswerText({
@@ -928,11 +934,9 @@ const ACEIIITest = () => {
           console.error(`Failed to upload drawing for question ${questionId}:`, uploadError);
           console.error('Upload error details:', uploadError.response?.data);
           alert('Failed to upload drawing. Please try again.');
-          return; // Don't save if upload fails
+          return;
         }
-      }
-
-      if (isFileUpload && valueToSave instanceof File) {
+      } else if (isFileUpload && valueToSave instanceof File) {
         try {
           answerText = await uploadMediaAndGetAnswerText({
             questionId: parseInt(questionId),
@@ -947,10 +951,7 @@ const ACEIIITest = () => {
           alert('Failed to upload file. Please try again.');
           return;
         }
-      }
-
-      // Handle Audio Blob uploads
-      if (valueToSave instanceof Blob && (valueToSave.type || '').startsWith('audio/')) {
+      } else if (valueToSave instanceof Blob && (valueToSave.type || '').startsWith('audio/')) {
         try {
           answerText = await uploadMediaAndGetAnswerText({
             questionId: parseInt(questionId),
@@ -965,6 +966,15 @@ const ACEIIITest = () => {
           alert('Failed to upload audio. Please try again.');
           return;
         }
+      } else if (Array.isArray(valueToSave)) {
+        // Grouped question - concatenate answers with ';' separator
+        answerText = valueToSave.join(';');
+      } else if (typeof valueToSave === 'object' && valueToSave !== null) {
+        // Objects (like matching questions) - stringify
+        answerText = JSON.stringify(valueToSave);
+      } else {
+        // Simple string/number answer
+        answerText = String(valueToSave);
       }
 
       const payload = {
@@ -1049,7 +1059,7 @@ const ACEIIITest = () => {
         console.log("Demo mode submission:", responses);
         alert("ACE-III Test submitted successfully (Demo Mode - Not Saved to Backend)!");
       }
-      navigate('/');
+      await checkFeedbackAndRedirect(navigate);
     } catch (error) {
       console.error("Submission failed:", error);
       alert("Failed to submit test. Please try again.");
@@ -1492,7 +1502,7 @@ const ACEIIITest = () => {
       </div>
 
       <div className="space-y-8">
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
+        <div className="bg-white shadow overflow-visible sm:rounded-lg p-6">
           <h2 className="text-xl font-medium text-gray-900 mb-4">{currentSectionTitle}</h2>
           <div className="space-y-6">
             {loadingSections.has(currentSection) && !loadedSections.has(currentSection) ? (
