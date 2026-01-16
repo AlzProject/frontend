@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
@@ -6,18 +6,22 @@ function Feedback() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    satisfactionRating: '5',
-    uiRating: '5',
-    testsRating: '5',
-    navigationRating: '5',
-    responseTimeRating: '5',
-    accessibilityRating: '5',
-    recommendationRating: '5',
+    satisfactionRating: '',
+    uiRating: '',
+    testsRating: '',
+    navigationRating: '',
+    responseTimeRating: '',
+    accessibilityRating: '',
+    recommendationRating: '',
     uiFeedback: '',
     testsFeedback: '',
     uxFeedback: '',
     suggestions: ''
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -109,6 +113,7 @@ function Feedback() {
                       checked={parseInt(formData.satisfactionRating) === rating}
                       onChange={handleChange}
                       className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      required
                     />
                     <span className="ml-1 text-sm text-slate-700 font-medium">{rating}</span>
                   </label>
