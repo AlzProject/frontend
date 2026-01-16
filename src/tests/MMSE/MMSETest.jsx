@@ -13,13 +13,19 @@ import { uploadMediaAndGetAnswerText } from '../../media';
 const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = '', className = '' }) => {
   const [isFocused, setIsFocused] = useState(false);
 
-  // Filter suggestions based on current input value using useMemo
+  // Filter suggestions based on current input value using useMemo with random ordering
   const filteredSuggestions = useMemo(() => {
-    if (!value || !Array.isArray(suggestions)) return suggestions;
-    const lowerValue = value.toLowerCase();
-    return suggestions.filter(s => 
-      s.toLowerCase().includes(lowerValue)
-    );
+    let result = [];
+    if (!value || !Array.isArray(suggestions)) {
+      result = [...suggestions];
+    } else {
+      const lowerValue = value.toLowerCase();
+      result = suggestions.filter(s => 
+        s.toLowerCase().includes(lowerValue)
+      );
+    }
+    // Randomize the order
+    return result.sort(() => Math.random() - 0.5);
   }, [value, suggestions]);
 
   const handleSelect = (suggestion) => {
@@ -39,7 +45,7 @@ const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = ''
         className={className}
       />
       {isFocused && filteredSuggestions.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+        <div className="absolute z-[9999] w-full mt-1 bg-white border border-gray-300 rounded-md shadow-2xl max-h-60 overflow-auto">
           {filteredSuggestions.map((suggestion, idx) => (
             <div
               key={idx}
@@ -117,6 +123,8 @@ const MemoryRegistrationQuestion = ({ title, description, words, fields, value, 
     </QuestionWrapper>
   );
 };
+
+import { checkFeedbackAndRedirect } from '../../utils';
 
 const MMSETest = () => {
   const navigate = useNavigate();
@@ -371,13 +379,13 @@ const MMSETest = () => {
       const question = findQuestion(questionId);
       if (!question) return;
 
-      let answerText = typeof valueToSave === 'string' ? valueToSave : JSON.stringify(valueToSave);
-
-      // Handle Drawing/File Uploads - upload immediately
       const config = question.config || {};
       const isDrawing = config.frontend_type === 'drawing';
       const isFileUpload = question.type === 'file_upload' || config.frontend_type === 'file_upload';
 
+      let answerText;
+
+      // Handle Blob/File uploads (drawing, audio, file_upload)
       if (isDrawing && valueToSave instanceof Blob && !(valueToSave.type || '').startsWith('audio/')) {
         try {
           answerText = await uploadMediaAndGetAnswerText({
@@ -391,11 +399,9 @@ const MMSETest = () => {
           console.error(`Failed to upload drawing for question ${questionId}:`, uploadError);
           console.error('Upload error details:', uploadError.response?.data);
           alert('Failed to upload drawing. Please try again.');
-          return; // Don't save if upload fails
+          return;
         }
-      }
-
-      if (isFileUpload && valueToSave instanceof File) {
+      } else if (isFileUpload && valueToSave instanceof File) {
         try {
           answerText = await uploadMediaAndGetAnswerText({
             questionId: parseInt(questionId),
@@ -410,6 +416,30 @@ const MMSETest = () => {
           alert('Failed to upload file. Please try again.');
           return;
         }
+      } else if (valueToSave instanceof Blob && (valueToSave.type || '').startsWith('audio/')) {
+        try {
+          answerText = await uploadMediaAndGetAnswerText({
+            questionId: parseInt(questionId),
+            fileOrBlob: valueToSave,
+            type: 'audio',
+            label: `Audio for Question ${questionId}`,
+            attachToQuestion: true,
+          });
+        } catch (uploadError) {
+          console.error(`Failed to upload audio for question ${questionId}:`, uploadError);
+          console.error('Upload error details:', uploadError.response?.data);
+          alert('Failed to upload audio. Please try again.');
+          return;
+        }
+      } else if (Array.isArray(valueToSave)) {
+        // Grouped question - concatenate answers with ';' separator
+        answerText = valueToSave.join(';');
+      } else if (typeof valueToSave === 'object' && valueToSave !== null) {
+        // Objects (like matching questions) - stringify
+        answerText = JSON.stringify(valueToSave);
+      } else {
+        // Simple string/number answer
+        answerText = String(valueToSave);
       }
 
       const payload = {
@@ -495,7 +525,7 @@ const MMSETest = () => {
         console.log("Demo mode submission:", responses);
         alert("Test submitted successfully (Demo Mode)!");
       }
-      navigate('/');
+      await checkFeedbackAndRedirect(navigate);
     } catch (error) {
       console.error("Submission failed:", error);
       alert("Failed to submit test. Please try again.");

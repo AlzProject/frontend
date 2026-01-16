@@ -13,6 +13,7 @@
             "text": "Please enter the current date and time details.",
             "type": "text",
             "maxScore": 5,
+            "ans": "2026;Winter;15;Thursday;January",
             "config": {
               "title": "Time Orientation",
               "frontend_type": "text_grouped",
@@ -38,6 +39,7 @@
             "text": "Where are we now?",
             "type": "text",
             "maxScore": 5,
+            "ans": "Maharashtra;Pune;Pune;Home;Ground Floor",
             "config": {
               "title": "Place Orientation",
               "frontend_type": "text_grouped",
@@ -69,6 +71,7 @@
             "text": "Memorize the 3 words shown. You will have 5 seconds.",
             "type": "text",
             "maxScore": 3,
+            "ans": "Apple;Penny;Table",
             "config": {
               "title": "Immediate Registration",
               "frontend_type": "memory_registration",
@@ -96,6 +99,7 @@
             "text": "Option A: Subtract 7 from 100, and then subtract 7 from that result, continuing 5 times. OR Option B: Spell the word WORLD backwards.",
             "type": "text",
             "maxScore": 5,
+            "ans": "93;86;79;72;65",
             "config": {
               "title": "Attention Task (Choose One)",
               "frontend_type": "text_grouped",
@@ -127,6 +131,7 @@
             "text": "What were the 3 objects asked to remember earlier?",
             "type": "text",
             "maxScore": 3,
+            "ans": "Apple;Penny;Table",
             "config": {
               "title": "Delayed Recall",
               "frontend_type": "text_grouped",
@@ -154,6 +159,7 @@
             "text": "Name the objects described or shown.",
             "type": "text",
             "maxScore": 2,
+            "ans": "Pen;Watch",
             "config": {
               "title": "Naming",
               "frontend_type": "text_grouped",
@@ -173,6 +179,7 @@
             "text": "Repeat the phrase exactly: 'No ifs, ands, or buts.'",
             "type": "text",
             "maxScore": 1,
+            "ans": "No ifs, ands, or buts.",
             "config": {
               "title": "Repetition",
               "frontend_type": "text",
@@ -190,6 +197,7 @@
             "text": "Select the correct order of actions: Take paper in right hand, fold in half, put on floor.",
             "type": "scmcq",
             "maxScore": 3,
+            "ans": "correct",
             "config": {
               "title": "3-Stage Command",
               "frontend_type": "mcq",
@@ -219,6 +227,7 @@
             "text": "Read the instruction: 'CLOSE YOUR EYES'. Did you close your eyes?",
             "type": "scmcq",
             "maxScore": 1,
+            "ans": "yes",
             "config": {
               "title": "Reading",
               "frontend_type": "mcq",
@@ -240,6 +249,7 @@
             "text": "Write a complete sentence (must contain a subject and a verb).",
             "type": "text",
             "maxScore": 1,
+            "ans": "The sun is shining today.",
             "config": {
               "title": "Writing",
               "frontend_type": "text_multiline",
@@ -259,6 +269,7 @@
             "text": "Copy the design of two intersecting pentagons.",
             "type": "file_upload",
             "maxScore": 1,
+            "ans": "",
             "config": {
               "title": "Copying",
               "frontend_type": "drawing",
