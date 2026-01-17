@@ -46,12 +46,12 @@ const MemoryRegistrationQuestion = ({ title, description, words, onComplete }) =
   if (showWords) {
     return (
       <QuestionWrapper title={title} description={description}>
-        <div className="text-center py-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-          <h3 className="text-2xl font-bold text-indigo-600 mb-6 tracking-wider leading-loose">
+        <div className="text-center py-6 sm:py-8 md:py-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-indigo-600 mb-4 sm:mb-5 md:mb-6 tracking-wider leading-loose">
             {words.join(" • ")}
           </h3>
-          <p className="text-sm text-gray-500">
-            Memorize these words. They will disappear in <span className="font-bold text-gray-900">{timeLeft}</span> seconds.
+          <p className="text-xs sm:text-sm text-gray-500">
+            Memorize these words. They will disappear in <span className="font-bold text-gray-900 text-sm sm:text-base">{timeLeft}</span> seconds.
           </p>
         </div>
       </QuestionWrapper>
@@ -60,7 +60,7 @@ const MemoryRegistrationQuestion = ({ title, description, words, onComplete }) =
 
   return (
     <QuestionWrapper title={title} description="Registration phase complete.">
-      <div className="p-4 bg-green-50 text-green-700 rounded-md">
+      <div className="p-3 sm:p-4 bg-green-50 text-green-700 rounded-md text-sm sm:text-base">
         <p>Words hidden. Proceed to the next task. (Recall will be tested later)</p>
       </div>
     </QuestionWrapper>
@@ -94,19 +94,18 @@ const DigitSpanQuestion = ({ title, description, sequence, type, onChange, value
   return (
     <QuestionWrapper title={title} description={description}>
       {status === 'ready' && (
-        <div className="text-center py-8">
+        <div className="text-center py-6 sm:py-8">
           <button
             onClick={startTest}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
-          >
+            className="inline-flex items-center px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 border border-transparent text-sm sm:text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
             Start {type} Sequence
           </button>
         </div>
       )}
       
       {status === 'showing' && (
-        <div className="text-center py-10 bg-gray-50 rounded-lg">
-          <span className="text-6xl font-bold text-indigo-600">
+        <div className="text-center py-8 sm:py-10 bg-gray-50 rounded-lg">
+          <span className="text-4xl sm:text-5xl md:text-6xl font-bold text-indigo-600">
             {currentIndex < sequence.length ? sequence[currentIndex] : "..."}
           </span>
         </div>
@@ -114,12 +113,12 @@ const DigitSpanQuestion = ({ title, description, sequence, type, onChange, value
 
       {status === 'input' && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
             Enter the sequence {type === 'Backward' ? 'backwards' : 'exactly as shown'}:
           </label>
           <input
             type="text"
-            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-lg border-gray-300 rounded-md p-2 border"
+            className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-base sm:text-lg border-gray-300 rounded-md p-2 border"
             value={value || ''}
             onChange={(e) => onChange(e.target.value)}
             placeholder="e.g. 1 2 3"
@@ -144,12 +143,12 @@ const VigilanceQuestion = ({ title, description, sequence, onChange, value }) =>
 
   return (
     <QuestionWrapper title={title} description={description}>
-      <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg justify-center">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 p-3 sm:p-4 bg-gray-50 rounded-lg justify-center">
         {sequence.split('').map((char, idx) => (
           <button
             key={idx}
             onClick={() => toggleSelection(idx)}
-            className={`w-10 h-10 rounded-full font-bold text-lg transition-colors ${
+            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full font-bold text-base sm:text-lg transition-colors ${
               selectedIndices.includes(idx)
                 ? 'bg-indigo-600 text-white'
                 : 'bg-white text-gray-800 border border-gray-300 hover:bg-gray-100'
@@ -159,7 +158,7 @@ const VigilanceQuestion = ({ title, description, sequence, onChange, value }) =>
           </button>
         ))}
       </div>
-      <p className="text-xs text-gray-500 mt-2 text-center">Click on every letter 'A'.</p>
+      <p className="text-xs sm:text-sm text-gray-500 mt-2 text-center">Click on every letter 'A'.</p>
     </QuestionWrapper>
   );
 };
@@ -389,7 +388,7 @@ const MOCATest = () => {
     };
 
     initTest();
-  }, []); // Run once on mount
+  }, [navigate]); // Run once on mount
 
   const getTranslation = (lang, sectionIdx = null, questionIdx = null) => {
      if (lang === 'en') return null;
@@ -577,7 +576,7 @@ const MOCATest = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    return <div className="flex justify-center items-center min-h-screen px-4 text-sm sm:text-base">Loading...</div>;
   }
 
   const renderQuestion = (q, qIdx) => {
@@ -635,13 +634,13 @@ const MOCATest = () => {
       case 'text_grouped':
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {(config.fields || q.fields).map((field, idx) => (
                 <div key={idx}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{field}</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{field}</label>
                   <input
                     type="text"
-                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
                     value={(responses[q.id] || [])[idx] || ''}
                     onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
                   />
@@ -653,16 +652,16 @@ const MOCATest = () => {
       case 'dropdown_grouped':
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {(config.fields || q.fields).map((field, idx) => {
                 const fieldLabel = typeof field === 'string' ? field : field.label;
                 const fieldOptions = typeof field === 'object' ? field.options : [];
                 
                 return (
                   <div key={idx}>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{fieldLabel}</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{fieldLabel}</label>
                     <select
-                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
                       value={(responses[q.id] || [])[idx] || ''}
                       onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
                     >
@@ -680,7 +679,7 @@ const MOCATest = () => {
       case 'naming_grouped':
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
               {(config.items || q.items || []).map((item, idx) => {
                 const mediaIndex = item.imageIndex !== undefined ? item.imageIndex : idx;
                 const imageUrl = q.media?.[mediaIndex]?.url || item.img;
@@ -691,17 +690,17 @@ const MOCATest = () => {
                       <img 
                         src={imageUrl} 
                         alt={item.label} 
-                        className="w-32 h-32 object-contain rounded-md mb-3 border bg-white"
+                        className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 object-contain rounded-md mb-2 sm:mb-3 border bg-white"
                       />
                     ) : (
-                      <div className="w-32 h-32 bg-gray-100 rounded-md mb-3 border flex items-center justify-center text-gray-400">
+                      <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 bg-gray-100 rounded-md mb-2 sm:mb-3 border flex items-center justify-center text-gray-400 text-xs sm:text-sm">
                         No Image
                       </div>
                     )}
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{item.label}</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center">{item.label}</label>
                     {item.options ? (
                       <select
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-xs sm:text-sm border-gray-300 rounded-md p-2 border"
                         value={(responses[q.id] || [])[idx] || ''}
                         onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
                       >
@@ -713,7 +712,7 @@ const MOCATest = () => {
                     ) : (
                       <input
                         type="text"
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-xs sm:text-sm border-gray-300 rounded-md p-2 border"
                         value={(responses[q.id] || [])[idx] || ''}
                         onChange={(e) => handleResponseChange(q.id, e.target.value, idx)}
                         placeholder={item.placeholder}
@@ -751,11 +750,11 @@ const MOCATest = () => {
       case 'file_upload':
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <input
                 type="file"
                 accept="image/*"
-                className="block w-full text-sm text-gray-700"
+                className="block w-full text-xs sm:text-sm text-gray-700"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
@@ -767,7 +766,7 @@ const MOCATest = () => {
                 <img
                   src={responses[q.id]}
                   alt="Uploaded"
-                  className="max-h-64 rounded border"
+                  className="max-h-48 sm:max-h-56 md:max-h-64 rounded border"
                 />
               )}
             </div>
@@ -790,19 +789,18 @@ const MOCATest = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">{currentTestTitle}</h1>
+    <div className="max-w-3xl mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">
+      <div className="mb-4 sm:mb-6 md:mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{currentTestTitle}</h1>
           <button
             onClick={() => setLanguage(prev => prev === 'en' ? 'mr' : 'en')}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-          >
+            className="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm sm:text-base w-full sm:w-auto">
             {language === 'en' ? 'मराठी' : 'English'}
           </button>
         </div>
-        <p className="mt-2 text-gray-600">Section {currentSection + 1} of {sections.length}</p>
-        <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
+        <p className="mt-2 text-gray-600 text-sm sm:text-base">Section {currentSection + 1} of {sections.length}</p>
+        <div className="w-full bg-gray-200 rounded-full h-2 sm:h-2.5 mt-3 sm:mt-4">
           <div 
             className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" 
             style={{ width: sections.length > 0 ? `${((currentSection + 1) / sections.length) * 100}%` : '0%' }}
@@ -810,24 +808,24 @@ const MOCATest = () => {
         </div>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-4 sm:space-y-6 md:space-y-8">
         {sections.length > 0 && sections[currentSection] ? (
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg p-6">
-            <h2 className="text-xl font-medium text-gray-900 mb-4">{currentSectionTitle}</h2>
-            <div className="space-y-6">
+          <div className="bg-white shadow overflow-hidden rounded-lg p-4 sm:p-5 md:p-6">
+            <h2 className="text-lg sm:text-xl font-medium text-gray-900 mb-3 sm:mb-4">{currentSectionTitle}</h2>
+            <div className="space-y-4 sm:space-y-5 md:space-y-6">
               {sections[currentSection].questions.map((q, idx) => renderQuestion(q, idx))}
             </div>
           </div>
         ) : (
-          <div className="text-center py-10">No sections found.</div>
+          <div className="text-center py-8 sm:py-10 text-sm sm:text-base">No sections found.</div>
         )}
 
-        <div className="flex justify-between pt-4">
+        <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 pt-3 sm:pt-4">
           <button
             type="button"
             onClick={handlePrevious}
             disabled={currentSection === 0}
-            className={`inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${currentSection === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`w-full sm:w-auto inline-flex justify-center items-center px-4 sm:px-5 md:px-6 py-2.5 sm:py-2 border border-gray-300 shadow-sm text-sm sm:text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${currentSection === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             Previous
           </button>
@@ -835,8 +833,7 @@ const MOCATest = () => {
             type="button"
             onClick={handleNext}
             disabled={isSubmitting}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
+            className="w-full sm:w-auto inline-flex justify-center items-center px-4 sm:px-5 md:px-6 py-2.5 sm:py-2 border border-transparent text-sm sm:text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             {currentSection === sections.length - 1 ? (isSubmitting ? 'Submitting...' : 'Submit Test') : 'Next'}
           </button>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   TextResponseQuestion,
@@ -93,8 +93,8 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
 
   return (
     <QuestionWrapper title={title} description={description}>
-      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-        <p className="text-sm text-blue-800">
+      <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded-md">
+        <p className="text-xs sm:text-sm text-blue-800">
           <strong>Instructions:</strong> Click on a word on the left, then click on the matching picture on the right to connect them.
         </p>
       </div>
@@ -116,20 +116,20 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
             />
           ))}
         </svg>
-        <div className="grid grid-cols-2 gap-8" style={{ position: 'relative', zIndex: 2 }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8" style={{ position: 'relative', zIndex: 2 }}>
           {/* Left Column - Words */}
-          <div className="space-y-3" ref={leftColumnRef}>
-            <h3 className="text-lg font-semibold mb-3 text-gray-700">Words</h3>
+          <div className="space-y-2 sm:space-y-3" ref={leftColumnRef}>
+            <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-700">Words</h3>
             {leftItems.map((item) => {
               const isSelected = selectedLeft === item.id;
               const isMatched = matches[item.label]; // Check by label
               
               return (
-                <div key={item.id} className="flex items-center gap-2">
+                <div key={item.id} className="flex items-center gap-1 sm:gap-2">
                   <button
                     data-item-id={item.id}
                     onClick={() => handleLeftClick(item.id)}
-                    className={`flex-1 p-3 rounded-lg border-2 font-medium text-left transition-all ${
+                    className={`flex-1 p-2 sm:p-3 rounded-lg border-2 font-medium text-sm sm:text-base text-left transition-all ${
                       isSelected
                         ? 'border-indigo-600 bg-indigo-50 shadow-md'
                         : isMatched
@@ -145,8 +145,8 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
           </div>
 
           {/* Right Column - Pictures */}
-          <div className="space-y-3" ref={rightColumnRef}>
-            <h3 className="text-lg font-semibold mb-3 text-gray-700">Pictures</h3>
+          <div className="space-y-2 sm:space-y-3" ref={rightColumnRef}>
+            <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-700">Pictures</h3>
             {rightItems.map((item) => {
               const isTargetOfSelected = !!selectedLeft;
               // Find which left label matches this right label
@@ -167,7 +167,7 @@ const MatchingQuestion = ({ title, description, leftItems, rightItems, value, on
                   data-item-id={item.id}
                   onClick={() => handleRightClick(item.id)}
                   disabled={!selectedLeft}
-                  className={`w-full p-4 rounded-lg border-2 transition-all ${
+                  className={`w-full p-2 sm:p-3 md:p-4 rounded-lg border-2 transition-all ${
                     matchedByLeft
                       ? 'border-indigo-300 bg-indigo-50'
                       : isTargetOfSelected
@@ -266,7 +266,7 @@ const AudioRecorder = ({ onRecordingComplete, label = "Start Recording", savedAu
     <div className="flex flex-col items-center space-y-2">
       <button 
         onClick={isRecording ? stopRecording : startRecording}
-        className={`px-4 py-2 rounded-md text-white font-medium ${
+        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-white font-medium text-sm sm:text-base ${
           isRecording 
             ? 'bg-red-600 hover:bg-red-700 animate-pulse' 
             : 'bg-indigo-600 hover:bg-indigo-700'
@@ -325,8 +325,8 @@ const NameAddressLearning = ({ title, description, onComplete, address, instruct
   if (phase === 'instruction') {
     return (
       <QuestionWrapper title={`${title} - Trial ${trial}/3`} description={description}>
-        <div className="text-center py-8">
-          <p className="mb-4 text-gray-600">
+        <div className="text-center py-4 sm:py-6 md:py-8">
+          <p className="mb-3 sm:mb-4 text-sm sm:text-base text-gray-600">
             {instructionText}
           </p>
           <button
@@ -343,8 +343,8 @@ const NameAddressLearning = ({ title, description, onComplete, address, instruct
   if (phase === 'showing') {
     return (
       <QuestionWrapper title={`${title} - Trial ${trial}/3`} description={memorizeText}>
-        <div className="text-center py-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-          <h3 className="text-2xl font-bold text-indigo-600 mb-6 tracking-wider leading-loose">
+        <div className="text-center py-6 sm:py-8 md:py-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-600 mb-4 sm:mb-5 md:mb-6 tracking-wider leading-loose px-2">
             {address}
           </h3>
           <p className="text-sm text-gray-500">
@@ -392,10 +392,11 @@ const NameAddressLearning = ({ title, description, onComplete, address, instruct
 // Component for Autocomplete Input with Suggestions
 const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = "", className = "" }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [displaySuggestions, setDisplaySuggestions] = useState([]);
   const inputRef = React.useRef(null);
   
   // Calculate filtered suggestions based on current value with random ordering
-  const filteredSuggestions = React.useMemo(() => {
+  useEffect(() => {
     let result = [];
     if (value && suggestions.length > 0) {
       result = suggestions.filter(s => 
@@ -406,7 +407,8 @@ const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = ""
     }
     
     // Randomize the order
-    return result.sort(() => Math.random() - 0.5);
+    const shuffled = result.sort(() => Math.random() - 0.5);
+    setTimeout(() => setDisplaySuggestions(shuffled), 0);
   }, [value, suggestions]);
   
   const handleInputChange = (e) => {
@@ -440,9 +442,9 @@ const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = ""
         onBlur={handleBlur}
         placeholder={placeholder}
       />
-      {showSuggestions && filteredSuggestions.length > 0 && (
-        <ul className="absolute z-[9999] w-full bg-white border border-gray-300 rounded-md shadow-2xl mt-1 max-h-60 overflow-auto">
-          {filteredSuggestions.map((suggestion, idx) => (
+      {showSuggestions && displaySuggestions.length > 0 && (
+        <ul className="absolute z-9999 w-full bg-white border border-gray-300 rounded-md shadow-2xl mt-1 max-h-60 overflow-auto">
+          {displaySuggestions.map((suggestion, idx) => (
             <li
               key={idx}
               className="px-4 py-2 hover:bg-indigo-50 cursor-pointer text-sm"
@@ -498,8 +500,8 @@ const RecognitionWithChoice = ({ title, description, config, value, onChange }) 
         </div>
         
         {showHints && config.hintQuestions && (
-          <div className="mt-6 p-6 bg-amber-50 border-2 border-amber-200 rounded-lg">
-            <h3 className="text-lg font-semibold text-amber-900 mb-4">
+          <div className="mt-4 sm:mt-5 md:mt-6 p-3 sm:p-4 md:p-6 bg-amber-50 border-2 border-amber-200 rounded-lg">
+            <h3 className="text-base sm:text-lg font-semibold text-amber-900 mb-3 sm:mb-4">
               {config.hintsLabel || "Select the correct options from the hints below:"}
             </h3>
             <div className="space-y-4">
@@ -564,7 +566,7 @@ const ACEIIITest = () => {
   const sectionsMetadataRef = React.useRef(null); // Store section metadata for lazy loading
 
   // Load a specific section's questions and media
-  const loadSection = async (sectionIndex, testId) => {
+  const loadSection = useCallback(async (sectionIndex) => {
     // Don't reload if already loaded or currently loading
     if (loadedSections.has(sectionIndex) || loadingSections.has(sectionIndex)) {
       return;
@@ -742,7 +744,7 @@ const ACEIIITest = () => {
         return newSet;
       });
     }
-  };
+  }, [loadedSections, loadingSections]);
 
   useEffect(() => {
     const initTest = async () => {
@@ -792,13 +794,13 @@ const ACEIIITest = () => {
 
         // Load first section immediately (blocking)
         if (sectionsData.length > 0) {
-          await loadSection(0, aceTest.id);
+          await loadSection(0);
         }
 
         // Load remaining sections in parallel (non-blocking)
         if (sectionsData.length > 1) {
           Promise.all(
-            sectionsData.slice(1).map((_, idx) => loadSection(idx + 1, aceTest.id))
+            sectionsData.slice(1).map((_, idx) => loadSection(idx + 1))
           ).catch(err => console.error('Error loading remaining sections:', err));
         }
 
@@ -880,17 +882,14 @@ const ACEIIITest = () => {
     };
 
     initTest();
-  }, [navigate]);
+  }, [navigate, loadSection]);
 
   // Load section when navigating to it
   useEffect(() => {
     if (sections.length > 0 && sectionsMetadataRef.current && attemptId) {
-      const testId = sectionsMetadataRef.current[0]?.testId;
-      if (testId) {
-        loadSection(currentSection, testId);
-      }
+      loadSection(currentSection);
     }
-  }, [currentSection, attemptId]);
+  }, [currentSection, attemptId, sections.length, loadSection]);
 
   // Helper to get translated content
   const getTranslation = (lang, sectionIdx = null, questionIdx = null) => {
@@ -1124,7 +1123,7 @@ const ACEIIITest = () => {
       case 'memory_registration':
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
-             <div className="p-4 bg-blue-50 text-blue-800 rounded-md text-center font-bold text-xl mb-6">
+             <div className="p-3 sm:p-4 bg-blue-50 text-blue-800 rounded-md text-center font-bold text-base sm:text-lg md:text-xl mb-4 sm:mb-5 md:mb-6">
                {(config.words || q.words || []).join(" - ")}
              </div>
              <div className="flex flex-col items-center">
@@ -1166,8 +1165,8 @@ const ACEIIITest = () => {
           <QuestionWrapper key={q.id} title={title} description={description}>
             <div className="space-y-2">
               {suggestions.length > 0 && (
-                <div className="mb-3">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Suggestions (click to use):</label>
+                <div className="mb-2 sm:mb-3">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Suggestions (click to use):</label>
                   <div className="space-y-1">
                     {suggestions.map((suggestion, idx) => (
                       <button
@@ -1197,10 +1196,10 @@ const ACEIIITest = () => {
         const fields = config.fields || [];
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-5 md:space-y-6">
               {fields.map((field, idx) => (
-                <div key={idx} className="flex flex-col items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <span className="mb-2 font-medium text-lg text-gray-700">{field}</span>
+                <div key={idx} className="flex flex-col items-center p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <span className="mb-2 font-medium text-base sm:text-lg text-gray-700">{field}</span>
                   <AudioRecorder 
                     onRecordingComplete={async (blob) => {
                       try {
@@ -1238,7 +1237,7 @@ const ACEIIITest = () => {
           // Render with images (like naming_grouped)
           return (
             <QuestionWrapper key={q.id} title={title} description={description}>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                 {(config.fields || q.fields || []).map((field, idx) => {
                   const imageUrl = q.media?.[idx]?.url;
                   const fieldSuggestions = suggestions[idx] || [];
@@ -1249,14 +1248,14 @@ const ACEIIITest = () => {
                         <img 
                           src={imageUrl} 
                           alt={field} 
-                          className="w-32 h-32 object-contain rounded-md mb-3 border bg-white"
+                          className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 object-contain rounded-md mb-2 sm:mb-3 border bg-white"
                         />
                       ) : (
-                        <div className="w-32 h-32 bg-gray-100 rounded-md mb-3 border flex items-center justify-center text-gray-400">
+                        <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 bg-gray-100 rounded-md mb-2 sm:mb-3 border flex items-center justify-center text-gray-400 text-xs sm:text-sm">
                           No Image
                         </div>
                       )}
-                      <label className="block text-sm font-medium text-gray-700 mb-1 text-center">{field}</label>
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 text-center">{field}</label>
                       <AutocompleteInput
                         value={(responses[q.id] || [])[idx] || ''}
                         onChange={(val) => handleResponseChange(q.id, val, idx)}
@@ -1275,7 +1274,7 @@ const ACEIIITest = () => {
         // Original text_grouped without images
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {(config.fields || q.fields || []).map((field, idx) => {
                 const fieldSuggestions = suggestions[idx] || [];
                 return (
@@ -1312,7 +1311,7 @@ const ACEIIITest = () => {
         const suggestions = config.suggestions || [];
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
               {(config.items || q.items || []).map((item, idx) => {
                 const mediaIndex = item.imageIndex !== undefined ? item.imageIndex : idx;
                 const imageUrl = q.media?.[mediaIndex]?.url;
@@ -1324,10 +1323,10 @@ const ACEIIITest = () => {
                       <img 
                         src={imageUrl} 
                         alt={item.label} 
-                        className="w-32 h-32 object-contain rounded-md mb-3 border bg-white"
+                        className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 object-contain rounded-md mb-2 sm:mb-3 border bg-white"
                       />
                     ) : (
-                      <div className="w-32 h-32 bg-gray-100 rounded-md mb-3 border flex items-center justify-center text-gray-400">
+                      <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 bg-gray-100 rounded-md mb-2 sm:mb-3 border flex items-center justify-center text-gray-400 text-xs sm:text-sm">
                         No Image
                       </div>
                     )}
@@ -1354,7 +1353,7 @@ const ACEIIITest = () => {
         
         return (
           <QuestionWrapper key={q.id} title={title} description={description}>
-            <div className={`${hasImages ? 'grid grid-cols-1 sm:grid-cols-3 gap-6' : 'space-y-3'}`}>
+            <div className={`${hasImages ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6' : 'space-y-2 sm:space-y-3'}`}>
               {optionsToRender.map((opt, idx) => {
                   // Get image from multiple sources:
                   // 1. Option's media from backend
@@ -1375,7 +1374,7 @@ const ACEIIITest = () => {
                     <div 
                       key={opt.id || idx} 
                       onClick={() => handleResponseChange(q.id, optionValue)}
-                      className={`relative flex ${optImage ? 'flex-col items-center text-center p-4' : 'items-center p-4'} border-2 rounded-lg cursor-pointer transition-all ${
+                      className={`relative flex ${optImage ? 'flex-col items-center text-center p-3 sm:p-4' : 'items-center p-3 sm:p-4'} border-2 rounded-lg cursor-pointer transition-all ${
                         isSelected ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 shadow-md' : 'border-gray-300 hover:border-indigo-300 hover:bg-gray-50'
                       }`}
                     >
@@ -1391,7 +1390,7 @@ const ACEIIITest = () => {
                         <img 
                           src={optImage} 
                           alt={optionLabel || 'Option image'} 
-                          className="w-full h-40 object-contain mb-3 rounded"
+                          className="w-full h-32 sm:h-36 md:h-40 object-contain mb-2 sm:mb-3 rounded"
                           onError={(e) => {
                             console.error('Failed to load image:', optImage);
                             e.target.style.display = 'none';
@@ -1400,7 +1399,7 @@ const ACEIIITest = () => {
                       )}
                        
                       {optionLabel && (
-                        <span className={`block font-medium ${isSelected ? 'text-indigo-900' : 'text-gray-900'}`}>
+                        <span className={`block font-medium text-sm sm:text-base ${isSelected ? 'text-indigo-900' : 'text-gray-900'}`}>
                           {optionLabel}
                         </span>
                       )}
@@ -1480,36 +1479,36 @@ const ACEIIITest = () => {
     : '';
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="mb-8 flex justify-between items-center">
+    <div className="max-w-4xl mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 lg:px-8">
+      <div className="mb-4 sm:mb-6 md:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{currentTestTitle}</h1>
-          <p className="mt-2 text-gray-600">Section {currentSection + 1} of {sections.length}</p>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{currentTestTitle}</h1>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600">Section {currentSection + 1} of {sections.length}</p>
         </div>
         <button
           onClick={() => setLanguage(prev => prev === 'en' ? 'mr' : 'en')}
-          className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 font-medium"
+          className="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 font-medium text-sm sm:text-base w-full sm:w-auto"
         >
           {language === 'en' ? 'Switch to Marathi' : 'Switch to English'}
         </button>
       </div>
       
-      <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4 mb-8">
+      <div className="w-full bg-gray-200 rounded-full h-2.5 mt-3 sm:mt-4 mb-4 sm:mb-6 md:mb-8">
         <div 
           className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" 
           style={{ width: `${((currentSection + 1) / sections.length) * 100}%` }}
         ></div>
       </div>
 
-      <div className="space-y-8">
-        <div className="bg-white shadow overflow-visible sm:rounded-lg p-6">
-          <h2 className="text-xl font-medium text-gray-900 mb-4">{currentSectionTitle}</h2>
-          <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6 md:space-y-8">
+        <div className="bg-white shadow overflow-visible sm:rounded-lg p-4 sm:p-5 md:p-6">
+          <h2 className="text-lg sm:text-xl font-medium text-gray-900 mb-3 sm:mb-4">{currentSectionTitle}</h2>
+          <div className="space-y-4 sm:space-y-5 md:space-y-6">
             {loadingSections.has(currentSection) && !loadedSections.has(currentSection) ? (
-              <div className="flex items-center justify-center py-12">
+              <div className="flex items-center justify-center py-8 sm:py-10 md:py-12">
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Loading questions...</p>
+                  <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-indigo-600 mx-auto mb-3 sm:mb-4"></div>
+                  <p className="text-sm sm:text-base text-gray-600">Loading questions...</p>
                 </div>
               </div>
             ) : (
@@ -1518,12 +1517,12 @@ const ACEIIITest = () => {
           </div>
         </div>
 
-        <div className="flex justify-between pt-4">
+        <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 pt-3 sm:pt-4">
           <button
             type="button"
             onClick={handlePrevious}
             disabled={currentSection === 0}
-            className={`inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${currentSection === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${currentSection === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             Previous
           </button>
@@ -1531,7 +1530,7 @@ const ACEIIITest = () => {
             type="button"
             onClick={handleNext}
             disabled={isSubmitting}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             {currentSection === sections.length - 1 ? (isSubmitting ? 'Submitting...' : 'Submit Test') : 'Next'}
           </button>

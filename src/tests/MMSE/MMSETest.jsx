@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   TextResponseQuestion,
@@ -12,9 +12,10 @@ import { uploadMediaAndGetAnswerText } from '../../media';
 // AutocompleteInput Component with dropdown suggestions
 const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = '', className = '' }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const [displaySuggestions, setDisplaySuggestions] = useState([]);
 
-  // Filter suggestions based on current input value using useMemo with random ordering
-  const filteredSuggestions = useMemo(() => {
+  // Filter and randomize suggestions
+  useEffect(() => {
     let result = [];
     if (!value || !Array.isArray(suggestions)) {
       result = [...suggestions];
@@ -25,7 +26,8 @@ const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = ''
       );
     }
     // Randomize the order
-    return result.sort(() => Math.random() - 0.5);
+    const shuffled = result.sort(() => Math.random() - 0.5);
+    setTimeout(() => setDisplaySuggestions(shuffled), 0);
   }, [value, suggestions]);
 
   const handleSelect = (suggestion) => {
@@ -44,16 +46,16 @@ const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = ''
         placeholder={placeholder}
         className={className}
       />
-      {isFocused && filteredSuggestions.length > 0 && (
-        <div className="absolute z-[9999] w-full mt-1 bg-white border border-gray-300 rounded-md shadow-2xl max-h-60 overflow-auto">
-          {filteredSuggestions.map((suggestion, idx) => (
+      {isFocused && displaySuggestions.length > 0 && (
+        <div className="absolute z-9999 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-2xl max-h-48 sm:max-h-60 overflow-auto">
+          {displaySuggestions.map((suggestion, idx) => (
             <div
               key={idx}
               onMouseDown={(e) => {
                 e.preventDefault();
                 handleSelect(suggestion);
               }}
-              className="px-4 py-2 cursor-pointer hover:bg-indigo-50 text-sm text-gray-700 border-b border-gray-100 last:border-b-0"
+              className="px-3 sm:px-4 py-1.5 sm:py-2 cursor-pointer hover:bg-indigo-50 text-xs sm:text-sm text-gray-700 border-b border-gray-100 last:border-b-0"
             >
               {suggestion}
             </div>
@@ -89,11 +91,11 @@ const MemoryRegistrationQuestion = ({ title, description, words, fields, value, 
   if (showWords) {
     return (
       <QuestionWrapper title={title} description={description}>
-        <div className="text-center py-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-          <h3 className="text-2xl font-bold text-indigo-600 mb-6 tracking-wider">
+        <div className="text-center py-6 sm:py-8 md:py-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-indigo-600 mb-4 sm:mb-5 md:mb-6 tracking-wider">
             {words.join(" • ")}
           </h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-gray-500">
             Memorize these words. They will disappear in <span className="font-bold text-gray-900">{timeLeft}</span> seconds.
           </p>
         </div>
@@ -103,13 +105,13 @@ const MemoryRegistrationQuestion = ({ title, description, words, fields, value, 
 
   return (
     <QuestionWrapper title={title} description="Please type the 3 words you just saw.">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         {fields.map((field, idx) => (
           <div key={idx}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{field}</label>
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{field}</label>
             <input
               type="text"
-              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
               value={(value || [])[idx] || ''}
               onChange={(e) => {
                 const newVal = [...(value || [])];
@@ -330,7 +332,7 @@ const MMSETest = () => {
     };
 
     initTest();
-  }, []);
+  }, [navigate]);
 
   // Helper to get translated content
   const getTranslation = (lang, sectionIdx, questionIdx) => {
@@ -535,15 +537,15 @@ const MMSETest = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    return <div className="flex justify-center items-center min-h-screen px-4 text-sm sm:text-base">Loading...</div>;
   }
 
   if (error) {
-    return <div className="flex justify-center items-center min-h-screen text-red-600">{error}</div>;
+    return <div className="flex justify-center items-center min-h-screen px-4 text-red-600 text-sm sm:text-base text-center">{error}</div>;
   }
 
   if (sections.length === 0) {
-    return <div className="flex justify-center items-center min-h-screen">Test data not available.</div>;
+    return <div className="flex justify-center items-center min-h-screen px-4 text-sm sm:text-base">Test data not available.</div>;
   }
 
   const renderQuestion = (q, idx) => {
@@ -576,7 +578,7 @@ const MMSETest = () => {
               onChange={(val) => handleResponseChange(q.id, val)}
               suggestions={config.suggestions || []}
               placeholder={config.placeholder || 'Enter your answer...'}
-              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
             />
           </QuestionWrapper>
         );
@@ -585,13 +587,13 @@ const MMSETest = () => {
           <QuestionWrapper key={q.id} title={config.title} description={config.description || qText}>
             <div className="space-y-2">
               {config.suggestions && config.suggestions.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-3">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                   {config.suggestions.map((suggestion, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => handleResponseChange(q.id, suggestion)}
-                      className="px-3 py-1 text-sm bg-indigo-50 text-indigo-700 rounded-md hover:bg-indigo-100 border border-indigo-200"
+                      className="px-2.5 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm bg-indigo-50 text-indigo-700 rounded-md hover:bg-indigo-100 border border-indigo-200"
                     >
                       {suggestion}
                     </button>
@@ -603,7 +605,7 @@ const MMSETest = () => {
                 onChange={(e) => handleResponseChange(q.id, e.target.value)}
                 placeholder={config.placeholder || 'Enter your answer...'}
                 rows={4}
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
               />
             </div>
           </QuestionWrapper>
@@ -611,18 +613,18 @@ const MMSETest = () => {
       case 'text_grouped':
         return (
           <QuestionWrapper key={q.id} title={config.title} description={config.description || qText}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {(config.fields || []).map((field, idx) => {
                 const fieldSuggestions = (config.suggestions && config.suggestions[idx]) || [];
                 return (
                   <div key={idx}>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{field}</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{field}</label>
                     <AutocompleteInput
                       value={(responses[q.id] || [])[idx] || ''}
                       onChange={(val) => handleResponseChange(q.id, val, idx)}
                       suggestions={fieldSuggestions}
                       placeholder={field}
-                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
                     />
                   </div>
                 );
@@ -688,11 +690,11 @@ const MMSETest = () => {
       case 'file_upload': // Backend type
         return (
           <QuestionWrapper key={q.id} title={config.title} description={config.description || qText}>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <input
                 type="file"
                 accept="image/*"
-                className="block w-full text-sm text-gray-700"
+                className="block w-full text-xs sm:text-sm text-gray-700"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
@@ -704,7 +706,7 @@ const MMSETest = () => {
                 <img
                   src={responses[q.id]}
                   alt="Uploaded"
-                  className="max-h-64 rounded border"
+                  className="max-h-48 sm:max-h-56 md:max-h-64 rounded border"
                 />
               )}
             </div>
@@ -748,51 +750,51 @@ const MMSETest = () => {
   const t = uiText[language];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-8 md:py-12 px-3 sm:px-4 md:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <div className="flex justify-end mb-4">
+        <div className="mb-4 sm:mb-6 md:mb-8">
+          <div className="flex justify-end mb-3 sm:mb-4">
             <button
               onClick={() => setLanguage(language === 'en' ? 'mr' : 'en')}
-              className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 border border-gray-300 shadow-sm text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               {language === 'en' ? 'Switch to Marathi (मराठी)' : 'Switch to English'}
             </button>
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900">{currentTestTitle}</h1>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2.5">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{currentTestTitle}</h1>
+          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
             <div 
-              className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" 
+              className="bg-indigo-600 h-2 rounded-full transition-all duration-300" 
               style={{ width: `${((currentSection + 1) / sections.length) * 100}%` }}
             ></div>
           </div>
-          <p className="mt-2 text-sm text-gray-500 text-right">
+          <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-gray-500 text-right">
             {t.section} {currentSection + 1} {t.of} {sections.length}
           </p>
         </div>
 
-        <div className="space-y-8">
-          <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6 mb-6">
-            <h2 className="text-xl font-medium text-gray-900 mb-4">{sectionTitle}</h2>
-            <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 md:space-y-8">
+          <div className="bg-white shadow px-3 py-4 sm:px-4 sm:py-5 md:px-6 md:py-6 rounded-lg mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-medium text-gray-900 mb-3 sm:mb-4">{sectionTitle}</h2>
+            <div className="space-y-4 sm:space-y-5 md:space-y-6">
               {currentSectionData.questions.map((q, idx) => renderQuestion(q, idx))}
             </div>
           </div>
         </div>
 
-        <div className="flex justify-between mt-8">
+        <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 mt-4 sm:mt-6 md:mt-8">
           <button
             onClick={handlePrevious}
             disabled={currentSection === 0}
-            className={`px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${currentSection === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`w-full sm:w-auto px-4 sm:px-5 md:px-6 py-2.5 sm:py-2 border border-gray-300 shadow-sm text-sm sm:text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${currentSection === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {t.previous}
           </button>
           <button
             onClick={handleNext}
             disabled={isSubmitting}
-            className="px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="w-full sm:w-auto px-4 sm:px-5 md:px-6 py-2.5 sm:py-2 border border-transparent shadow-sm text-sm sm:text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             {currentSection === sections.length - 1 ? (isSubmitting ? t.submitting : t.submit) : t.next}
           </button>

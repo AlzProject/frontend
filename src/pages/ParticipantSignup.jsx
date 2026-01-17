@@ -7,6 +7,7 @@ const ParticipantSignup = () => {
     name: '',
     email: '',
     contact: '',
+    age: '',
     password: '',
     confirmPassword: ''
   });
@@ -35,7 +36,8 @@ const ParticipantSignup = () => {
         password: formData.password,
         type: 'participant',
         user_specific_info: {
-          contact: formData.contact
+          contact: formData.contact,
+          age: formData.age ? parseInt(formData.age) : null
         }
       };
 
@@ -49,7 +51,7 @@ const ParticipantSignup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-blue-50/40 to-slate-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-sky-50 via-blue-50/40 to-slate-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl w-full">
         <div className="text-center mb-8">
           <div className="mx-auto w-16 h-16 bg-blue-700 flex items-center justify-center mb-4">
@@ -110,6 +112,19 @@ const ParticipantSignup = () => {
                     type="tel"
                     className="mt-1 block w-full border-2 border-gray-300 py-3 px-4 focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-700/20 sm:text-sm transition-all"
                     value={formData.contact}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label htmlFor="age" className="block text-sm font-semibold text-gray-900 mb-2">Age</label>
+                  <input
+                    id="age"
+                    name="age"
+                    type="number"
+                    min="1"
+                    max="120"
+                    className="mt-1 block w-full border-2 border-gray-300 py-3 px-4 focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-700/20 sm:text-sm transition-all"
+                    value={formData.age}
                     onChange={handleChange}
                   />
                 </div>
@@ -176,7 +191,7 @@ const ParticipantSignup = () => {
           {error && (
             <div className="bg-red-50 border-l-4 border-red-600 p-4">
               <div className="flex">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <svg className="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>

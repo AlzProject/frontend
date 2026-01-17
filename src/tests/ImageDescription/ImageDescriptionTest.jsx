@@ -16,6 +16,7 @@ function ImageDescriptionTest() {
   const [attemptId, setAttemptId] = useState(null);
   const [questionId, setQuestionId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   
   // Image pool and selection
   const [imagePool, setImagePool] = useState([]);
@@ -262,10 +263,10 @@ function ImageDescriptionTest() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-center justify-center px-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-700 mx-auto mb-4"></div>
-          <p className="text-slate-600 text-lg">Loading test...</p>
+          <div className="animate-spin rounded-full h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 border-b-2 border-blue-700 mx-auto mb-3 sm:mb-4"></div>
+          <p className="text-slate-600 text-base sm:text-lg">Loading test...</p>
         </div>
       </div>
     );
@@ -273,13 +274,13 @@ function ImageDescriptionTest() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-lg border border-red-200 p-8 max-w-md">
-          <div className="text-red-600 text-xl font-bold mb-4">Error</div>
-          <p className="text-slate-700 mb-6">{error}</p>
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-center justify-center px-4">
+        <div className="bg-white rounded-xl shadow-lg border border-red-200 p-6 sm:p-8 max-w-md w-full">
+          <div className="text-red-600 text-lg sm:text-xl font-bold mb-3 sm:mb-4">Error</div>
+          <p className="text-slate-700 mb-4 sm:mb-6 text-sm sm:text-base">{error}</p>
           <button
             onClick={() => navigate('/')}
-            className="px-6 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg transition-all"
+            className="px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg transition-all text-sm sm:text-base w-full sm:w-auto"
           >
             Return to Home
           </button>
@@ -289,17 +290,17 @@ function ImageDescriptionTest() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-slate-100">
       {/* Header */}
       <header className="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto py-3 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto py-2 sm:py-3 px-3 sm:px-4 md:px-6 lg:px-8">
           <div className="flex justify-between items-center">
-            <h1 className="text-xl sm:text-2xl font-bold text-white">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
               {t.title}
             </h1>
             <button 
               onClick={toggleLanguage}
-              className="px-3 py-1.5 border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 text-xs font-medium transition-all rounded-lg bg-slate-800/50 hover:bg-slate-800"
+              className="px-2.5 sm:px-3 py-1 sm:py-1.5 border border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 text-xs font-medium transition-all rounded-lg bg-slate-800/50 hover:bg-slate-800"
             >
               {language === 'en' ? 'मराठी' : 'English'}
             </button>
@@ -308,188 +309,188 @@ function ImageDescriptionTest() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden ring-1 ring-slate-900/5">
+      <main className="max-w-5xl mx-auto px-3 py-4 sm:px-4 sm:py-4 md:px-6 md:py-6 lg:px-8 h-[calc(100vh-64px)] overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl ring-1 ring-slate-900/5 flex flex-col h-full overflow-hidden">
           
           {/* Section Header */}
-          <div className="bg-slate-900 px-8 py-6 border-b border-slate-800">
-            <h2 className="text-2xl font-bold text-white mb-2">{section.title}</h2>
-            <p className="text-slate-300">{section.description}</p>
+          <div className="bg-slate-900 px-4 py-3 shrink-0 flex justify-between items-center">
+            <div>
+              <h2 className="text-lg font-bold text-white leading-tight">{section.title}</h2>
+              <p className="text-xs text-slate-300">{section.description}</p>
+            </div>
+            <button
+              onClick={() => setShowInstructions(!showInstructions)}
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium rounded-lg transition-colors border border-slate-700 mx-2"
+            >
+              {showInstructions ? 'Hide Instructions' : 'Show Instructions'}
+            </button>
           </div>
 
-          <div className="p-6 sm:p-8 space-y-8">
-            {/* Instructions */}
-            <div className="bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg p-5 shadow-sm">
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 mt-0.5">
-                  <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-bold text-indigo-900 text-lg mb-1">Instructions</h3>
-                  <p className="text-indigo-800 font-medium mb-2">{question.text}</p>
-                  <p className="text-indigo-700 text-sm leading-relaxed max-w-3xl">
-                    {config.instructions || "Please observe the image below carefully. Navigate through the images using the arrows if multiple images are provided. When you are ready, press the 'Start Recording' button and describe everything you see in detail. You have 1 minute to record your response."}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Image Display */}
-            {selectedMedia && (
-              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-inner">
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="bg-white px-4 py-1.5 rounded-full shadow-sm border border-slate-200 text-sm font-semibold text-slate-600 tracking-wide">
-                    Image {currentImageIndex + 1} of {imagePool.length}
+          <div className="flex-1 overflow-auto p-4 flex flex-col gap-4">
+            {/* Instructions Collapsible */}
+            {showInstructions && (
+              <div className="bg-indigo-50 border-l-4 border-indigo-500 rounded-r-lg p-3 shadow-sm shrink-0">
+                <div className="flex gap-3">
+                  <div className="shrink-0 mt-0.5">
+                    <svg className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                   </div>
-                  
-                  <div className="flex justify-center items-center gap-6 w-full">
-                    <button
-                      onClick={handlePrevImage}
-                      className="group flex flex-col items-center justify-center p-4 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-600 hover:text-blue-600 rounded-xl shadow-sm border border-slate-200 hover:border-blue-300 transition-all duration-200 min-w-[5.5rem]"
-                      title="Previous Image"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mb-1 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      <span className="text-xs font-bold uppercase tracking-wider">Prev</span>
-                    </button>
-
-                    <div className="relative border-2 border-slate-200 rounded-lg overflow-hidden shadow-lg bg-white" style={{ width: '60vh', height: '60vh' }}>
-                      {currentImageUrl ? (
-                        <img 
-                          src={currentImageUrl}
-                          alt={`Description prompt ${currentImageIndex + 1}`}
-                          className="object-contain w-full h-full"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-400 gap-3">
-                          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
-                          <span className="text-sm font-medium">Loading image...</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <button
-                      onClick={handleNextImage}
-                      className="group flex flex-col items-center justify-center p-4 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-600 hover:text-blue-600 rounded-xl shadow-sm border border-slate-200 hover:border-blue-300 transition-all duration-200 min-w-[5.5rem]"
-                      title="Next Image"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mb-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                      <span className="text-xs font-bold uppercase tracking-wider">Next</span>
-                    </button>
+                  <div>
+                    <h3 className="font-bold text-indigo-900 text-sm mb-1">Instructions</h3>
+                    <p className="text-indigo-800 font-medium mb-1 text-xs">{question.text}</p>
+                    <p className="text-indigo-700 text-xs leading-relaxed max-w-3xl">
+                      {config.instructions || "Please observe the image below carefully. Navigate through the images using the arrows if multiple images are provided. When you are ready, press the 'Start Recording' button and describe everything you see in detail. You have 1 minute to record your response."}
+                    </p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Recording Controls */}
-            <div className="bg-white rounded-xl border-2 border-slate-100 p-6 sm:p-8 space-y-6">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center space-x-4 bg-slate-100 px-5 py-3 rounded-full">
-                  <div className={`w-3 h-3 rounded-full shadow-sm ${isRecording ? 'bg-red-500 animate-pulse ring-4 ring-red-200' : 'bg-slate-400'}`}></div>
-                  <span className={`text-xl font-mono font-bold ${isRecording ? 'text-slate-900' : 'text-slate-500'}`}>
-                    {formatTime(recordingTime)} / 1:00
-                  </span>
-                </div>
-                
-                <span className={`text-sm font-medium px-3 py-1 rounded-full ${
-                  isRecording 
-                    ? 'bg-red-100 text-red-700' 
-                    : hasStarted 
-                      ? 'bg-amber-100 text-amber-700' 
-                      : 'bg-green-100 text-green-700'
-                }`}>
-                  {isRecording ? '• Recording in progress' : hasStarted ? 'Recording paused/finished' : 'Ready to start'}
-                </span>
-              </div>
+            {/* Image Display */}
+            {selectedMedia && (
+              <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 shadow-inner flex-1 flex flex-col min-h-0">
+                <div className="flex flex-col items-center gap-3 h-full">
+                  <div className="flex justify-between w-full items-center px-2">
+                     <button
+                      onClick={handlePrevImage}
+                      className="p-2 hover:bg-white text-slate-600 hover:text-blue-600 rounded-lg border border-transparent hover:border-slate-200 transition-all"
+                      title="Previous Image"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
 
-              <div className="flex gap-4">
-                <button
-                  onClick={startRecording}
-                  disabled={isRecording || audioBlob}
-                  className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-lg transition-all transform active:scale-[0.98] ${
-                    isRecording || audioBlob
-                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
-                      : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-green-200/50'
-                  }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                  </svg>
-                  {audioBlob ? 'Recording Saved' : 'Start Recording'}
-                </button>
-
-                <button
-                  onClick={stopRecording}
-                  disabled={!isRecording}
-                  className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-lg transition-all transform active:scale-[0.98] ${
-                    !isRecording
-                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
-                      : 'bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-red-200/50'
-                  }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
-                  </svg>
-                  Stop Recording
-                </button>
-              </div>
-
-              {/* Audio Playback */}
-              {audioBlob && (
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                  <div className="flex items-center gap-2 mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p className="font-semibold text-slate-700">Review Response</p>
+                    <span className="text-xs font-semibold text-slate-500">
+                      Image {currentImageIndex + 1} / {imagePool.length}
+                    </span>
+                    
+                    <button
+                      onClick={handleNextImage}
+                      className="p-2 hover:bg-white text-slate-600 hover:text-blue-600 rounded-lg border border-transparent hover:border-slate-200 transition-all"
+                      title="Next Image"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
                   </div>
-                  <audio 
-                    src={URL.createObjectURL(audioBlob)} 
-                    controls 
-                    className="w-full h-10"
-                  />
-                </div>
-              )}
-            </div>
 
-            {/* Submit Button */}
-            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-slate-100">
-              <button
-                onClick={() => navigate('/')}
-                className="px-6 py-3 border border-slate-300 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 transition-all text-center"
-              >
-                Cancel Test
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={!audioBlob || submitting}
-                className={`px-8 py-3 font-bold rounded-xl transition-all shadow-md transform active:scale-[0.98] flex items-center justify-center gap-2 ${
-                  audioBlob && !submitting
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg'
-                    : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
-                }`}
-              >
-                {submitting ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Submitting...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Submit Evaluation</span>
+                  <div className="border rounded-lg shadow-sm bg-white w-full flex-1 min-h-0 flex items-center justify-center p-2 overflow-hidden">
+                    {currentImageUrl ? (
+                      <img 
+                        src={currentImageUrl}
+                        alt={`Description prompt ${currentImageIndex + 1}`}
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-400 gap-2">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <span className="text-sm font-medium">Loading image...</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Footer Controls: Recording & Submit */}
+            <div className="bg-white rounded-xl border border-slate-200 p-4 shrink-0 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                {/* Timer & Status */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center space-x-2 bg-slate-100 px-4 py-2 rounded-full">
+                    <div className={`w-2.5 h-2.5 rounded-full shadow-sm ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-slate-400'}`}></div>
+                    <span className={`text-base font-mono font-bold ${isRecording ? 'text-slate-900' : 'text-slate-500'}`}>
+                      {formatTime(recordingTime)}
+                    </span>
+                  </div>
+                  <span className={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full ${
+                  isRecording 
+                    ? 'bg-red-50 text-red-600 border border-red-100' 
+                    : hasStarted 
+                      ? 'bg-amber-50 text-amber-600 border border-amber-100' 
+                      : 'bg-green-50 text-green-600 border border-green-100'
+                }`}>
+                  {isRecording ? 'Recording' : hasStarted ? 'Recorded' : 'Ready'}
+                </span>
+                </div>
+
+                {/* Recording Buttons */}
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={startRecording}
+                    disabled={isRecording || audioBlob}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all active:scale-95 ${
+                      isRecording || audioBlob
+                        ? 'bg-slate-100 text-slate-400 border border-slate-200'
+                        : 'bg-green-600 hover:bg-green-700 text-white shadow-sm'
+                    }`}
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                     </svg>
-                  </>
-                )}
-              </button>
+                    Record
+                  </button>
+
+                  <button
+                    onClick={stopRecording}
+                    disabled={!isRecording}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all active:scale-95 ${
+                      !isRecording
+                        ? 'bg-slate-100 text-slate-400 border border-slate-200'
+                        : 'bg-red-600 hover:bg-red-700 text-white shadow-sm'
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                    </svg>
+                    Stop
+                  </button>
+                  
+                  {audioBlob && (
+                      <audio 
+                        src={URL.createObjectURL(audioBlob)} 
+                        controls 
+                        className="h-10 w-40"
+                      />
+                  )}
+                </div>
+
+                {/* Submit Actions */}
+                <div className="flex items-center gap-3 border-l border-slate-100 pl-3">
+                  <button
+                    onClick={() => navigate('/')}
+                    className="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-lg transition-colors">
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={!audioBlob || submitting}
+                    className={`px-5 py-2 text-sm font-bold rounded-lg shadow-sm transition-all active:scale-95 flex items-center gap-2 ${
+                      audioBlob && !submitting
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                        : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+                    }`}
+                  >
+                    {submitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Submitting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Submit</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
