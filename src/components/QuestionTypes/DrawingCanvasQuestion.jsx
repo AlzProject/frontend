@@ -38,13 +38,14 @@ const DrawingCanvasQuestion = ({
   }, [backgroundImage, width, height]);
 
   const startDrawing = (e) => {
+    e.preventDefault();
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
     
-    const clientX = e.nativeEvent.clientX;
-    const clientY = e.nativeEvent.clientY;
+    const clientX = e.nativeEvent.clientX ?? (e.touches && e.touches[0]?.clientX);
+    const clientY = e.nativeEvent.clientY ?? (e.touches && e.touches[0]?.clientY);
     
     const x = (clientX - rect.left) * scaleX;
     const y = (clientY - rect.top) * scaleY;
@@ -70,6 +71,7 @@ const DrawingCanvasQuestion = ({
   };
 
   const draw = (e) => {
+    e.preventDefault();
     if (!isDrawing) return;
     
     const canvas = canvasRef.current;
@@ -77,8 +79,8 @@ const DrawingCanvasQuestion = ({
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
     
-    const clientX = e.nativeEvent.clientX;
-    const clientY = e.nativeEvent.clientY;
+    const clientX = e.nativeEvent.clientX ?? (e.touches && e.touches[0]?.clientX);
+    const clientY = e.nativeEvent.clientY ?? (e.touches && e.touches[0]?.clientY);
     
     const x = (clientX - rect.left) * scaleX;
     const y = (clientY - rect.top) * scaleY;
@@ -124,11 +126,13 @@ const DrawingCanvasQuestion = ({
             width={width}
             height={height}
             className="border-2 border-gray-300 rounded-lg cursor-crosshair touch-none bg-white max-w-full h-auto"
-            onMouseDown={startDrawing}
-            onMouseUp={finishDrawing}
-            onMouseMove={draw}
-            onMouseLeave={finishDrawing}
-            // Add touch support if needed, but mouse events often work for basic touch in some browsers or need mapping
+            onPointerDown={startDrawing}
+            onPointerUp={finishDrawing}
+            onPointerMove={draw}
+            onPointerLeave={finishDrawing}
+            onTouchStart={startDrawing}
+            onTouchMove={draw}
+            onTouchEnd={finishDrawing}
           />
 
           {savedImage && (
