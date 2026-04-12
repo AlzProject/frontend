@@ -1,10 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import MMSETest from './tests/MMSE/MMSETest';
-import MOCATest from './tests/MoCA/MOCATest';
-import ACEIIITest from './tests/ACE-III/ACEIIITest';
-import CDRTest from './tests/CDR/CDRTest';
-import ImageDescriptionTest from './tests/ImageDescription/ImageDescriptionTest';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import ParticipantLogin from './pages/ParticipantLogin';
@@ -16,7 +11,10 @@ import TestDetails from './components/Admin/TestDetails';
 import AttemptList from './components/Admin/AttemptList';
 import EvaluationView from './components/Admin/EvaluationView';
 import api from './api';
+import DynamicTest from './components/DynamicTest';
 import './App.css'
+
+import { generateSlug } from './utils';
 
 // Protected Route Component - requires login
 const ProtectedRoute = ({ children }) => {
@@ -119,29 +117,7 @@ function LandingPage() {
     fetchTests();
   }, []);
 
-  // Generate URL-friendly slug from test title or test_specific_info
-  const generateSlug = (title, testSpecificInfo = {}) => {
-    // First, check if slug is provided in test_specific_info
-    if (testSpecificInfo?.slug) {
-      return testSpecificInfo.slug;
-    }
-    
-    // Otherwise, infer from title
-    const lowerTitle = title.toLowerCase();
-    
-    if (lowerTitle.includes('cdr') || lowerTitle.includes('clinical dementia rating')) {
-      return 'cdr';
-    } else if (lowerTitle.includes('moca') || lowerTitle.includes('montreal')) {
-      return 'moca';
-    } else if (lowerTitle.includes('mmse') || lowerTitle.includes('mini-mental')) {
-      return 'mmse';
-    } else if (lowerTitle.includes('ace') || lowerTitle.includes('addenbrooke')) {
-      return 'ace-iii';
-    }
-    
-    // Default: convert title to slug
-    return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-  };
+  // Slug logic imported from utils
 
   const toggleLanguage = () => {
     setLanguage(prev => prev === 'en' ? 'mr' : 'en');
@@ -359,12 +335,7 @@ function App() {
         <Route path="/feedback" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
         
         {/* Test Routes */}
-        <Route path="/test/mmse" element={<ProtectedRoute><MMSETest /></ProtectedRoute>} />
-        <Route path="/test/moca" element={<ProtectedRoute><MOCATest /></ProtectedRoute>} />
-        <Route path="/test/ace-iii" element={<ProtectedRoute><ACEIIITest /></ProtectedRoute>} />
-        <Route path="/test/cdr" element={<ProtectedRoute><CDRTest /></ProtectedRoute>} />
-        <Route path="/test/clinical-dementia-rating" element={<ProtectedRoute><CDRTest /></ProtectedRoute>} />
-        <Route path="/test/image-description" element={<ProtectedRoute><ImageDescriptionTest /></ProtectedRoute>} />
+        <Route path="/test/:slug" element={<ProtectedRoute><DynamicTest /></ProtectedRoute>} />
         
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />

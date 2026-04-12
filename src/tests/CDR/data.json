@@ -16,10 +16,15 @@
             "config": {
               "title": "Memory Registration",
               "frontend_type": "memory_words_display",
-              "words": ["Apple", "Chair", "River"],
+              "words": [
+                "Apple",
+                "Chair",
+                "River"
+              ],
               "instruction": "I will show you three words. Please remember them.",
               "note": "This is a display-only question for memory registration"
-            }
+            },
+            "category": "memory"
           },
           {
             "id": 2,
@@ -31,15 +36,31 @@
               "title": "Delayed Recall",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Apple", "value": "apple" },
-                { "label": "Chair", "value": "chair" },
-                { "label": "River", "value": "river" },
-                { "label": "Garden", "value": "garden" },
-                { "label": "Phone", "value": "phone" }
+                {
+                  "label": "Apple",
+                  "value": "apple"
+                },
+                {
+                  "label": "Chair",
+                  "value": "chair"
+                },
+                {
+                  "label": "River",
+                  "value": "river"
+                },
+                {
+                  "label": "Garden",
+                  "value": "garden"
+                },
+                {
+                  "label": "Phone",
+                  "value": "phone"
+                }
               ],
               "multiselect": true,
               "instruction": "Select all three words you remember"
-            }
+            },
+            "category": "memory"
           },
           {
             "id": 3,
@@ -51,12 +72,29 @@
               "title": "Conversation Memory",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Never", "value": "never", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 0.5 },
-                { "label": "Often", "value": "often", "score": 1 },
-                { "label": "Almost always", "value": "always", "score": 2 }
+                {
+                  "label": "Never",
+                  "value": "never",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 0.5
+                },
+                {
+                  "label": "Often",
+                  "value": "often",
+                  "score": 1
+                },
+                {
+                  "label": "Almost always",
+                  "value": "always",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "memory"
           },
           {
             "id": 4,
@@ -68,12 +106,29 @@
               "title": "Object Misplacement",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Never", "value": "never", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 0.5 },
-                { "label": "Often", "value": "often", "score": 1 },
-                { "label": "Almost always", "value": "always", "score": 2 }
+                {
+                  "label": "Never",
+                  "value": "never",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 0.5
+                },
+                {
+                  "label": "Often",
+                  "value": "often",
+                  "score": 1
+                },
+                {
+                  "label": "Almost always",
+                  "value": "always",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "memory"
           },
           {
             "id": 5,
@@ -85,12 +140,29 @@
               "title": "Repetition",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Never", "value": "never", "score": 0 },
-                { "label": "Rarely", "value": "rarely", "score": 0.5 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "Often", "value": "often", "score": 2 }
+                {
+                  "label": "Never",
+                  "value": "never",
+                  "score": 0
+                },
+                {
+                  "label": "Rarely",
+                  "value": "rarely",
+                  "score": 0.5
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "Often",
+                  "value": "often",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "memory"
           }
         ]
       },
@@ -118,7 +190,8 @@
                 "14/02/2025",
                 "30/04/2025"
               ]
-            }
+            },
+            "category": "orientation"
           },
           {
             "id": 7,
@@ -130,15 +203,37 @@
               "title": "Day of Week",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Monday", "value": "monday" },
-                { "label": "Tuesday", "value": "tuesday" },
-                { "label": "Wednesday", "value": "wednesday" },
-                { "label": "Thursday", "value": "thursday" },
-                { "label": "Friday", "value": "friday" },
-                { "label": "Saturday", "value": "saturday" },
-                { "label": "Sunday", "value": "sunday" }
+                {
+                  "label": "Monday",
+                  "value": "monday"
+                },
+                {
+                  "label": "Tuesday",
+                  "value": "tuesday"
+                },
+                {
+                  "label": "Wednesday",
+                  "value": "wednesday"
+                },
+                {
+                  "label": "Thursday",
+                  "value": "thursday"
+                },
+                {
+                  "label": "Friday",
+                  "value": "friday"
+                },
+                {
+                  "label": "Saturday",
+                  "value": "saturday"
+                },
+                {
+                  "label": "Sunday",
+                  "value": "sunday"
+                }
               ]
-            }
+            },
+            "category": "orientation"
           },
           {
             "id": 8,
@@ -150,20 +245,57 @@
               "title": "Month",
               "frontend_type": "mcq",
               "options": [
-                { "label": "January", "value": "january" },
-                { "label": "February", "value": "february" },
-                { "label": "March", "value": "march" },
-                { "label": "April", "value": "april" },
-                { "label": "May", "value": "may" },
-                { "label": "June", "value": "june" },
-                { "label": "July", "value": "july" },
-                { "label": "August", "value": "august" },
-                { "label": "September", "value": "september" },
-                { "label": "October", "value": "october" },
-                { "label": "November", "value": "november" },
-                { "label": "December", "value": "december" }
+                {
+                  "label": "January",
+                  "value": "january"
+                },
+                {
+                  "label": "February",
+                  "value": "february"
+                },
+                {
+                  "label": "March",
+                  "value": "march"
+                },
+                {
+                  "label": "April",
+                  "value": "april"
+                },
+                {
+                  "label": "May",
+                  "value": "may"
+                },
+                {
+                  "label": "June",
+                  "value": "june"
+                },
+                {
+                  "label": "July",
+                  "value": "july"
+                },
+                {
+                  "label": "August",
+                  "value": "august"
+                },
+                {
+                  "label": "September",
+                  "value": "september"
+                },
+                {
+                  "label": "October",
+                  "value": "october"
+                },
+                {
+                  "label": "November",
+                  "value": "november"
+                },
+                {
+                  "label": "December",
+                  "value": "december"
+                }
               ]
-            }
+            },
+            "category": "orientation"
           },
           {
             "id": 9,
@@ -184,7 +316,8 @@
                 "2025",
                 "2026"
               ]
-            }
+            },
+            "category": "orientation"
           },
           {
             "id": 10,
@@ -196,12 +329,25 @@
               "title": "Location",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Home", "value": "home" },
-                { "label": "Hospital / Clinic", "value": "hospital" },
-                { "label": "My city", "value": "city" },
-                { "label": "Other", "value": "other" }
+                {
+                  "label": "Home",
+                  "value": "home"
+                },
+                {
+                  "label": "Hospital / Clinic",
+                  "value": "hospital"
+                },
+                {
+                  "label": "My city",
+                  "value": "city"
+                },
+                {
+                  "label": "Other",
+                  "value": "other"
+                }
               ]
-            }
+            },
+            "category": "orientation"
           },
           {
             "id": 11,
@@ -213,11 +359,24 @@
               "title": "Location Confusion",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Never", "value": "never", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "Often", "value": "often", "score": 2 }
+                {
+                  "label": "Never",
+                  "value": "never",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "Often",
+                  "value": "often",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "orientation"
           }
         ]
       },
@@ -235,12 +394,29 @@
               "title": "Emergency Response",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Call for help", "value": "call_help", "score": 0 },
-                { "label": "Leave the house", "value": "leave", "score": 0 },
-                { "label": "Ignore it", "value": "ignore", "score": 2 },
-                { "label": "Not sure", "value": "not_sure", "score": 1 }
+                {
+                  "label": "Call for help",
+                  "value": "call_help",
+                  "score": 0
+                },
+                {
+                  "label": "Leave the house",
+                  "value": "leave",
+                  "score": 0
+                },
+                {
+                  "label": "Ignore it",
+                  "value": "ignore",
+                  "score": 2
+                },
+                {
+                  "label": "Not sure",
+                  "value": "not_sure",
+                  "score": 1
+                }
               ]
-            }
+            },
+            "category": "judgment"
           },
           {
             "id": 13,
@@ -260,7 +436,8 @@
                 "I would look in the last place I remember having them",
                 "I would use my spare keys"
               ]
-            }
+            },
+            "category": "judgment"
           },
           {
             "id": 14,
@@ -272,12 +449,29 @@
               "title": "Medication Understanding",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Both tablets together", "value": "together", "score": 0.5 },
-                { "label": "One in morning & one at night", "value": "split", "score": 0 },
-                { "label": "Only one tablet", "value": "one", "score": 2 },
-                { "label": "I'm not sure", "value": "not_sure", "score": 1 }
+                {
+                  "label": "Both tablets together",
+                  "value": "together",
+                  "score": 0.5
+                },
+                {
+                  "label": "One in morning & one at night",
+                  "value": "split",
+                  "score": 0
+                },
+                {
+                  "label": "Only one tablet",
+                  "value": "one",
+                  "score": 2
+                },
+                {
+                  "label": "I'm not sure",
+                  "value": "not_sure",
+                  "score": 1
+                }
               ]
-            }
+            },
+            "category": "judgment"
           },
           {
             "id": 15,
@@ -297,7 +491,8 @@
                 "50",
                 "10"
               ]
-            }
+            },
+            "category": "judgment"
           },
           {
             "id": 16,
@@ -309,11 +504,24 @@
               "title": "Adaptability",
               "frontend_type": "mcq",
               "options": [
-                { "label": "No, I adjust easily", "value": "easy", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "Yes, it's difficult", "value": "difficult", "score": 2 }
+                {
+                  "label": "No, I adjust easily",
+                  "value": "easy",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "Yes, it's difficult",
+                  "value": "difficult",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "judgment"
           }
         ]
       },
@@ -331,11 +539,24 @@
               "title": "Appointment Management",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Yes, always", "value": "always", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "No, someone else manages them", "value": "never", "score": 2 }
+                {
+                  "label": "Yes, always",
+                  "value": "always",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "No, someone else manages them",
+                  "value": "never",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "community"
           },
           {
             "id": 18,
@@ -347,11 +568,24 @@
               "title": "Shopping Independence",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Yes", "value": "yes", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "No", "value": "no", "score": 2 }
+                {
+                  "label": "Yes",
+                  "value": "yes",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "No",
+                  "value": "no",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "community"
           },
           {
             "id": 19,
@@ -363,11 +597,24 @@
               "title": "Financial Management",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Yes, completely", "value": "yes", "score": 0 },
-                { "label": "Partially", "value": "partial", "score": 1 },
-                { "label": "No", "value": "no", "score": 2 }
+                {
+                  "label": "Yes, completely",
+                  "value": "yes",
+                  "score": 0
+                },
+                {
+                  "label": "Partially",
+                  "value": "partial",
+                  "score": 1
+                },
+                {
+                  "label": "No",
+                  "value": "no",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "community"
           },
           {
             "id": 20,
@@ -379,11 +626,24 @@
               "title": "Transportation",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Yes (bus, train, driving, etc.)", "value": "independent", "score": 0 },
-                { "label": "Only with someone", "value": "assisted", "score": 1 },
-                { "label": "No, not at all", "value": "dependent", "score": 2 }
+                {
+                  "label": "Yes (bus, train, driving, etc.)",
+                  "value": "independent",
+                  "score": 0
+                },
+                {
+                  "label": "Only with someone",
+                  "value": "assisted",
+                  "score": 1
+                },
+                {
+                  "label": "No, not at all",
+                  "value": "dependent",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "community"
           },
           {
             "id": 21,
@@ -395,11 +655,24 @@
               "title": "Public Places",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Never", "value": "never", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "Often", "value": "often", "score": 2 }
+                {
+                  "label": "Never",
+                  "value": "never",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "Often",
+                  "value": "often",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "community"
           }
         ]
       },
@@ -417,11 +690,24 @@
               "title": "Home Tasks",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Yes, easily", "value": "easy", "score": 0 },
-                { "label": "Yes, but sometimes need help", "value": "need_help", "score": 1 },
-                { "label": "No, I need help for most tasks", "value": "dependent", "score": 2 }
+                {
+                  "label": "Yes, easily",
+                  "value": "easy",
+                  "score": 0
+                },
+                {
+                  "label": "Yes, but sometimes need help",
+                  "value": "need_help",
+                  "score": 1
+                },
+                {
+                  "label": "No, I need help for most tasks",
+                  "value": "dependent",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "home"
           },
           {
             "id": 23,
@@ -433,12 +719,29 @@
               "title": "Hobbies",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Yes", "value": "yes", "score": 0 },
-                { "label": "Somewhat", "value": "somewhat", "score": 0.5 },
-                { "label": "Not as much", "value": "less", "score": 1 },
-                { "label": "No, I've stopped", "value": "stopped", "score": 2 }
+                {
+                  "label": "Yes",
+                  "value": "yes",
+                  "score": 0
+                },
+                {
+                  "label": "Somewhat",
+                  "value": "somewhat",
+                  "score": 0.5
+                },
+                {
+                  "label": "Not as much",
+                  "value": "less",
+                  "score": 1
+                },
+                {
+                  "label": "No, I've stopped",
+                  "value": "stopped",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "home"
           },
           {
             "id": 24,
@@ -450,11 +753,24 @@
               "title": "Task Completion",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Yes", "value": "yes", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "No", "value": "no", "score": 2 }
+                {
+                  "label": "Yes",
+                  "value": "yes",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "No",
+                  "value": "no",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "home"
           },
           {
             "id": 25,
@@ -466,11 +782,24 @@
               "title": "Task Focus",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Never", "value": "never", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "Often", "value": "often", "score": 2 }
+                {
+                  "label": "Never",
+                  "value": "never",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "Often",
+                  "value": "often",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "home"
           }
         ]
       },
@@ -488,11 +817,24 @@
               "title": "Bathing",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Yes", "value": "yes", "score": 0 },
-                { "label": "Sometimes need help", "value": "sometimes", "score": 1 },
-                { "label": "No", "value": "no", "score": 2 }
+                {
+                  "label": "Yes",
+                  "value": "yes",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes need help",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "No",
+                  "value": "no",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "personal"
           },
           {
             "id": 27,
@@ -504,11 +846,24 @@
               "title": "Dressing",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Yes", "value": "yes", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "No", "value": "no", "score": 2 }
+                {
+                  "label": "Yes",
+                  "value": "yes",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "No",
+                  "value": "no",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "personal"
           },
           {
             "id": 28,
@@ -520,11 +875,24 @@
               "title": "Eating",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Yes", "value": "yes", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "No", "value": "no", "score": 2 }
+                {
+                  "label": "Yes",
+                  "value": "yes",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "No",
+                  "value": "no",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "personal"
           },
           {
             "id": 29,
@@ -536,11 +904,24 @@
               "title": "Hygiene Reminders",
               "frontend_type": "mcq",
               "options": [
-                { "label": "No", "value": "no", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "Yes", "value": "yes", "score": 2 }
+                {
+                  "label": "No",
+                  "value": "no",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "Yes",
+                  "value": "yes",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "personal"
           },
           {
             "id": 30,
@@ -552,11 +933,24 @@
               "title": "Hygiene Maintenance",
               "frontend_type": "mcq",
               "options": [
-                { "label": "Never", "value": "never", "score": 0 },
-                { "label": "Sometimes", "value": "sometimes", "score": 1 },
-                { "label": "Often", "value": "often", "score": 2 }
+                {
+                  "label": "Never",
+                  "value": "never",
+                  "score": 0
+                },
+                {
+                  "label": "Sometimes",
+                  "value": "sometimes",
+                  "score": 1
+                },
+                {
+                  "label": "Often",
+                  "value": "often",
+                  "score": 2
+                }
               ]
-            }
+            },
+            "category": "personal"
           }
         ]
       }
@@ -566,12 +960,66 @@
       "slug": "cdr",
       "scoring_note": "This is a patient self-assessment tool. Clinician review is required for final CDR scoring.",
       "domains": {
-        "memory": { "questions": [1, 2, 3, 4, 5], "weight": 2 },
-        "orientation": { "questions": [6, 7, 8, 9, 10, 11], "weight": 1 },
-        "judgment": { "questions": [12, 13, 14, 15, 16], "weight": 1 },
-        "community": { "questions": [17, 18, 19, 20, 21], "weight": 1 },
-        "home": { "questions": [22, 23, 24, 25], "weight": 1 },
-        "personal_care": { "questions": [26, 27, 28, 29, 30], "weight": 1 }
+        "memory": {
+          "questions": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "weight": 2
+        },
+        "orientation": {
+          "questions": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "weight": 1
+        },
+        "judgment": {
+          "questions": [
+            12,
+            13,
+            14,
+            15,
+            16
+          ],
+          "weight": 1
+        },
+        "community": {
+          "questions": [
+            17,
+            18,
+            19,
+            20,
+            21
+          ],
+          "weight": 1
+        },
+        "home": {
+          "questions": [
+            22,
+            23,
+            24,
+            25
+          ],
+          "weight": 1
+        },
+        "personal_care": {
+          "questions": [
+            26,
+            27,
+            28,
+            29,
+            30
+          ],
+          "weight": 1
+        }
       },
       "translations": {
         "mr": {
@@ -585,7 +1033,11 @@
                   "text": "कृपया हे तीन शब्द लक्षात ठेवा. तुम्हाला नंतर त्यांची आठवण विचारली जाईल.",
                   "config": {
                     "title": "स्मृती नोंदणी",
-                    "words": ["सफरचंद", "खुर्ची", "नदी"],
+                    "words": [
+                      "सफरचंद",
+                      "खुर्ची",
+                      "नदी"
+                    ],
                     "instruction": "मी तुम्हाला तीन शब्द दाखवेन. ते लक्षात ठेवा."
                   }
                 },
@@ -594,11 +1046,26 @@
                   "config": {
                     "title": "विलंबित आठवण",
                     "options": [
-                      { "label": "सफरचंद", "value": "apple" },
-                      { "label": "खुर्ची", "value": "chair" },
-                      { "label": "नदी", "value": "river" },
-                      { "label": "बाग", "value": "garden" },
-                      { "label": "फोन", "value": "phone" }
+                      {
+                        "label": "सफरचंद",
+                        "value": "apple"
+                      },
+                      {
+                        "label": "खुर्ची",
+                        "value": "chair"
+                      },
+                      {
+                        "label": "नदी",
+                        "value": "river"
+                      },
+                      {
+                        "label": "बाग",
+                        "value": "garden"
+                      },
+                      {
+                        "label": "फोन",
+                        "value": "phone"
+                      }
                     ],
                     "instruction": "तुम्हाला आठवणारे सर्व तीन शब्द निवडा"
                   }
@@ -608,10 +1075,22 @@
                   "config": {
                     "title": "संभाषण स्मृती",
                     "options": [
-                      { "label": "कधीही नाही", "value": "never" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "अनेकदा", "value": "often" },
-                      { "label": "जवळजवळ नेहमी", "value": "always" }
+                      {
+                        "label": "कधीही नाही",
+                        "value": "never"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "अनेकदा",
+                        "value": "often"
+                      },
+                      {
+                        "label": "जवळजवळ नेहमी",
+                        "value": "always"
+                      }
                     ]
                   }
                 },
@@ -620,10 +1099,22 @@
                   "config": {
                     "title": "वस्तू चुकीच्या ठिकाणी ठेवणे",
                     "options": [
-                      { "label": "कधीही नाही", "value": "never" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "अनेकदा", "value": "often" },
-                      { "label": "जवळजवळ नेहमी", "value": "always" }
+                      {
+                        "label": "कधीही नाही",
+                        "value": "never"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "अनेकदा",
+                        "value": "often"
+                      },
+                      {
+                        "label": "जवळजवळ नेहमी",
+                        "value": "always"
+                      }
                     ]
                   }
                 },
@@ -632,10 +1123,22 @@
                   "config": {
                     "title": "पुनरावृत्ती",
                     "options": [
-                      { "label": "कधीही नाही", "value": "never" },
-                      { "label": "क्वचितच", "value": "rarely" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "अनेकदा", "value": "often" }
+                      {
+                        "label": "कधीही नाही",
+                        "value": "never"
+                      },
+                      {
+                        "label": "क्वचितच",
+                        "value": "rarely"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "अनेकदा",
+                        "value": "often"
+                      }
                     ]
                   }
                 }
@@ -656,13 +1159,34 @@
                   "config": {
                     "title": "आठवड्याचा दिवस",
                     "options": [
-                      { "label": "सोमवार", "value": "monday" },
-                      { "label": "मंगळवार", "value": "tuesday" },
-                      { "label": "बुधवार", "value": "wednesday" },
-                      { "label": "गुरुवार", "value": "thursday" },
-                      { "label": "शुक्रवार", "value": "friday" },
-                      { "label": "शनिवार", "value": "saturday" },
-                      { "label": "रविवार", "value": "sunday" }
+                      {
+                        "label": "सोमवार",
+                        "value": "monday"
+                      },
+                      {
+                        "label": "मंगळवार",
+                        "value": "tuesday"
+                      },
+                      {
+                        "label": "बुधवार",
+                        "value": "wednesday"
+                      },
+                      {
+                        "label": "गुरुवार",
+                        "value": "thursday"
+                      },
+                      {
+                        "label": "शुक्रवार",
+                        "value": "friday"
+                      },
+                      {
+                        "label": "शनिवार",
+                        "value": "saturday"
+                      },
+                      {
+                        "label": "रविवार",
+                        "value": "sunday"
+                      }
                     ]
                   }
                 },
@@ -671,18 +1195,54 @@
                   "config": {
                     "title": "महिना",
                     "options": [
-                      { "label": "जानेवारी", "value": "january" },
-                      { "label": "फेब्रुवारी", "value": "february" },
-                      { "label": "मार्च", "value": "march" },
-                      { "label": "एप्रिल", "value": "april" },
-                      { "label": "मे", "value": "may" },
-                      { "label": "जून", "value": "june" },
-                      { "label": "जुलै", "value": "july" },
-                      { "label": "ऑगस्ट", "value": "august" },
-                      { "label": "सप्टेंबर", "value": "september" },
-                      { "label": "ऑक्टोबर", "value": "october" },
-                      { "label": "नोव्हेंबर", "value": "november" },
-                      { "label": "डिसेंबर", "value": "december" }
+                      {
+                        "label": "जानेवारी",
+                        "value": "january"
+                      },
+                      {
+                        "label": "फेब्रुवारी",
+                        "value": "february"
+                      },
+                      {
+                        "label": "मार्च",
+                        "value": "march"
+                      },
+                      {
+                        "label": "एप्रिल",
+                        "value": "april"
+                      },
+                      {
+                        "label": "मे",
+                        "value": "may"
+                      },
+                      {
+                        "label": "जून",
+                        "value": "june"
+                      },
+                      {
+                        "label": "जुलै",
+                        "value": "july"
+                      },
+                      {
+                        "label": "ऑगस्ट",
+                        "value": "august"
+                      },
+                      {
+                        "label": "सप्टेंबर",
+                        "value": "september"
+                      },
+                      {
+                        "label": "ऑक्टोबर",
+                        "value": "october"
+                      },
+                      {
+                        "label": "नोव्हेंबर",
+                        "value": "november"
+                      },
+                      {
+                        "label": "डिसेंबर",
+                        "value": "december"
+                      }
                     ]
                   }
                 },
@@ -698,10 +1258,22 @@
                   "config": {
                     "title": "स्थान",
                     "options": [
-                      { "label": "घर", "value": "home" },
-                      { "label": "हॉस्पिटल / दवाखाना", "value": "hospital" },
-                      { "label": "माझे शहर", "value": "city" },
-                      { "label": "इतर", "value": "other" }
+                      {
+                        "label": "घर",
+                        "value": "home"
+                      },
+                      {
+                        "label": "हॉस्पिटल / दवाखाना",
+                        "value": "hospital"
+                      },
+                      {
+                        "label": "माझे शहर",
+                        "value": "city"
+                      },
+                      {
+                        "label": "इतर",
+                        "value": "other"
+                      }
                     ]
                   }
                 },
@@ -710,9 +1282,18 @@
                   "config": {
                     "title": "स्थान गोंधळ",
                     "options": [
-                      { "label": "कधीही नाही", "value": "never" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "अनेकदा", "value": "often" }
+                      {
+                        "label": "कधीही नाही",
+                        "value": "never"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "अनेकदा",
+                        "value": "often"
+                      }
                     ]
                   }
                 }
@@ -726,10 +1307,22 @@
                   "config": {
                     "title": "आपत्कालीन प्रतिसाद",
                     "options": [
-                      { "label": "मदतीसाठी कॉल करा", "value": "call_help" },
-                      { "label": "घर सोडा", "value": "leave" },
-                      { "label": "दुर्लक्ष करा", "value": "ignore" },
-                      { "label": "खात्री नाही", "value": "not_sure" }
+                      {
+                        "label": "मदतीसाठी कॉल करा",
+                        "value": "call_help"
+                      },
+                      {
+                        "label": "घर सोडा",
+                        "value": "leave"
+                      },
+                      {
+                        "label": "दुर्लक्ष करा",
+                        "value": "ignore"
+                      },
+                      {
+                        "label": "खात्री नाही",
+                        "value": "not_sure"
+                      }
                     ]
                   }
                 },
@@ -745,10 +1338,22 @@
                   "config": {
                     "title": "औषध समजून घेणे",
                     "options": [
-                      { "label": "दोन्ही गोळ्या एकत्र", "value": "together" },
-                      { "label": "एक सकाळी आणि एक रात्री", "value": "split" },
-                      { "label": "फक्त एक गोळी", "value": "one" },
-                      { "label": "मला खात्री नाही", "value": "not_sure" }
+                      {
+                        "label": "दोन्ही गोळ्या एकत्र",
+                        "value": "together"
+                      },
+                      {
+                        "label": "एक सकाळी आणि एक रात्री",
+                        "value": "split"
+                      },
+                      {
+                        "label": "फक्त एक गोळी",
+                        "value": "one"
+                      },
+                      {
+                        "label": "मला खात्री नाही",
+                        "value": "not_sure"
+                      }
                     ]
                   }
                 },
@@ -764,9 +1369,18 @@
                   "config": {
                     "title": "अनुकूलता",
                     "options": [
-                      { "label": "नाही, मी सहजपणे समायोजित होतो", "value": "easy" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "होय, ते कठीण आहे", "value": "difficult" }
+                      {
+                        "label": "नाही, मी सहजपणे समायोजित होतो",
+                        "value": "easy"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "होय, ते कठीण आहे",
+                        "value": "difficult"
+                      }
                     ]
                   }
                 }
@@ -780,9 +1394,18 @@
                   "config": {
                     "title": "भेट व्यवस्थापन",
                     "options": [
-                      { "label": "होय, नेहमी", "value": "always" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "नाही, दुसरा कोणीतरी व्यवस्थापित करतो", "value": "never" }
+                      {
+                        "label": "होय, नेहमी",
+                        "value": "always"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "नाही, दुसरा कोणीतरी व्यवस्थापित करतो",
+                        "value": "never"
+                      }
                     ]
                   }
                 },
@@ -791,9 +1414,18 @@
                   "config": {
                     "title": "खरेदी स्वातंत्र्य",
                     "options": [
-                      { "label": "होय", "value": "yes" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "नाही", "value": "no" }
+                      {
+                        "label": "होय",
+                        "value": "yes"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "नाही",
+                        "value": "no"
+                      }
                     ]
                   }
                 },
@@ -802,9 +1434,18 @@
                   "config": {
                     "title": "आर्थिक व्यवस्थापन",
                     "options": [
-                      { "label": "होय, पूर्णपणे", "value": "yes" },
-                      { "label": "अंशतः", "value": "partial" },
-                      { "label": "नाही", "value": "no" }
+                      {
+                        "label": "होय, पूर्णपणे",
+                        "value": "yes"
+                      },
+                      {
+                        "label": "अंशतः",
+                        "value": "partial"
+                      },
+                      {
+                        "label": "नाही",
+                        "value": "no"
+                      }
                     ]
                   }
                 },
@@ -813,9 +1454,18 @@
                   "config": {
                     "title": "वाहतूक",
                     "options": [
-                      { "label": "होय (बस, ट्रेन, ड्रायव्हिंग इ.)", "value": "independent" },
-                      { "label": "फक्त कोणाच्या सोबत", "value": "assisted" },
-                      { "label": "नाही, अजिबात नाही", "value": "dependent" }
+                      {
+                        "label": "होय (बस, ट्रेन, ड्रायव्हिंग इ.)",
+                        "value": "independent"
+                      },
+                      {
+                        "label": "फक्त कोणाच्या सोबत",
+                        "value": "assisted"
+                      },
+                      {
+                        "label": "नाही, अजिबात नाही",
+                        "value": "dependent"
+                      }
                     ]
                   }
                 },
@@ -824,9 +1474,18 @@
                   "config": {
                     "title": "सार्वजनिक ठिकाणे",
                     "options": [
-                      { "label": "कधीही नाही", "value": "never" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "अनेकदा", "value": "often" }
+                      {
+                        "label": "कधीही नाही",
+                        "value": "never"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "अनेकदा",
+                        "value": "often"
+                      }
                     ]
                   }
                 }
@@ -840,9 +1499,18 @@
                   "config": {
                     "title": "घरातील कामे",
                     "options": [
-                      { "label": "होय, सहजपणे", "value": "easy" },
-                      { "label": "होय, पण कधीकधी मदत लागते", "value": "need_help" },
-                      { "label": "नाही, बहुतेक कामांसाठी मला मदत लागते", "value": "dependent" }
+                      {
+                        "label": "होय, सहजपणे",
+                        "value": "easy"
+                      },
+                      {
+                        "label": "होय, पण कधीकधी मदत लागते",
+                        "value": "need_help"
+                      },
+                      {
+                        "label": "नाही, बहुतेक कामांसाठी मला मदत लागते",
+                        "value": "dependent"
+                      }
                     ]
                   }
                 },
@@ -851,10 +1519,22 @@
                   "config": {
                     "title": "छंद",
                     "options": [
-                      { "label": "होय", "value": "yes" },
-                      { "label": "काहीसे", "value": "somewhat" },
-                      { "label": "इतके नाही", "value": "less" },
-                      { "label": "नाही, मी थांबवले आहे", "value": "stopped" }
+                      {
+                        "label": "होय",
+                        "value": "yes"
+                      },
+                      {
+                        "label": "काहीसे",
+                        "value": "somewhat"
+                      },
+                      {
+                        "label": "इतके नाही",
+                        "value": "less"
+                      },
+                      {
+                        "label": "नाही, मी थांबवले आहे",
+                        "value": "stopped"
+                      }
                     ]
                   }
                 },
@@ -863,9 +1543,18 @@
                   "config": {
                     "title": "कार्य पूर्णत्व",
                     "options": [
-                      { "label": "होय", "value": "yes" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "नाही", "value": "no" }
+                      {
+                        "label": "होय",
+                        "value": "yes"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "नाही",
+                        "value": "no"
+                      }
                     ]
                   }
                 },
@@ -874,9 +1563,18 @@
                   "config": {
                     "title": "कार्य लक्ष",
                     "options": [
-                      { "label": "कधीही नाही", "value": "never" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "अनेकदा", "value": "often" }
+                      {
+                        "label": "कधीही नाही",
+                        "value": "never"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "अनेकदा",
+                        "value": "often"
+                      }
                     ]
                   }
                 }
@@ -890,9 +1588,18 @@
                   "config": {
                     "title": "आंघोळ",
                     "options": [
-                      { "label": "होय", "value": "yes" },
-                      { "label": "कधीकधी मदत लागते", "value": "sometimes" },
-                      { "label": "नाही", "value": "no" }
+                      {
+                        "label": "होय",
+                        "value": "yes"
+                      },
+                      {
+                        "label": "कधीकधी मदत लागते",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "नाही",
+                        "value": "no"
+                      }
                     ]
                   }
                 },
@@ -901,9 +1608,18 @@
                   "config": {
                     "title": "कपडे घालणे",
                     "options": [
-                      { "label": "होय", "value": "yes" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "नाही", "value": "no" }
+                      {
+                        "label": "होय",
+                        "value": "yes"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "नाही",
+                        "value": "no"
+                      }
                     ]
                   }
                 },
@@ -912,9 +1628,18 @@
                   "config": {
                     "title": "जेवण",
                     "options": [
-                      { "label": "होय", "value": "yes" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "नाही", "value": "no" }
+                      {
+                        "label": "होय",
+                        "value": "yes"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "नाही",
+                        "value": "no"
+                      }
                     ]
                   }
                 },
@@ -923,9 +1648,18 @@
                   "config": {
                     "title": "स्वच्छता आठवणी",
                     "options": [
-                      { "label": "नाही", "value": "no" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "होय", "value": "yes" }
+                      {
+                        "label": "नाही",
+                        "value": "no"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "होय",
+                        "value": "yes"
+                      }
                     ]
                   }
                 },
@@ -934,9 +1668,18 @@
                   "config": {
                     "title": "स्वच्छता राखणे",
                     "options": [
-                      { "label": "कधीही नाही", "value": "never" },
-                      { "label": "कधीकधी", "value": "sometimes" },
-                      { "label": "अनेकदा", "value": "often" }
+                      {
+                        "label": "कधीही नाही",
+                        "value": "never"
+                      },
+                      {
+                        "label": "कधीकधी",
+                        "value": "sometimes"
+                      },
+                      {
+                        "label": "अनेकदा",
+                        "value": "often"
+                      }
                     ]
                   }
                 }
@@ -948,4 +1691,3 @@
     }
   }
 ]
-

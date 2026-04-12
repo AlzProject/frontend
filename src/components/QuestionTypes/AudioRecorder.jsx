@@ -4,9 +4,13 @@ import api from '../../api';
 
 const AudioRecorder = ({ questionId, value, onChange, label = "Record Answer", maxDuration = 300 }) => {
   const [isRecording, setIsRecording] = useState(false);
-  const [mediaId, setMediaId] = useState(value ? value.replace('media:', '') : null);
+  const [mediaId, setMediaId] = useState(
+    typeof value === 'string' && value.startsWith('media:') ? value.replace('media:', '') : null
+  );
   const [uploading, setUploading] = useState(false);
-  const [audioUrl, setAudioUrl] = useState(null);
+  const [audioUrl, setAudioUrl] = useState(
+    typeof value === 'string' && value && !value.startsWith('media:') ? value : null
+  );
   const [recordingTime, setRecordingTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   
@@ -21,8 +25,8 @@ const AudioRecorder = ({ questionId, value, onChange, label = "Record Answer", m
       if (mediaId && !audioUrl) {
         try {
           const response = await api.get(`/media/${mediaId}/download`);
-          if (response.data && response.data.url) {
-            setAudioUrl(response.data.url);
+          if (response.data && response.data.presignedUrl) {
+            setAudioUrl(response.data.presignedUrl);
           }
         } catch (error) {
           console.error('Failed to fetch audio playback URL:', error);
@@ -33,11 +37,14 @@ const AudioRecorder = ({ questionId, value, onChange, label = "Record Answer", m
     fetchAudioUrl();
   }, [mediaId, audioUrl]);
 
-  // Update mediaId when value prop changes
+  // Update mediaId/audioUrl when value prop changes
   useEffect(() => {
-    if (value && value.startsWith('media:')) {
-      const id = value.replace('media:', '');
-      setMediaId(id);
+    if (!value || typeof value !== 'string') { setMediaId(null); setAudioUrl(null); return; }
+    if (value.startsWith('media:')) {
+      setMediaId(value.replace('media:', ''));
+    } else {
+      setMediaId(null);
+      setAudioUrl(value);
     }
   }, [value]);
 
@@ -185,7 +192,7 @@ const AudioRecorder = ({ questionId, value, onChange, label = "Record Answer", m
       </div>
       
       {/* Playback Controls */}
-      {mediaId && audioUrl && !isRecording && !uploading && (
+      {audioUrl && !isRecording && !uploading && (
         <div className="mt-2 p-3 bg-green-50 border-2 border-green-200 rounded-lg space-y-2">
           <div className="flex items-center gap-2 text-sm text-green-700 font-medium">
             <span>✓</span>

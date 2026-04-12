@@ -11,10 +11,12 @@
       "questions": [
         {
           "id": "img-desc-1",
-          "type": "voice_recording",
+          "type": "file_upload",
           "text": "Please look at the image shown below and describe it in as much detail as possible. You have 1 minute to speak.",
           "duration": 60,
           "config": {
+            "frontend_type": "audio_notes",
+            "hideNotes": true,
             "recordingDuration": 60,
             "imagePool": [
               "image1.jpg",
@@ -24,8 +26,10 @@
               "image5.jpg"
             ],
             "randomImage": true,
-            "instructions": "Click 'Start Recording' and describe everything you see in the image. Speak clearly and continuously for up to 1 minute."
-          }
+            "instructions": "Click 'Start Recording' and describe everything you see in the image. Speak clearly and continuously for up to 1 minute.",
+            "inputType": "voice_recording"
+          },
+          "category": "image"
         }
       ]
     }

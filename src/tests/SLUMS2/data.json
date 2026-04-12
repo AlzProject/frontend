@@ -1,0 +1,1010 @@
+[
+  {
+    "title": "Saint Louis University Mental Status (SLUMS) Self Administerd",
+    "description": "Cognitive screening adapted for Indian participants with familiar currency, places, and story context.",
+    "sections": [
+      {
+        "title": "Orientation",
+        "orderIndex": 1,
+        "questions": [
+          {
+            "id": 1,
+            "text": "What day of the week is it today?",
+            "type": "text",
+            "maxScore": 1,
+            "config": {
+              "title": "Day of the Week",
+              "frontend_type": "dropdown",
+              "options": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ]
+            },
+            "category": "orientation"
+          },
+          {
+            "id": 2,
+            "text": "What year is it?",
+            "type": "text",
+            "maxScore": 1,
+            "config": {
+              "title": "Year",
+              "frontend_type": "dropdown",
+              "options": [
+                "2025",
+                "2026",
+                "2027",
+                "2028"
+              ]
+            },
+            "category": "orientation"
+          },
+          {
+            "id": 3,
+            "text": "What state or union territory are you in?",
+            "type": "text",
+            "maxScore": 1,
+            "config": {
+              "title": "State / UT",
+              "frontend_type": "dropdown",
+              "options": [
+                "Maharashtra",
+                "Delhi",
+                "Karnataka",
+                "Tamil Nadu",
+                "Gujarat",
+                "Telangana",
+                "West Bengal",
+                "Uttar Pradesh"
+              ]
+            },
+            "category": "orientation"
+          }
+        ]
+      },
+      {
+        "title": "Memory Registration",
+        "orderIndex": 2,
+        "questions": [
+          {
+            "id": 4,
+            "text": "Please remember these five objects. I will ask you what they are later.",
+            "type": "text",
+            "maxScore": 1,
+            "ans": "",
+            "config": {
+              "title": "Memory Registration",
+              "frontend_type": "memory_registration",
+              "words": [
+                "Mango",
+                "Key",
+                "Scarf",
+                "House",
+                "Bus"
+              ],
+              "note": "Display-only question for delayed recall"
+            },
+            "category": "memory"
+          }
+        ]
+      },
+      {
+        "title": "Calculation",
+        "orderIndex": 3,
+        "questions": [
+          {
+            "id": 5,
+            "text": "You have ₹100 and you go to the store and buy a dozen oranges for ₹36 and a toy cycle for ₹20. How much did you spend?",
+            "type": "text",
+            "maxScore": 2,
+            "ans": "56",
+            "config": {
+              "title": "How Much Did You Spend?",
+              "frontend_type": "dropdown",
+              "options": [
+                "46",
+                "52",
+                "56",
+                "60",
+                "66",
+                "72"
+              ],
+              "correctAnswer": "56"
+            },
+            "category": "calculation"
+          },
+          {
+            "id": 6,
+            "text": "How much do you have left?",
+            "type": "text",
+            "maxScore": 1,
+            "ans": "44",
+            "config": {
+              "title": "How Much Do You Have Left?",
+              "frontend_type": "dropdown",
+              "options": [
+                "24",
+                "34",
+                "40",
+                "44",
+                "48",
+                "54"
+              ],
+              "correctAnswer": "44"
+            },
+            "category": "calculation"
+          }
+        ]
+      },
+      {
+        "title": "Fluency",
+        "orderIndex": 4,
+        "questions": [
+          {
+            "id": 7,
+            "text": "Name as many animals as you can in one minute. Record your answer.",
+            "type": "text",
+            "maxScore": 3,
+            "ans": "15",
+            "config": {
+              "title": "Animal Naming",
+              "frontend_type": "audio_notes",
+              "maxDuration": 60,
+              "audioLabel": "Record animal fluency response",
+              "notesLabel": "Optional typed notes",
+              "notesPlaceholder": "e.g. cow, goat, tiger, elephant or enter total count"
+            },
+            "category": "fluency"
+          }
+        ]
+      },
+      {
+        "title": "Delayed Recall",
+        "orderIndex": 5,
+        "questions": [
+          {
+            "id": 8,
+            "text": "What was the first object I asked you to remember?",
+            "type": "text",
+            "maxScore": 1,
+            "ans": "Mango",
+            "config": {
+              "title": "Object 1",
+              "frontend_type": "dropdown",
+              "options": [
+                "Mango",
+                "Key",
+                "Scarf",
+                "House",
+                "Bus",
+                "Book",
+                "Spoon",
+                "Temple"
+              ],
+              "correctAnswer": "Mango"
+            },
+            "category": "delayed"
+          },
+          {
+            "id": 9,
+            "text": "What was the second object I asked you to remember?",
+            "type": "text",
+            "maxScore": 1,
+            "ans": "Key",
+            "config": {
+              "title": "Object 2",
+              "frontend_type": "dropdown",
+              "options": [
+                "Mango",
+                "Key",
+                "Scarf",
+                "House",
+                "Bus",
+                "Book",
+                "Spoon",
+                "Temple"
+              ],
+              "correctAnswer": "Key"
+            },
+            "category": "delayed"
+          },
+          {
+            "id": 10,
+            "text": "What was the third object I asked you to remember?",
+            "type": "text",
+            "maxScore": 1,
+            "ans": "Scarf",
+            "config": {
+              "title": "Object 3",
+              "frontend_type": "dropdown",
+              "options": [
+                "Mango",
+                "Key",
+                "Scarf",
+                "House",
+                "Bus",
+                "Book",
+                "Spoon",
+                "Temple"
+              ],
+              "correctAnswer": "Scarf"
+            },
+            "category": "delayed"
+          },
+          {
+            "id": 11,
+            "text": "What was the fourth object I asked you to remember?",
+            "type": "text",
+            "maxScore": 1,
+            "ans": "House",
+            "config": {
+              "title": "Object 4",
+              "frontend_type": "dropdown",
+              "options": [
+                "Mango",
+                "Key",
+                "Scarf",
+                "House",
+                "Bus",
+                "Book",
+                "Spoon",
+                "Temple"
+              ],
+              "correctAnswer": "House"
+            },
+            "category": "delayed"
+          },
+          {
+            "id": 12,
+            "text": "What was the fifth object I asked you to remember?",
+            "type": "text",
+            "maxScore": 1,
+            "ans": "Bus",
+            "config": {
+              "title": "Object 5",
+              "frontend_type": "dropdown",
+              "options": [
+                "Mango",
+                "Key",
+                "Scarf",
+                "House",
+                "Bus",
+                "Book",
+                "Spoon",
+                "Temple"
+              ],
+              "correctAnswer": "Bus"
+            },
+            "category": "delayed"
+          }
+        ]
+      },
+      {
+        "title": "Attention",
+        "orderIndex": 6,
+        "questions": [
+          {
+            "id": 13,
+            "text": "I am going to give you a series of numbers. Enter each one backwards. First: 87 backwards.",
+            "type": "text",
+            "maxScore": 1,
+            "ans": "78",
+            "config": {
+              "title": "87 Backwards",
+              "frontend_type": "text_input",
+              "placeholder": "Enter the numbers backwards"
+            },
+            "category": "attention"
+          },
+          {
+            "id": 14,
+            "text": "Next: 649 backwards.",
+            "type": "text",
+            "maxScore": 1,
+            "ans": "946",
+            "config": {
+              "title": "649 Backwards",
+              "frontend_type": "text_input",
+              "placeholder": "Enter the numbers backwards"
+            },
+            "category": "attention"
+          },
+          {
+            "id": 15,
+            "text": "Finally: 8537 backwards.",
+            "type": "text",
+            "maxScore": 1,
+            "ans": "7358",
+            "config": {
+              "title": "8537 Backwards",
+              "frontend_type": "text_input",
+              "placeholder": "Enter the numbers backwards"
+            },
+            "category": "attention"
+          }
+        ]
+      },
+      {
+        "title": "Clock Drawing",
+        "orderIndex": 7,
+        "questions": [
+          {
+            "id": 16,
+            "text": "Draw a clock, put in all the hour markers, and set the time to ten minutes to eleven.",
+            "type": "file_upload",
+            "maxScore": 4,
+            "config": {
+              "title": "Clock Drawing",
+              "frontend_type": "drawing"
+            },
+            "category": "clock"
+          }
+        ]
+      },
+      {
+        "title": "Figures",
+        "orderIndex": 8,
+        "questions": [
+          {
+            "id": 17,
+            "text": "Place an X inside the triangle shown below.",
+            "type": "file_upload",
+            "maxScore": 1,
+            "config": {
+              "title": "Place X in Triangle",
+              "frontend_type": "drawing",
+              "backgroundImageKey": "SLUMS_FIGURES_SVG"
+            },
+            "category": "figures"
+          },
+          {
+            "id": 18,
+            "text": "Which of the figures is the largest?",
+            "type": "text",
+            "maxScore": 1,
+            "ans": "Square",
+            "config": {
+              "title": "Largest Figure",
+              "frontend_type": "dropdown",
+              "options": [
+                "Triangle",
+                "Circle",
+                "Square"
+              ],
+              "correctAnswer": "Square"
+            },
+            "category": "figures"
+          }
+        ]
+      },
+      {
+        "title": "Story Recall",
+        "orderIndex": 9,
+        "questions": [
+          {
+            "id": 19,
+            "text": "Listen to this story and answer the questions. Anita was a very successful bank manager in Bengaluru. She met Raj, a kind school teacher, and they married and had three children. Anita stopped working for some years to care for her children. When the children became teenagers, she went back to work. What was the woman's name?",
+            "type": "text",
+            "maxScore": 2,
+            "ans": "Anita",
+            "config": {
+              "title": "Woman's Name",
+              "frontend_type": "dropdown",
+              "options": [
+                "Anita",
+                "Asha",
+                "Neha",
+                "Pooja"
+              ],
+              "correctAnswer": "Anita"
+            },
+            "category": "story"
+          },
+          {
+            "id": 20,
+            "text": "What work did she do?",
+            "type": "text",
+            "maxScore": 2,
+            "ans": "Bank manager",
+            "config": {
+              "title": "Her Work",
+              "frontend_type": "dropdown",
+              "options": [
+                "Doctor",
+                "Bank manager",
+                "Teacher",
+                "Engineer"
+              ],
+              "correctAnswer": "Bank manager"
+            },
+            "category": "story"
+          },
+          {
+            "id": 21,
+            "text": "When did she go back to work?",
+            "type": "text",
+            "maxScore": 2,
+            "ans": "When her children became teenagers",
+            "config": {
+              "title": "When Back to Work",
+              "frontend_type": "dropdown",
+              "options": [
+                "After marriage",
+                "When her children became teenagers",
+                "After moving cities",
+                "When she turned 40"
+              ],
+              "correctAnswer": "When her children became teenagers"
+            },
+            "category": "story"
+          },
+          {
+            "id": 22,
+            "text": "Which state did they live in?",
+            "type": "text",
+            "maxScore": 2,
+            "ans": "Karnataka",
+            "config": {
+              "title": "State They Lived In",
+              "frontend_type": "dropdown",
+              "options": [
+                "Maharashtra",
+                "Karnataka",
+                "Kerala",
+                "Gujarat"
+              ],
+              "correctAnswer": "Karnataka"
+            },
+            "category": "story"
+          }
+        ]
+      }
+    ],
+    "language": "en",
+    "test_specific_info": {
+      "slug": "slums2",
+      "locale": "en-IN",
+      "adaptation": "Indian context",
+      "translations": {
+        "mr": {
+          "sections": [
+            {
+              "title": "अभिमुखीकरण",
+              "questions": [
+                {
+                  "text": "अभिमुखीकरण प्रश्नांची उत्तरे द्या.",
+                  "config": {
+                    "title": "अभिमुखीकरण",
+                    "fields": [
+                      {
+                        "label": "आठवड्याचा दिवस",
+                        "options": [
+                          {
+                            "value": "Monday",
+                            "label": "सोमवार"
+                          },
+                          {
+                            "value": "Tuesday",
+                            "label": "मंगळवार"
+                          },
+                          {
+                            "value": "Wednesday",
+                            "label": "बुधवार"
+                          },
+                          {
+                            "value": "Thursday",
+                            "label": "गुरुवार"
+                          },
+                          {
+                            "value": "Friday",
+                            "label": "शुक्रवार"
+                          },
+                          {
+                            "value": "Saturday",
+                            "label": "शनिवार"
+                          },
+                          {
+                            "value": "Sunday",
+                            "label": "रविवार"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "वर्ष",
+                        "options": [
+                          {
+                            "value": "2025",
+                            "label": "२०२५"
+                          },
+                          {
+                            "value": "2026",
+                            "label": "२०२६"
+                          },
+                          {
+                            "value": "2027",
+                            "label": "२०२७"
+                          },
+                          {
+                            "value": "2028",
+                            "label": "२०२८"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "राज्य / केंद्रशासित प्रदेश",
+                        "options": [
+                          {
+                            "value": "Maharashtra",
+                            "label": "महाराष्ट्र"
+                          },
+                          {
+                            "value": "Delhi",
+                            "label": "दिल्ली"
+                          },
+                          {
+                            "value": "Karnataka",
+                            "label": "कर्नाटक"
+                          },
+                          {
+                            "value": "Tamil Nadu",
+                            "label": "तामिळनाडू"
+                          },
+                          {
+                            "value": "Gujarat",
+                            "label": "गुजरात"
+                          },
+                          {
+                            "value": "Telangana",
+                            "label": "तेलंगणा"
+                          },
+                          {
+                            "value": "West Bengal",
+                            "label": "पश्चिम बंगाल"
+                          },
+                          {
+                            "value": "Uttar Pradesh",
+                            "label": "उत्तर प्रदेश"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "स्मृती नोंदणी",
+              "questions": [
+                {
+                  "text": "कृपया या पाच वस्तू लक्षात ठेवा. मी नंतर विचारीन.",
+                  "config": {
+                    "title": "स्मृती नोंदणी",
+                    "words": [
+                      "आंबा",
+                      "चावी",
+                      "स्कार्फ",
+                      "घर",
+                      "बस"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "गणना",
+              "questions": [
+                {
+                  "text": "तुमच्याकडे ₹१०० आहेत आणि तुम्ही दुकानात जाऊन १२ संत्री ₹३६ ला आणि एक खेळण्याची सायकल ₹२० ला विकत घेता.",
+                  "config": {
+                    "title": "पैशांची गणना",
+                    "fields": [
+                      {
+                        "label": "तुम्ही किती खर्च केलात?",
+                        "options": [
+                          "46",
+                          "52",
+                          "56",
+                          "60",
+                          "66",
+                          "72"
+                        ]
+                      },
+                      {
+                        "label": "तुमच्याकडे किती शिल्लक आहे?",
+                        "options": [
+                          "24",
+                          "34",
+                          "40",
+                          "44",
+                          "48",
+                          "54"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "प्रवाहिता",
+              "questions": [
+                {
+                  "text": "एक मिनिटात जास्तीत जास्त प्राण्यांची नावे सांगा. तुमचे उत्तर रेकॉर्ड करा.",
+                  "config": {
+                    "title": "प्राणी नामांकन",
+                    "audioLabel": "प्राणी प्रवाहिता उत्तर रेकॉर्ड करा",
+                    "notesLabel": "वैकल्पिक टाइप केलेल्या नोंदी",
+                    "notesPlaceholder": "उदा. गाय, बकरी, वाघ, हत्ती..."
+                  }
+                }
+              ]
+            },
+            {
+              "title": "विलंबित स्मृती",
+              "questions": [
+                {
+                  "text": "मी तुम्हाला लक्षात ठेवण्यास सांगितलेल्या पाच वस्तू कोणत्या होत्या?",
+                  "config": {
+                    "title": "विलंबित स्मृती",
+                    "fields": [
+                      {
+                        "label": "वस्तू १",
+                        "options": [
+                          {
+                            "value": "Mango",
+                            "label": "आंबा"
+                          },
+                          {
+                            "value": "Key",
+                            "label": "चावी"
+                          },
+                          {
+                            "value": "Scarf",
+                            "label": "स्कार्फ"
+                          },
+                          {
+                            "value": "House",
+                            "label": "घर"
+                          },
+                          {
+                            "value": "Bus",
+                            "label": "बस"
+                          },
+                          {
+                            "value": "Book",
+                            "label": "पुस्तक"
+                          },
+                          {
+                            "value": "Spoon",
+                            "label": "चमचा"
+                          },
+                          {
+                            "value": "Temple",
+                            "label": "मंदिर"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "वस्तू २",
+                        "options": [
+                          {
+                            "value": "Mango",
+                            "label": "आंबा"
+                          },
+                          {
+                            "value": "Key",
+                            "label": "चावी"
+                          },
+                          {
+                            "value": "Scarf",
+                            "label": "स्कार्फ"
+                          },
+                          {
+                            "value": "House",
+                            "label": "घर"
+                          },
+                          {
+                            "value": "Bus",
+                            "label": "बस"
+                          },
+                          {
+                            "value": "Book",
+                            "label": "पुस्तक"
+                          },
+                          {
+                            "value": "Spoon",
+                            "label": "चमचा"
+                          },
+                          {
+                            "value": "Temple",
+                            "label": "मंदिर"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "वस्तू ३",
+                        "options": [
+                          {
+                            "value": "Mango",
+                            "label": "आंबा"
+                          },
+                          {
+                            "value": "Key",
+                            "label": "चावी"
+                          },
+                          {
+                            "value": "Scarf",
+                            "label": "स्कार्फ"
+                          },
+                          {
+                            "value": "House",
+                            "label": "घर"
+                          },
+                          {
+                            "value": "Bus",
+                            "label": "बस"
+                          },
+                          {
+                            "value": "Book",
+                            "label": "पुस्तक"
+                          },
+                          {
+                            "value": "Spoon",
+                            "label": "चमचा"
+                          },
+                          {
+                            "value": "Temple",
+                            "label": "मंदिर"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "वस्तू ४",
+                        "options": [
+                          {
+                            "value": "Mango",
+                            "label": "आंबा"
+                          },
+                          {
+                            "value": "Key",
+                            "label": "चावी"
+                          },
+                          {
+                            "value": "Scarf",
+                            "label": "स्कार्फ"
+                          },
+                          {
+                            "value": "House",
+                            "label": "घर"
+                          },
+                          {
+                            "value": "Bus",
+                            "label": "बस"
+                          },
+                          {
+                            "value": "Book",
+                            "label": "पुस्तक"
+                          },
+                          {
+                            "value": "Spoon",
+                            "label": "चमचा"
+                          },
+                          {
+                            "value": "Temple",
+                            "label": "मंदिर"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "वस्तू ५",
+                        "options": [
+                          {
+                            "value": "Mango",
+                            "label": "आंबा"
+                          },
+                          {
+                            "value": "Key",
+                            "label": "चावी"
+                          },
+                          {
+                            "value": "Scarf",
+                            "label": "स्कार्फ"
+                          },
+                          {
+                            "value": "House",
+                            "label": "घर"
+                          },
+                          {
+                            "value": "Bus",
+                            "label": "बस"
+                          },
+                          {
+                            "value": "Book",
+                            "label": "पुस्तक"
+                          },
+                          {
+                            "value": "Spoon",
+                            "label": "चमचा"
+                          },
+                          {
+                            "value": "Temple",
+                            "label": "मंदिर"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "लक्ष",
+              "questions": [
+                {
+                  "text": "मी तुम्हाला काही संख्या देणार आहे. प्रत्येक संख्या उलट्या क्रमाने लिहा.",
+                  "config": {
+                    "title": "संख्या उलटे",
+                    "fields": [
+                      "८७ उलटे",
+                      "६४९ उलटे",
+                      "८५३७ उलटे"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "घड्याळ रेखाटन",
+              "questions": [
+                {
+                  "text": "एक घड्याळ काढा, सर्व तासाचे आकडे घाला आणि वेळ अकरा वाजण्याच्या दहा मिनिटे आधी दाखवा.",
+                  "config": {
+                    "title": "घड्याळ रेखाटन"
+                  }
+                }
+              ]
+            },
+            {
+              "title": "आकृत्या",
+              "questions": [
+                {
+                  "text": "खाली दाखवलेल्या त्रिकोणात X लिहा.",
+                  "config": {
+                    "title": "त्रिकोणात X ठेवा"
+                  }
+                },
+                {
+                  "text": "कोणती आकृती सर्वात मोठी आहे?",
+                  "config": {
+                    "title": "सर्वात मोठी आकृती",
+                    "fields": [
+                      {
+                        "label": "सर्वात मोठी आकृती निवडा",
+                        "options": [
+                          {
+                            "value": "Triangle",
+                            "label": "त्रिकोण"
+                          },
+                          {
+                            "value": "Circle",
+                            "label": "वर्तुळ"
+                          },
+                          {
+                            "value": "Square",
+                            "label": "चौरस"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "title": "कथा स्मरण",
+              "questions": [
+                {
+                  "text": "ही कथा ऐका आणि प्रश्नांची उत्तरे द्या. अनिता बेंगळुरूमधील एक अत्यंत यशस्वी बँक व्यवस्थापक होती. तिची राजशी, एका दयाळू शाळेच्या शिक्षकाशी भेट झाली, त्यांनी लग्न केले आणि तीन मुले झाली. अनिताने काही वर्षे मुलांच्या संगोपनासाठी नोकरी सोडली. जेव्हा मुले किशोरवयीन झाली, तेव्हा ती पुन्हा कामावर रुजू झाली.",
+                  "config": {
+                    "title": "कथा स्मरण",
+                    "fields": [
+                      {
+                        "label": "त्या महिलेचे नाव काय होते?",
+                        "options": [
+                          {
+                            "value": "Anita",
+                            "label": "अनिता"
+                          },
+                          {
+                            "value": "Asha",
+                            "label": "आशा"
+                          },
+                          {
+                            "value": "Neha",
+                            "label": "नेहा"
+                          },
+                          {
+                            "value": "Pooja",
+                            "label": "पूजा"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "ती काय काम करत होती?",
+                        "options": [
+                          {
+                            "value": "Doctor",
+                            "label": "डॉक्टर"
+                          },
+                          {
+                            "value": "Bank manager",
+                            "label": "बँक व्यवस्थापक"
+                          },
+                          {
+                            "value": "Teacher",
+                            "label": "शिक्षिका"
+                          },
+                          {
+                            "value": "Engineer",
+                            "label": "अभियंता"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "ती पुन्हा कामावर कधी गेली?",
+                        "options": [
+                          {
+                            "value": "After marriage",
+                            "label": "लग्नानंतर"
+                          },
+                          {
+                            "value": "When her children became teenagers",
+                            "label": "मुले किशोरवयीन झाल्यावर"
+                          },
+                          {
+                            "value": "After moving cities",
+                            "label": "शहर बदलल्यावर"
+                          },
+                          {
+                            "value": "When she turned 40",
+                            "label": "चाळीशी ओलांडल्यावर"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "ते कोणत्या राज्यात राहत होते?",
+                        "options": [
+                          {
+                            "value": "Maharashtra",
+                            "label": "महाराष्ट्र"
+                          },
+                          {
+                            "value": "Karnataka",
+                            "label": "कर्नाटक"
+                          },
+                          {
+                            "value": "Kerala",
+                            "label": "केरळ"
+                          },
+                          {
+                            "value": "Gujarat",
+                            "label": "गुजरात"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+]

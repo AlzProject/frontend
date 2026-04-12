@@ -7,6 +7,25 @@ import api from './api';
  * 
  * @param {Function} navigate - The navigate function from useNavigate hook
  */
+export const generateSlug = (title, testSpecificInfo = {}) => {
+  if (testSpecificInfo?.slug) {
+    return testSpecificInfo.slug;
+  }
+  const lowerTitle = title.toLowerCase();
+  if (lowerTitle.includes('cdr') || lowerTitle.includes('clinical dementia rating')) {
+    return 'cdr';
+  } else if (lowerTitle.includes('moca') || lowerTitle.includes('montreal')) {
+    return 'moca';
+  } else if (lowerTitle.includes('slums') || lowerTitle.includes('saint louis')) {
+    return 'slums';
+  } else if (lowerTitle.includes('mmse') || lowerTitle.includes('mini-mental')) {
+    return 'mmse';
+  } else if (lowerTitle.includes('ace') || lowerTitle.includes('addenbrooke')) {
+    return 'ace-iii';
+  }
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+};
+
 export const checkFeedbackAndRedirect = async (navigate) => {
   try {
     const userStr = localStorage.getItem('user');

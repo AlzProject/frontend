@@ -40,7 +40,7 @@ export async function uploadMediaAndGetAnswerText({
   fileOrBlob,
   type,
   label,
-  attachToQuestion = true,
+  attachToQuestion = false,
 }) {
   const { id, presignedUrl } = await createPresignedUpload({ type, label });
 

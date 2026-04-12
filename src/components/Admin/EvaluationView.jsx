@@ -88,10 +88,10 @@ const EvaluationView = () => {
                   <p className="text-sm text-gray-900 font-medium mt-1">
                     {question ? question.text : 'Loading question text...'}
                   </p>
-                  {question && question.type === 'file_upload' && (
-                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                       File Upload
-                     </span>
+                  {question && (question.type === 'file_upload' || (response.answerText || '').startsWith('media:')) && (
+                     <a href={(response.answerText || '').startsWith('media:') ? (response.answerText || '').replace('media:', '/v1/media/') + '/download' : response.answerText} target="_blank" rel="noreferrer" className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 hover:underline cursor-pointer">
+                       View Submitted Media
+                     </a>
                   )}
                 </div>
 

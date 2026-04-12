@@ -16,23 +16,110 @@
             "ans": "2026;Winter;15;Thursday;January",
             "config": {
               "title": "Time Orientation",
-              "frontend_type": "text_grouped",
-              "description": "Please enter the current date and time details.",
-              "fields": [
-                "Year",
-                "Season",
-                "Date",
-                "Day",
-                "Month"
-              ],
-              "suggestions": [
-                ["2020", "2021", "2022", "2023", "2024", "2025", "2026"],
-                ["Spring", "Summer", "Fall", "Winter", "Autumn"],
-                ["1", "5", "10", "15", "20", "25", "30"],
-                ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-                ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-              ]
-            }
+              "description": "Please enter the current date and time details."
+            },
+            "isGradable": false,
+            "subQuestions": [
+              {
+                "text": "Year",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "2026",
+                "config": {
+                  "placeholder": "Year",
+                  "suggestions": [
+                    "2020",
+                    "2021",
+                    "2022",
+                    "2023",
+                    "2024",
+                    "2025",
+                    "2026"
+                  ]
+                }
+              },
+              {
+                "text": "Season",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Winter",
+                "config": {
+                  "placeholder": "Season",
+                  "suggestions": [
+                    "Spring",
+                    "Summer",
+                    "Fall",
+                    "Winter",
+                    "Autumn"
+                  ]
+                }
+              },
+              {
+                "text": "Date",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "15",
+                "config": {
+                  "placeholder": "Date",
+                  "suggestions": [
+                    "1",
+                    "5",
+                    "10",
+                    "15",
+                    "20",
+                    "25",
+                    "30"
+                  ]
+                }
+              },
+              {
+                "text": "Day",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Thursday",
+                "config": {
+                  "placeholder": "Day",
+                  "suggestions": [
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday"
+                  ]
+                }
+              },
+              {
+                "text": "Month",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "January",
+                "config": {
+                  "placeholder": "Month",
+                  "suggestions": [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December"
+                  ]
+                }
+              }
+            ],
+            "category": "orientation"
           },
           {
             "id": 2,
@@ -42,23 +129,98 @@
             "ans": "Maharashtra;Pune;Pune;Home;Ground Floor",
             "config": {
               "title": "Place Orientation",
-              "frontend_type": "text_grouped",
-              "description": "Where are we now?",
-              "fields": [
-                "State",
-                "County",
-                "Town",
-                "Hospital/Building",
-                "Floor"
-              ],
-              "suggestions": [
-                ["Maharashtra", "Delhi", "Karnataka", "Tamil Nadu", "Gujarat"],
-                ["Pune", "Mumbai", "Bangalore", "Chennai", "Delhi"],
-                ["Pune", "Mumbai", "Bangalore", "Chennai", "Hyderabad", "Kolkata"],
-                ["City Hospital", "General Hospital", "Medical Center", "Clinic", "Home"],
-                ["Ground Floor", "1st Floor", "2nd Floor", "3rd Floor", "4th Floor"]
-              ]
-            }
+              "description": "Where are we now?"
+            },
+            "isGradable": false,
+            "subQuestions": [
+              {
+                "text": "State",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Maharashtra",
+                "config": {
+                  "placeholder": "State",
+                  "suggestions": [
+                    "Maharashtra",
+                    "Delhi",
+                    "Karnataka",
+                    "Tamil Nadu",
+                    "Gujarat"
+                  ]
+                }
+              },
+              {
+                "text": "County",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Pune",
+                "config": {
+                  "placeholder": "County",
+                  "suggestions": [
+                    "Pune",
+                    "Mumbai",
+                    "Bangalore",
+                    "Chennai",
+                    "Delhi"
+                  ]
+                }
+              },
+              {
+                "text": "Town",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Pune",
+                "config": {
+                  "placeholder": "Town",
+                  "suggestions": [
+                    "Pune",
+                    "Mumbai",
+                    "Bangalore",
+                    "Chennai",
+                    "Hyderabad",
+                    "Kolkata"
+                  ]
+                }
+              },
+              {
+                "text": "Hospital/Building",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Home",
+                "config": {
+                  "placeholder": "Hospital/Building",
+                  "suggestions": [
+                    "City Hospital",
+                    "General Hospital",
+                    "Medical Center",
+                    "Clinic",
+                    "Home"
+                  ]
+                }
+              },
+              {
+                "text": "Floor",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Ground Floor",
+                "config": {
+                  "placeholder": "Floor",
+                  "suggestions": [
+                    "Ground Floor",
+                    "1st Floor",
+                    "2nd Floor",
+                    "3rd Floor",
+                    "4th Floor"
+                  ]
+                }
+              }
+            ],
+            "category": "orientation"
           }
         ]
       },
@@ -86,7 +248,8 @@
                 "Penny",
                 "Table"
               ]
-            }
+            },
+            "category": "registration"
           }
         ]
       },
@@ -102,23 +265,92 @@
             "ans": "93;86;79;72;65",
             "config": {
               "title": "Attention Task (Choose One)",
-              "frontend_type": "text_grouped",
-              "description": "Option A: Subtract 7 from 100, and then subtract 7 from that result, continuing 5 times. OR Option B: Spell the word WORLD backwards.",
-              "fields": [
-                "100-7 (or Letter 1)",
-                "-7 (or Letter 2)",
-                "-7 (or Letter 3)",
-                "-7 (or Letter 4)",
-                "-7 (or Letter 5)"
-              ],
-              "suggestions": [
-                ["93", "D", "90", "95"],
-                ["86", "L", "83", "85"],
-                ["79", "R", "76", "80"],
-                ["72", "O", "69", "75"],
-                ["65", "W", "62", "70"]
-              ]
-            }
+              "description": "Option A: Subtract 7 from 100, and then subtract 7 from that result, continuing 5 times. OR Option B: Spell the word WORLD backwards."
+            },
+            "isGradable": false,
+            "subQuestions": [
+              {
+                "text": "100-7 (or Letter 1)",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "93",
+                "config": {
+                  "placeholder": "100-7 (or Letter 1)",
+                  "suggestions": [
+                    "93",
+                    "D",
+                    "90",
+                    "95"
+                  ]
+                }
+              },
+              {
+                "text": "-7 (or Letter 2)",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "86",
+                "config": {
+                  "placeholder": "-7 (or Letter 2)",
+                  "suggestions": [
+                    "86",
+                    "L",
+                    "83",
+                    "85"
+                  ]
+                }
+              },
+              {
+                "text": "-7 (or Letter 3)",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "79",
+                "config": {
+                  "placeholder": "-7 (or Letter 3)",
+                  "suggestions": [
+                    "79",
+                    "R",
+                    "76",
+                    "80"
+                  ]
+                }
+              },
+              {
+                "text": "-7 (or Letter 4)",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "72",
+                "config": {
+                  "placeholder": "-7 (or Letter 4)",
+                  "suggestions": [
+                    "72",
+                    "O",
+                    "69",
+                    "75"
+                  ]
+                }
+              },
+              {
+                "text": "-7 (or Letter 5)",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "65",
+                "config": {
+                  "placeholder": "-7 (or Letter 5)",
+                  "suggestions": [
+                    "65",
+                    "W",
+                    "62",
+                    "70"
+                  ]
+                }
+              }
+            ],
+            "category": "attention"
           }
         ]
       },
@@ -134,19 +366,63 @@
             "ans": "Apple;Penny;Table",
             "config": {
               "title": "Delayed Recall",
-              "frontend_type": "text_grouped",
-              "description": "What were the 3 objects asked to remember earlier?",
-              "fields": [
-                "Object 1",
-                "Object 2",
-                "Object 3"
-              ],
-              "suggestions": [
-                ["Apple", "Ball", "Car", "Dog", "Flag"],
-                ["Penny", "Table", "Chair", "Book", "Key"],
-                ["Table", "River", "House", "Tree", "Flower"]
-              ]
-            }
+              "description": "What were the 3 objects asked to remember earlier?"
+            },
+            "isGradable": false,
+            "subQuestions": [
+              {
+                "text": "Object 1",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Apple",
+                "config": {
+                  "placeholder": "Object 1",
+                  "suggestions": [
+                    "Apple",
+                    "Ball",
+                    "Car",
+                    "Dog",
+                    "Flag"
+                  ]
+                }
+              },
+              {
+                "text": "Object 2",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Penny",
+                "config": {
+                  "placeholder": "Object 2",
+                  "suggestions": [
+                    "Penny",
+                    "Table",
+                    "Chair",
+                    "Book",
+                    "Key"
+                  ]
+                }
+              },
+              {
+                "text": "Object 3",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Table",
+                "config": {
+                  "placeholder": "Object 3",
+                  "suggestions": [
+                    "Table",
+                    "River",
+                    "House",
+                    "Tree",
+                    "Flower"
+                  ]
+                }
+              }
+            ],
+            "category": "recall"
           }
         ]
       },
@@ -162,17 +438,44 @@
             "ans": "Pen;Watch",
             "config": {
               "title": "Naming",
-              "frontend_type": "text_grouped",
-              "description": "Name the objects described or shown.",
-              "fields": [
-                "Object 1 (Used for writing)",
-                "Object 2 (Used for telling time)"
-              ],
-              "suggestions": [
-                ["Pen", "Pencil", "Marker", "Crayon"],
-                ["Watch", "Clock", "Wristwatch", "Timer"]
-              ]
-            }
+              "description": "Name the objects described or shown."
+            },
+            "isGradable": false,
+            "subQuestions": [
+              {
+                "text": "Object 1 (Used for writing)",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Pen",
+                "config": {
+                  "placeholder": "Object 1 (Used for writing)",
+                  "suggestions": [
+                    "Pen",
+                    "Pencil",
+                    "Marker",
+                    "Crayon"
+                  ]
+                }
+              },
+              {
+                "text": "Object 2 (Used for telling time)",
+                "type": "text",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "Watch",
+                "config": {
+                  "placeholder": "Object 2 (Used for telling time)",
+                  "suggestions": [
+                    "Watch",
+                    "Clock",
+                    "Wristwatch",
+                    "Timer"
+                  ]
+                }
+              }
+            ],
+            "category": "language"
           },
           {
             "id": 7,
@@ -190,7 +493,8 @@
                 "No ifs, ands, or buts.",
                 "No if, and, or but"
               ]
-            }
+            },
+            "category": "language"
           },
           {
             "id": 8,
@@ -220,7 +524,8 @@
                   "value": "wrong3"
                 }
               ]
-            }
+            },
+            "category": "language"
           },
           {
             "id": 9,
@@ -242,7 +547,8 @@
                   "value": "no"
                 }
               ]
-            }
+            },
+            "category": "language"
           },
           {
             "id": 10,
@@ -262,20 +568,21 @@
                 "I enjoy reading books.",
                 "The cat is sleeping."
               ]
-            }
+            },
+            "category": "language"
           },
           {
             "id": 11,
             "text": "Copy the design of two intersecting pentagons.",
             "type": "file_upload",
             "maxScore": 1,
-            "ans": "",
             "config": {
               "title": "Copying",
               "frontend_type": "drawing",
               "description": "Copy the design of two intersecting pentagons.",
-              "referenceImageFile": "IntersectingPentagons.png"
-            }
+              "referenceImageFile": "Images/IntersectingPentagons.png"
+            },
+            "category": "language"
           }
         ]
       }

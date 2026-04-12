@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   TextResponseQuestion,
   MultipleChoiceQuestion,
   DrawingCanvasQuestion,
-  QuestionWrapper
-} from '../../components/QuestionTypes';
-import api from '../../api';
-import { uploadMediaAndGetAnswerText } from '../../media';
+  QuestionWrapper,
+  AudioRecorder
+} from './QuestionTypes';
+import api from '../api';
+import { uploadMediaAndGetAnswerText } from '../media';
+import { checkFeedbackAndRedirect, generateSlug } from '../utils';
 
 // AutocompleteInput Component with dropdown suggestions
 const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = '', className = '' }) => {
@@ -20,9 +22,9 @@ const AutocompleteInput = ({ value, onChange, suggestions = [], placeholder = ''
     if (!value || !Array.isArray(suggestions)) {
       result = [...suggestions];
     } else {
-      const lowerValue = value.toLowerCase();
+      const lowerValue = String(value).toLowerCase();
       result = suggestions.filter(s => 
-        s.toLowerCase().includes(lowerValue)
+        s && String(s).toLowerCase().includes(lowerValue)
       );
     }
     // Randomize the order
@@ -126,9 +128,9 @@ const MemoryRegistrationQuestion = ({ title, description, words, fields, value, 
   );
 };
 
-import { checkFeedbackAndRedirect } from '../../utils';
 
-const MMSETest = () => {
+const DynamicTest = () => {
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [currentSection, setCurrentSection] = useState(0);
   const [responses, setResponses] = useState({});
@@ -152,21 +154,20 @@ const MMSETest = () => {
       
       setLoading(true);
       try {
-        // 1. Fetch tests to find MMSE
+        // 1. Fetch tests to find matching slug
         const testsRes = await api.get('/tests');
         const tests = testsRes.data.items || [];
-        const mmseTest = tests.find(t => 
-          (t.title || '').includes('MMSE') || 
-          (t.title || '').includes('Mini-Mental')
+        const currentTest = tests.find(t => 
+          generateSlug(t.title, t.test_specific_info) === slug
         );
         
-        if (mmseTest) {
-          setTestTitle(mmseTest.title);
-          setTestSpecificInfo(mmseTest.test_specific_info || {});
+        if (currentTest) {
+          setTestTitle(currentTest.title);
+          setTestSpecificInfo(currentTest.test_specific_info || {});
           
           // 2. Fetch Sections & Questions
           try {
-            const sectionsRes = await api.get(`/tests/${mmseTest.id}/sections`);
+            const sectionsRes = await api.get(`/tests/${currentTest.id}/sections`);
             const sectionsData = Array.isArray(sectionsRes.data) ? sectionsRes.data : [];
             sectionsData.sort((a, b) => a.orderIndex - b.orderIndex);
 
@@ -222,12 +223,62 @@ const MMSETest = () => {
                       };
                     }));
                   }
+
+                  let subQuestions = [];
+                  if (questionDetail.subQuestions && Array.isArray(questionDetail.subQuestions)) {
+                    subQuestions = await Promise.all(questionDetail.subQuestions.map(async (sq) => {
+                      try {
+                        const sqDetailRes = await api.get(`/questions/${sq.id}`);
+                        const sqDetail = sqDetailRes.data;
+                        
+                        let sqMedia = [];
+                        if (sqDetail.media && Array.isArray(sqDetail.media)) {
+                          sqMedia = await Promise.all(sqDetail.media.map(async (m) => {
+                            try {
+                              const downloadRes = await api.get(`/media/${m.id}/download`);
+                              return { ...m, url: downloadRes.data.presignedUrl };
+                            } catch (err) {
+                              return m;
+                            }
+                          }));
+                        }
+                        
+                        let sqOptions = [];
+                        if (sqDetail.options && Array.isArray(sqDetail.options)) {
+                          sqOptions = await Promise.all(sqDetail.options.map(async (opt) => {
+                            let optMedia = [];
+                            if (opt.media && Array.isArray(opt.media)) {
+                              optMedia = await Promise.all(opt.media.map(async (m) => {
+                                try {
+                                  const downloadRes = await api.get(`/media/${m.id}/download`);
+                                  return { ...m, url: downloadRes.data.presignedUrl };
+                                } catch (err) {
+                                  return m;
+                                }
+                              }));
+                            }
+                            return { ...opt, media: optMedia };
+                          }));
+                        }
+                        
+                        return {
+                          ...sqDetail,
+                          config: sqDetail.config || {},
+                          media: sqMedia,
+                          options: sqOptions
+                        };
+                      } catch (err) {
+                        return { ...sq, config: sq.config || {} };
+                      }
+                    }));
+                  }
                   
                   return {
                     ...q,
                     config: q.config || {},
                     media: questionMedia,
-                    options: options
+                    options: options,
+                    subQuestions: subQuestions.length > 0 ? subQuestions : q.subQuestions
                   };
                 } catch (err) {
                   console.error(`Failed to fetch details for question ${q.id}:`, err);
@@ -254,7 +305,7 @@ const MMSETest = () => {
               const attempts = attemptsRes.data.items || attemptsRes.data || [];
               
               const activeAttempt = attempts.find(a => 
-                a.testId === mmseTest.id && !a.submittedAt && !a.submit_time
+                a.testId === currentTest.id && !a.submittedAt && !a.submit_time
               );
 
               if (activeAttempt) {
@@ -307,7 +358,7 @@ const MMSETest = () => {
                 }
               } else {
                 // Start a new attempt
-                const attemptRes = await api.post('/attempts', { testId: mmseTest.id });
+                const attemptRes = await api.post('/attempts', { testId: currentTest.id });
                 setAttemptId(attemptRes.data.id);
               }
             } catch (attemptError) {
@@ -321,7 +372,7 @@ const MMSETest = () => {
             setError("Failed to load test content.");
           }
         } else {
-          setError("MMSE Test not found in the system.");
+          setError("Test not found in the system.");
         }
       } catch (error) {
         console.error("Failed to initialize test:", error);
@@ -340,12 +391,12 @@ const MMSETest = () => {
     
     // Default to English content
     const section = sections[sectionIdx];
-    const question = section.questions[questionIdx];
+    const question = section.questions && section.questions[questionIdx];
     
     let content = {
       sectionTitle: section.title,
-      qText: question.text,
-      config: question.config || {}
+      qText: question ? question.text : '',
+      config: question ? (question.config || {}) : {}
     };
 
     // Apply translation if available
@@ -395,7 +446,7 @@ const MMSETest = () => {
             fileOrBlob: valueToSave,
             type: 'image',
             label: `Drawing for Question ${questionId}`,
-            attachToQuestion: true,
+            attachToQuestion: false,
           });
         } catch (uploadError) {
           console.error(`Failed to upload drawing for question ${questionId}:`, uploadError);
@@ -410,7 +461,7 @@ const MMSETest = () => {
             fileOrBlob: valueToSave,
             type: 'image',
             label: `File upload for Question ${questionId}`,
-            attachToQuestion: true,
+            attachToQuestion: false,
           });
         } catch (uploadError) {
           console.error(`Failed to upload file for question ${questionId}:`, uploadError);
@@ -425,7 +476,7 @@ const MMSETest = () => {
             fileOrBlob: valueToSave,
             type: 'audio',
             label: `Audio for Question ${questionId}`,
-            attachToQuestion: true,
+            attachToQuestion: false,
           });
         } catch (uploadError) {
           console.error(`Failed to upload audio for question ${questionId}:`, uploadError);
@@ -508,8 +559,13 @@ const MMSETest = () => {
 
   const findQuestion = (id) => {
     for (const section of sections) {
-      const q = section.questions.find(q => q.id == id);
-      if (q) return q;
+      for (const q of section.questions) {
+        if (q.id == id) return q;
+        if (q.subQuestions && q.subQuestions.length > 0) {
+          const subQ = q.subQuestions.find(sq => sq.id == id);
+          if (subQ) return subQ;
+        }
+      }
     }
     return null;
   };
@@ -548,175 +604,267 @@ const MMSETest = () => {
     return <div className="flex justify-center items-center min-h-screen px-4 text-sm sm:text-base">Test data not available.</div>;
   }
 
-  const renderQuestion = (q, idx) => {
-    const { qText, config } = getTranslation(language, currentSection, idx);
+  const renderQuestion = (q, idx, isSubQuestion = false) => {
+    // Only use translation by index for top-level questions for now
+    const translation = isSubQuestion ? null : getTranslation(language, currentSection, idx);
+    const qText = translation ? translation.qText : q.text;
+    const config = { ...(q.config || {}), ...(translation?.config || {}) };
     
     // Use config.frontend_type if available, otherwise fallback to q.type mapping
-    // But wait, q.type is from backend (e.g. 'text', 'scmcq'). 
-    // The original code switched on q.type but used custom types like 'memory_registration' which are now in config.frontend_type.
-    
     const type = config.frontend_type || q.type;
 
-    switch (type) {
-      case 'memory_registration':
-        return (
-          <MemoryRegistrationQuestion
-            key={q.id}
-            title={config.title}
-            description={config.description || qText}
-            words={config.words || []}
-            fields={config.fields || []}
-            value={responses[q.id]}
-            onChange={(val) => handleResponseChange(q.id, val)}
-          />
-        );
-      case 'text':
-        return (
-          <QuestionWrapper key={q.id} title={config.title} description={config.description || qText}>
-            <AutocompleteInput
-              value={responses[q.id] || ''}
+    let innerContent;
+
+    if (q.isGradable === false) {
+      innerContent = (
+        <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText} />
+      );
+    } else {
+      switch (type) {
+        case 'memory_registration':
+          innerContent = (
+            <MemoryRegistrationQuestion
+              key={`q-${q.id}`}
+              title={config.title}
+              description={config.description || qText}
+              words={config.words || []}
+              fields={config.fields || []}
+              value={responses[q.id]}
               onChange={(val) => handleResponseChange(q.id, val)}
-              suggestions={config.suggestions || []}
-              placeholder={config.placeholder || 'Enter your answer...'}
-              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
             />
-          </QuestionWrapper>
-        );
-      case 'text_multiline':
-        return (
-          <QuestionWrapper key={q.id} title={config.title} description={config.description || qText}>
-            <div className="space-y-2">
-              {config.suggestions && config.suggestions.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-                  {config.suggestions.map((suggestion, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => handleResponseChange(q.id, suggestion)}
-                      className="px-2.5 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm bg-indigo-50 text-indigo-700 rounded-md hover:bg-indigo-100 border border-indigo-200"
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
-                </div>
-              )}
-              <textarea
+          );
+          break;
+        case 'text':
+          innerContent = (
+            <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
+              <AutocompleteInput
                 value={responses[q.id] || ''}
-                onChange={(e) => handleResponseChange(q.id, e.target.value)}
+                onChange={(val) => handleResponseChange(q.id, val)}
+                suggestions={config.suggestions || []}
                 placeholder={config.placeholder || 'Enter your answer...'}
-                rows={4}
                 className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
               />
-            </div>
-          </QuestionWrapper>
-        );
-      case 'text_grouped':
-        return (
-          <QuestionWrapper key={q.id} title={config.title} description={config.description || qText}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {(config.fields || []).map((field, idx) => {
-                const fieldSuggestions = (config.suggestions && config.suggestions[idx]) || [];
-                return (
-                  <div key={idx}>
-                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{field}</label>
-                    <AutocompleteInput
-                      value={(responses[q.id] || [])[idx] || ''}
-                      onChange={(val) => handleResponseChange(q.id, val, idx)}
-                      suggestions={fieldSuggestions}
-                      placeholder={field}
-                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
-                    />
+            </QuestionWrapper>
+            );
+          break;
+        case 'text_multiline':
+          innerContent = (
+            <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
+              <div className="space-y-2">
+                {config.suggestions && config.suggestions.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                    {config.suggestions.map((suggestion, sIdx) => (
+                      <button
+                        key={sIdx}
+                        type="button"
+                        onClick={() => handleResponseChange(q.id, suggestion)}
+                        className="px-2.5 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm bg-indigo-50 text-indigo-700 rounded-md hover:bg-indigo-100 border border-indigo-200"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
-          </QuestionWrapper>
-        );
-      case 'mcq':
-      case 'scmcq': { // Backend type might be scmcq
-        // Use actual options from backend if available, otherwise fall back to config
-        const rawOptions = q.options && q.options.length > 0 ? q.options : (config.options || []);
-        
-        // Transform backend options to component format
-        const transformedOptions = rawOptions.map(opt => ({
-          value: opt.id || opt.value,
-          label: opt.text || opt.label,
-          img: opt.media?.[0]?.url || opt.img
-        }));
-        
-        return (
-          <MultipleChoiceQuestion
-            key={q.id}
-            title={config.title}
-            description={config.description || qText}
-            options={transformedOptions}
-            selectedValues={responses[q.id] ? [responses[q.id]] : []}
-            onChange={(vals) => handleResponseChange(q.id, vals[0])}
-            type="single"
-          />
-        );
-      }
-      case 'drawing': {
-        // Determine reference image from question media attachments
-        // This provides visual guidance for what the patient needs to draw
-        let referenceImage = null;
-        
-        // First, check if question has attached media (from backend)
-        if (q.media && Array.isArray(q.media) && q.media.length > 0) {
-          // Find the first image-type media
-          const imageMedia = q.media.find(m => m.type === 'image');
-          if (imageMedia) {
-            // Use presigned URL from url field
-            referenceImage = imageMedia.url;
-          }
-        }
-        
-        // Fallback to config.referenceImage if specified
-        if (!referenceImage && config.referenceImage) {
-          referenceImage = config.referenceImage;
-        }
-        
-        return (
-          <DrawingCanvasQuestion
-            key={q.id}
-            title={config.title}
-            description={config.description || qText}
-            onSave={(blob) => handleResponseChange(q.id, blob)}
-            referenceImage={referenceImage}
-            savedImage={responses[q.id] || null}
-          />
-        );
-      }
-      case 'file_upload': // Backend type
-        return (
-          <QuestionWrapper key={q.id} title={config.title} description={config.description || qText}>
-            <div className="space-y-2 sm:space-y-3">
-              <input
-                type="file"
-                accept="image/*"
-                className="block w-full text-xs sm:text-sm text-gray-700"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  setResponses(prev => ({ ...prev, [q.id]: URL.createObjectURL(file) }));
-                  saveResponseToBackend(q.id, file);
-                }}
-              />
-              {typeof responses[q.id] === 'string' && (responses[q.id].startsWith('http') || responses[q.id].startsWith('blob:')) && (
-                <img
-                  src={responses[q.id]}
-                  alt="Uploaded"
-                  className="max-h-48 sm:max-h-56 md:max-h-64 rounded border"
+                )}
+                <textarea
+                  value={responses[q.id] || ''}
+                  onChange={(e) => handleResponseChange(q.id, e.target.value)}
+                  placeholder={config.placeholder || 'Enter your answer...'}
+                  rows={4}
+                  className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
                 />
-              )}
-            </div>
-          </QuestionWrapper>
-        );
-      default:
-        return (
-            <div key={q.id}>Unknown question type: {type}</div>
-        );
+              </div>
+            </QuestionWrapper>
+            );
+          break;
+        case 'dropdown_grouped':
+          innerContent = (
+            <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                {(config.fields || []).map((field, fIdx) => (
+                  <div key={fIdx}>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{field.label}</label>
+                    <select
+                      value={(responses[q.id] || [])[fIdx] || ''}
+                      onChange={(e) => handleResponseChange(q.id, e.target.value, fIdx)}
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border bg-white"
+                    >
+                      <option value="" disabled>Select an option</option>
+                      {(field.options || []).map((opt, oIdx) => (
+                        <option key={oIdx} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            </QuestionWrapper>
+          );
+          break;
+        case 'text_grouped':
+          innerContent = (
+            <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                {(config.fields || []).map((field, fIdx) => {
+                  const fieldSuggestions = (config.suggestions && config.suggestions[fIdx]) || [];
+                  return (
+                    <div key={fIdx}>
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">{field}</label>
+                      <AutocompleteInput
+                        value={(responses[q.id] || [])[fIdx] || ''}
+                        onChange={(val) => handleResponseChange(q.id, val, fIdx)}
+                        suggestions={fieldSuggestions}
+                        placeholder={field}
+                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </QuestionWrapper>
+          );
+          break;
+        case 'mcq':
+        case 'scmcq': {
+          const rawOptions = q.options && q.options.length > 0 ? q.options : (config.options || []);
+          const transformedOptions = rawOptions.map(opt => ({
+            value: opt.id || opt.value,
+            label: opt.text || opt.label,
+            img: opt.media?.[0]?.url || opt.img
+          }));
+          
+          innerContent = (
+            <MultipleChoiceQuestion
+              key={`qw-${q.id}`}
+              title={config.title}
+              description={config.description || qText}
+              options={transformedOptions}
+              selectedValues={responses[q.id] ? [responses[q.id]] : []}
+              onChange={(vals) => handleResponseChange(q.id, vals[0])}
+              type="single"
+            />
+          );
+          break;
+        }
+        case 'drawing': {
+          let referenceImage = null;
+          if (q.media && Array.isArray(q.media) && q.media.length > 0) {
+            const imageMedia = q.media.find(m => m.type === 'image');
+            if (imageMedia) {
+              referenceImage = imageMedia.url;
+            }
+          }
+          if (!referenceImage && config.referenceImage) {
+            referenceImage = config.referenceImage;
+          }
+          
+          innerContent = (
+            <DrawingCanvasQuestion
+              key={`qw-${q.id}`}
+              title={config.title}
+              description={config.description || qText}
+              onSave={(blob) => handleResponseChange(q.id, blob)}
+              referenceImage={referenceImage}
+              savedImage={responses[q.id] || null}
+            />
+          );
+          break;
+        }
+        case 'file_upload':
+          innerContent = (
+            <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
+              <div className="space-y-2 sm:space-y-3">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="block w-full text-xs sm:text-sm text-gray-700"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setResponses(prev => ({ ...prev, [q.id]: URL.createObjectURL(file) }));
+                    saveResponseToBackend(q.id, file);
+                  }}
+                />
+                {typeof responses[q.id] === 'string' && (responses[q.id].startsWith('http') || responses[q.id].startsWith('blob:')) && (
+                  <img
+                    src={responses[q.id]}
+                    alt="Uploaded"
+                    className="max-h-48 sm:max-h-56 md:max-h-64 rounded border"
+                  />
+                )}
+              </div>
+            </QuestionWrapper>
+          );
+          break;
+        case 'audio_notes': {
+          let audioMediaUrls = q.media?.map(m => m.url) || [];
+          if (config.randomImage && audioMediaUrls.length > 0) {
+             const attemptNum = parseInt((attemptId || '0').toString().replace(/\D/g, '') || '0') + (q.id || 0);
+             audioMediaUrls = [audioMediaUrls[attemptNum % audioMediaUrls.length]];
+          }
+          innerContent = (
+            <QuestionWrapper mediaUrls={audioMediaUrls} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
+              <div className="space-y-4">
+                <AudioRecorder
+                  questionId={q.id}
+                  value={
+                    typeof responses[q.id] === 'object' && responses[q.id] !== null 
+                      ? responses[q.id].audio || '' 
+                      : (typeof responses[q.id] === 'string' && responses[q.id].startsWith('media:') ? responses[q.id] : '')
+                  }
+                  onChange={(val) => {
+                    const currentObj = typeof responses[q.id] === 'object' && responses[q.id] !== null 
+                      ? responses[q.id] 
+                      : {};
+                    handleResponseChange(q.id, { ...currentObj, audio: val });
+                  }}
+                  label={config.audioLabel || 'Record Response'}
+                  maxDuration={config.maxDuration || 60}
+                />
+                {(config.hideNotes !== true) && (<div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+                    {config.notesLabel || 'Notes (Optional)'}
+                  </label>
+                  <textarea
+                    value={
+                      typeof responses[q.id] === 'object' && responses[q.id] !== null 
+                        ? responses[q.id].notes || '' 
+                        : (typeof responses[q.id] === 'string' && !responses[q.id].startsWith('media:') ? responses[q.id] : '')
+                    }
+                    onChange={(e) => {
+                      const currentObj = typeof responses[q.id] === 'object' && responses[q.id] !== null 
+                        ? responses[q.id] 
+                        : {};
+                      handleResponseChange(q.id, { ...currentObj, notes: e.target.value });
+                    }}
+                    placeholder={config.notesPlaceholder || 'Enter your typed notes here...'}
+                    rows={3}
+                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm sm:text-base border-gray-300 rounded-md p-2 border"
+                  />
+                </div>)}
+              </div>
+            </QuestionWrapper>
+          );
+          break;
+        }
+        default:
+          innerContent = (
+            <div key={`qw-${q.id}`}>Unknown question type: {type}</div>
+          );
+          break;
+      }
     }
+
+    if (q.subQuestions && q.subQuestions.length > 0) {
+      return (
+        <div key={`container-${q.id}`} className="space-y-4">
+          {innerContent}
+          <div className="ml-4 sm:ml-6 border-l-2 border-indigo-100 pl-4 py-2 space-y-4">
+            {q.subQuestions.map((subQ, subIdx) => renderQuestion(subQ, `${idx}-${subIdx}`, true))}
+          </div>
+        </div>
+      );
+    }
+
+    return innerContent;
   };
 
   const currentSectionData = sections[currentSection];
@@ -804,4 +952,4 @@ const MMSETest = () => {
   );
 };
 
-export default MMSETest;
+export default DynamicTest;
