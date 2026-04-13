@@ -1,0 +1,45 @@
+openapi_reference: openapi.yaml
+description: "Rules for defining tests in data.json based on frontend DynamicTest.jsx components."
+supported_frontend_types:
+  - type: text
+    description: "Single autocomplete text input."
+    config_requirements:
+      - "placeholder: (string) Input placeholder"
+      - "suggestions: (array of strings) Autocomplete options"
+  - type: text_multiline
+    description: "Textarea input with optional quick-insert suggestions."
+    config_requirements:
+      - "placeholder: (string) Textarea placeholder"
+      - "suggestions: (array of strings) Quick insert buttons"
+  - type: text_grouped
+    description: "Multiple text inputs in a grid."
+    config_requirements:
+      - "fields: (array of strings) Labels for each input"
+      - "suggestions: (array of arrays of strings) Autocomplete options per field"
+  - type: dropdown_grouped
+    description: "Multiple select dropdowns in a grid."
+    config_requirements:
+      - "fields: (array of objects {label: string, options: string[]})"
+  - type: mcq / scmcq
+    description: "Multiple choice (single correct or multiple correct)."
+    config_requirements:
+      - "options: (array of objects {id/value: string, text/label: string, img?: string})"
+  - type: memory_registration
+    description: "Shows text briefly, then hides it and asks for input."
+    config_requirements:
+      - "words: (array of strings) Text to memorize"
+      - "fields: (array of strings) Labels for the input fields when recalling"
+  - type: drawing
+    description: "Canvas for freehand drawing, optionally with a background image."
+    config_requirements:
+      - "referenceImage: (string) URL/path to background image (or use q.media)"
+  - type: file_upload
+    description: "Image upload component."
+    config_requirements: []
+  - type: audio_notes
+    description: "Audio recording component."
+    config_requirements: []
+rules:
+  - "The 'frontend_type' property is optional; if omitted, the app falls back to question 'type'."
+  - "Always define a 'config' block for custom UI settings."
+  - "Do NOT use frontend_type: 'name_address_learning', 'audio_grouped', 'matching', or 'recognition_with_choice' as they are not supported components. Use 'memory_registration', 'text_grouped', or 'dropdown_grouped' instead."

@@ -14,7 +14,7 @@
             "maxScore": 1,
             "config": {
               "title": "Day of the Week",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "Monday",
                 "Tuesday",
@@ -34,7 +34,7 @@
             "maxScore": 1,
             "config": {
               "title": "Year",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "2025",
                 "2026",
@@ -51,7 +51,7 @@
             "maxScore": 1,
             "config": {
               "title": "State / UT",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "Maharashtra",
                 "Delhi",
@@ -105,7 +105,7 @@
             "ans": "56",
             "config": {
               "title": "How Much Did You Spend?",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "46",
                 "52",
@@ -126,7 +126,7 @@
             "ans": "44",
             "config": {
               "title": "How Much Do You Have Left?",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "24",
                 "34",
@@ -175,7 +175,7 @@
             "ans": "Mango",
             "config": {
               "title": "Object 1",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "Mango",
                 "Key",
@@ -198,7 +198,7 @@
             "ans": "Key",
             "config": {
               "title": "Object 2",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "Mango",
                 "Key",
@@ -221,7 +221,7 @@
             "ans": "Scarf",
             "config": {
               "title": "Object 3",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "Mango",
                 "Key",
@@ -244,7 +244,7 @@
             "ans": "House",
             "config": {
               "title": "Object 4",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "Mango",
                 "Key",
@@ -267,7 +267,7 @@
             "ans": "Bus",
             "config": {
               "title": "Object 5",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "Mango",
                 "Key",
@@ -296,7 +296,7 @@
             "ans": "78",
             "config": {
               "title": "87 Backwards",
-              "frontend_type": "text_input",
+              "frontend_type": "text",
               "placeholder": "Enter the numbers backwards"
             },
             "category": "attention"
@@ -309,7 +309,7 @@
             "ans": "946",
             "config": {
               "title": "649 Backwards",
-              "frontend_type": "text_input",
+              "frontend_type": "text",
               "placeholder": "Enter the numbers backwards"
             },
             "category": "attention"
@@ -322,7 +322,7 @@
             "ans": "7358",
             "config": {
               "title": "8537 Backwards",
-              "frontend_type": "text_input",
+              "frontend_type": "text",
               "placeholder": "Enter the numbers backwards"
             },
             "category": "attention"
@@ -370,7 +370,7 @@
             "ans": "Square",
             "config": {
               "title": "Largest Figure",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "Triangle",
                 "Circle",
@@ -394,7 +394,7 @@
             "ans": "Anita",
             "config": {
               "title": "Woman's Name",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "Anita",
                 "Asha",
@@ -413,7 +413,7 @@
             "ans": "Bank manager",
             "config": {
               "title": "Her Work",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "Doctor",
                 "Bank manager",
@@ -432,7 +432,7 @@
             "ans": "When her children became teenagers",
             "config": {
               "title": "When Back to Work",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "After marriage",
                 "When her children became teenagers",
@@ -451,7 +451,7 @@
             "ans": "Karnataka",
             "config": {
               "title": "State They Lived In",
-              "frontend_type": "dropdown",
+              "frontend_type": "dropdown_grouped",
               "options": [
                 "Maharashtra",
                 "Karnataka",

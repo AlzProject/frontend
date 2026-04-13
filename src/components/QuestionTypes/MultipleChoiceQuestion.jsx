@@ -8,7 +8,8 @@ const MultipleChoiceQuestion = ({
   selectedValues = [], 
   onChange, 
   type = 'single', // 'single' or 'multi'
-  layout = 'vertical' // 'vertical' or 'horizontal'
+  layout = 'vertical', // 'vertical' or 'horizontal'
+  mediaUrls = []
 }) => {
   
   const handleChange = (value) => {
@@ -23,7 +24,7 @@ const MultipleChoiceQuestion = ({
   };
 
   return (
-    <QuestionWrapper title={title} description={description}>
+    <QuestionWrapper title={title} description={description} mediaUrls={mediaUrls}>
       <div className={`flex ${layout === 'horizontal' ? 'flex-row flex-wrap gap-4' : 'flex-col space-y-3'}`}>
         {options.map((option) => (
           <label 
@@ -49,6 +50,7 @@ const MultipleChoiceQuestion = ({
                   src={option.img} 
                   alt={option.label} 
                   className="mb-2 h-32 w-32 object-cover rounded-md border border-gray-200"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
                 />
               )}
               <span className="block text-sm font-medium text-gray-700">

@@ -467,7 +467,7 @@
             "maxScore": 7,
             "config": {
               "title": "Name and Address Learning",
-              "frontend_type": "name_address_learning",
+              "frontend_type": "memory_registration",
               "address": "Rajesh Kumar • 42 MG Road • Andheri • Mumbai",
               "instructionText": "I will show you a name and address. Read it and try to remember it.",
               "memorizeText": "Memorize this address.",
@@ -475,7 +475,20 @@
               "repeatText": "Repeat the address aloud (or type it below for self-check).",
               "buttonShow": "Show Address",
               "buttonNext": "Next Trial",
-              "buttonFinish": "Finish Learning"
+              "buttonFinish": "Finish Learning",
+              "words": [
+                "Rajesh Kumar",
+                "42 MG Road",
+                "Andheri",
+                "Mumbai"
+              ],
+              "fields": [
+                "Name",
+                "Street Num",
+                "Street Name",
+                "Area",
+                "City"
+              ]
             },
             "category": "memory"
           }
@@ -585,8 +598,7 @@
             "maxScore": 7,
             "config": {
               "title": "Letter Fluency",
-              "frontend_type": "audio",
-              "placeholder": "List words here..."
+              "frontend_type": "audio_notes"
             },
             "category": "fluency"
           },
@@ -597,8 +609,7 @@
             "maxScore": 7,
             "config": {
               "title": "Category Fluency",
-              "frontend_type": "audio",
-              "placeholder": "List animals here..."
+              "frontend_type": "audio_notes"
             },
             "category": "fluency"
           }
@@ -621,18 +632,30 @@
                 {
                   "text": "Frog",
                   "value": "frog",
-                  "imageFile": "frog.jpg"
+                  "imageFile": "frog.jpg",
+                  "imageSize": {
+                    "width": 120,
+                    "height": 120
+                  }
                 },
                 {
                   "text": "Banana",
                   "value": "banana",
                   "imageFile": "banana.jpg",
-                  "isCorrect": true
+                  "isCorrect": true,
+                  "imageSize": {
+                    "width": 120,
+                    "height": 120
+                  }
                 },
                 {
                   "text": "Car",
                   "value": "car",
-                  "imageFile": "car.webp"
+                  "imageFile": "car.webp",
+                  "imageSize": {
+                    "width": 120,
+                    "height": 120
+                  }
                 }
               ]
             },
@@ -669,7 +692,7 @@
             "maxScore": 4,
             "config": {
               "title": "Repetition",
-              "frontend_type": "audio_grouped",
+              "frontend_type": "text_grouped",
               "fields": [
                 "Hippopotamus",
                 "Eccentricity",
@@ -788,7 +811,11 @@
                   "suggestions": [],
                   "imageFiles": [
                     "watch.jpg"
-                  ]
+                  ],
+                  "imageSize": {
+                    "width": 200,
+                    "height": 200
+                  }
                 }
               },
               {
@@ -802,7 +829,11 @@
                   "suggestions": [],
                   "imageFiles": [
                     "pencil.png"
-                  ]
+                  ],
+                  "imageSize": {
+                    "width": 200,
+                    "height": 200
+                  }
                 }
               },
               {
@@ -816,7 +847,11 @@
                   "suggestions": [],
                   "imageFiles": [
                     "penguin.jpg"
-                  ]
+                  ],
+                  "imageSize": {
+                    "width": 200,
+                    "height": 200
+                  }
                 }
               },
               {
@@ -830,7 +865,11 @@
                   "suggestions": [],
                   "imageFiles": [
                     "anchor.jpg"
-                  ]
+                  ],
+                  "imageSize": {
+                    "width": 200,
+                    "height": 200
+                  }
                 }
               },
               {
@@ -844,7 +883,11 @@
                   "suggestions": [],
                   "imageFiles": [
                     "giraffe.jpg"
-                  ]
+                  ],
+                  "imageSize": {
+                    "width": 200,
+                    "height": 200
+                  }
                 }
               },
               {
@@ -858,7 +901,11 @@
                   "suggestions": [],
                   "imageFiles": [
                     "spoon.jpg"
-                  ]
+                  ],
+                  "imageSize": {
+                    "width": 200,
+                    "height": 200
+                  }
                 }
               }
             ],
@@ -877,87 +924,156 @@
             "maxScore": 1,
             "config": {
               "title": "Reading (1 point)",
-              "frontend_type": "audio",
-              "placeholder": "Note errors if any..."
+              "frontend_type": "audio_notes"
             },
             "category": "language"
           },
           {
             "id": 15,
-            "text": "Match each word to the correct picture by selecting pairs.",
+            "text": "Match each picture to the correct word.",
             "type": "text",
             "maxScore": 4,
-            "correctAnswer": {
-              "word1": "pic1",
-              "word2": "pic2",
-              "word3": "pic3",
-              "word4": "pic4"
-            },
             "config": {
               "title": "Comprehension Association (4 points)",
-              "frontend_type": "matching",
               "imageFiles": [
                 "Images/mango.jpeg",
                 "Images/elephant.png",
                 "Images/rickshaw.jpg",
                 "Images/tree.jpg"
-              ],
-              "leftItems": [
-                {
-                  "id": "word1",
-                  "label": "Mango",
-                  "type": "text"
-                },
-                {
-                  "id": "word2",
-                  "label": "Elephant",
-                  "type": "text"
-                },
-                {
-                  "id": "word3",
-                  "label": "Rickshaw",
-                  "type": "text"
-                },
-                {
-                  "id": "word4",
-                  "label": "Banyan Tree",
-                  "type": "text"
-                }
-              ],
-              "rightItems": [
-                {
-                  "id": "pic3",
-                  "label": "Rickshaw",
-                  "type": "image",
-                  "imageIndex": 2
-                },
-                {
-                  "id": "pic1",
-                  "label": "Mango",
-                  "type": "image",
-                  "imageIndex": 0
-                },
-                {
-                  "id": "pic4",
-                  "label": "Banyan Tree",
-                  "type": "image",
-                  "imageIndex": 3
-                },
-                {
-                  "id": "pic2",
-                  "label": "Elephant",
-                  "type": "image",
-                  "imageIndex": 1
-                }
-              ],
-              "correctMatches": {
-                "word1": "pic1",
-                "word2": "pic2",
-                "word3": "pic3",
-                "word4": "pic4"
-              }
+              ]
             },
-            "category": "language"
+            "category": "language",
+            "isGradable": false,
+            "subQuestions": [
+              {
+                "text": "Mango",
+                "type": "scmcq",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "1",
+                "config": {
+                  "frontend_type": "mcq",
+                  "options": [
+                    {
+                      "text": "1",
+                      "value": "1",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "2",
+                      "value": "2",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "3",
+                      "value": "3",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "4",
+                      "value": "4",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              },
+              {
+                "text": "Elephant",
+                "type": "scmcq",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "2",
+                "config": {
+                  "frontend_type": "mcq",
+                  "options": [
+                    {
+                      "text": "1",
+                      "value": "1",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "2",
+                      "value": "2",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "3",
+                      "value": "3",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "4",
+                      "value": "4",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              },
+              {
+                "text": "Rickshaw",
+                "type": "scmcq",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "3",
+                "config": {
+                  "frontend_type": "mcq",
+                  "options": [
+                    {
+                      "text": "1",
+                      "value": "1",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "2",
+                      "value": "2",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "3",
+                      "value": "3",
+                      "isCorrect": true
+                    },
+                    {
+                      "text": "4",
+                      "value": "4",
+                      "isCorrect": false
+                    }
+                  ]
+                }
+              },
+              {
+                "text": "Banyan Tree",
+                "type": "scmcq",
+                "maxScore": 1,
+                "isGradable": true,
+                "ans": "4",
+                "config": {
+                  "frontend_type": "mcq",
+                  "options": [
+                    {
+                      "text": "1",
+                      "value": "1",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "2",
+                      "value": "2",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "3",
+                      "value": "3",
+                      "isCorrect": false
+                    },
+                    {
+                      "text": "4",
+                      "value": "4",
+                      "isCorrect": true
+                    }
+                  ]
+                }
+              }
+            ]
           }
         ]
       },
@@ -973,7 +1089,11 @@
             "config": {
               "title": "Infinity Diagram",
               "frontend_type": "drawing",
-              "referenceImageFile": "Images/infinity.jpg"
+              "referenceImageFile": "Images/infinity.jpg",
+              "imageSize": {
+                "width": 400,
+                "height": 200
+              }
             },
             "category": "visuospatial"
           },
@@ -985,7 +1105,11 @@
             "config": {
               "title": "Wire Cube",
               "frontend_type": "drawing",
-              "referenceImageFile": "Images/wire_cube.svg"
+              "referenceImageFile": "Images/wire_cube.svg",
+              "imageSize": {
+                "width": 300,
+                "height": 300
+              }
             },
             "category": "visuospatial"
           },
@@ -1018,7 +1142,11 @@
                 "dotCounting/d2.png",
                 "dotCounting/d3.png",
                 "dotCounting/d4.png"
-              ]
+              ],
+              "imageSize": {
+                "width": 150,
+                "height": 150
+              }
             },
             "isGradable": false,
             "subQuestions": [
@@ -1131,7 +1259,11 @@
                 "fragmentedLetters/fragK.png",
                 "fragmentedLetters/fragM.png",
                 "fragmentedLetters/fragT.png"
-              ]
+              ],
+              "imageSize": {
+                "width": 200,
+                "height": 200
+              }
             },
             "isGradable": false,
             "subQuestions": [
@@ -1336,109 +1468,49 @@
             "maxScore": 5,
             "config": {
               "title": "Recognition (5 points)",
-              "frontend_type": "recognition_with_choice",
+              "frontend_type": "dropdown_grouped",
               "recallCompleteText": "Recall was complete",
               "recallIncompleteText": "Recall was incomplete - Show hints",
               "hintsLabel": "Select the correct options from the hints below:",
-              "hintQuestions": [
+              "fields": [
                 {
                   "label": "Name:",
                   "options": [
-                    {
-                      "text": "Ramesh Kumar",
-                      "value": "wrong1",
-                      "isCorrect": false
-                    },
-                    {
-                      "text": "Rajesh Kumar",
-                      "value": "correct1",
-                      "isCorrect": true
-                    },
-                    {
-                      "text": "Rajesh Sharma",
-                      "value": "wrong2",
-                      "isCorrect": false
-                    }
+                    "Ramesh Kumar",
+                    "Rajesh Kumar",
+                    "Rajesh Sharma"
                   ]
                 },
                 {
                   "label": "Street Number:",
                   "options": [
-                    {
-                      "text": "32",
-                      "value": "wrong3",
-                      "isCorrect": false
-                    },
-                    {
-                      "text": "42",
-                      "value": "correct2",
-                      "isCorrect": true
-                    },
-                    {
-                      "text": "52",
-                      "value": "wrong4",
-                      "isCorrect": false
-                    }
+                    "32",
+                    "42",
+                    "52"
                   ]
                 },
                 {
                   "label": "Street Name:",
                   "options": [
-                    {
-                      "text": "FC Road",
-                      "value": "wrong5",
-                      "isCorrect": false
-                    },
-                    {
-                      "text": "MG Road",
-                      "value": "correct3",
-                      "isCorrect": true
-                    },
-                    {
-                      "text": "SB Road",
-                      "value": "wrong6",
-                      "isCorrect": false
-                    }
+                    "FC Road",
+                    "MG Road",
+                    "SB Road"
                   ]
                 },
                 {
                   "label": "Area:",
                   "options": [
-                    {
-                      "text": "Bandra",
-                      "value": "wrong7",
-                      "isCorrect": false
-                    },
-                    {
-                      "text": "Andheri",
-                      "value": "correct4",
-                      "isCorrect": true
-                    },
-                    {
-                      "text": "Dadar",
-                      "value": "wrong8",
-                      "isCorrect": false
-                    }
+                    "Bandra",
+                    "Andheri",
+                    "Dadar"
                   ]
                 },
                 {
                   "label": "City:",
                   "options": [
-                    {
-                      "text": "Pune",
-                      "value": "wrong9",
-                      "isCorrect": false
-                    },
-                    {
-                      "text": "Mumbai",
-                      "value": "correct5",
-                      "isCorrect": true
-                    },
-                    {
-                      "text": "Delhi",
-                      "value": "wrong10",
-                      "isCorrect": false
-                    }
+                    "Pune",
+                    "Mumbai",
+                    "Delhi"
                   ]
                 }
               ]
@@ -2003,59 +2075,135 @@
                 },
                 {
                   "text": "शब्दांची योग्य चित्रांशी जोडी लावा.",
-                  "correctAnswer": {
-                    "word1": "pic1",
-                    "word2": "pic2",
-                    "word3": "pic3",
-                    "word4": "pic4"
-                  },
+                  "correctAnswer": [
+                    "आंबा",
+                    "हत्ती",
+                    "रिक्षा",
+                    "वडाचे झाड"
+                  ],
                   "config": {
                     "title": "अर्थबोध आणि जोड्या (4 गुण)",
-                    "leftItems": [
-                      {
-                        "id": "word1",
-                        "label": "आंबा",
-                        "type": "text"
-                      },
-                      {
-                        "id": "word2",
-                        "label": "हत्ती",
-                        "type": "text"
-                      },
-                      {
-                        "id": "word3",
-                        "label": "रिक्षा",
-                        "type": "text"
-                      },
-                      {
-                        "id": "word4",
-                        "label": "वडाचे झाड",
-                        "type": "text"
-                      }
-                    ],
-                    "rightItems": [
-                      {
-                        "id": "pic3",
-                        "label": "रिक्षा",
-                        "type": "image"
-                      },
-                      {
-                        "id": "pic1",
-                        "label": "आंबा",
-                        "type": "image"
-                      },
-                      {
-                        "id": "pic4",
-                        "label": "वडाचे झाड",
-                        "type": "image"
-                      },
-                      {
-                        "id": "pic2",
-                        "label": "हत्ती",
-                        "type": "image"
-                      }
+                    "imageFiles": [
+                      "Images/mango.jpeg",
+                      "Images/elephant.png",
+                      "Images/rickshaw.jpg",
+                      "Images/tree.jpg"
                     ]
-                  }
+                  },
+                  "subQuestions": [
+                    {
+                      "text": "आंबा",
+                      "ans": "1",
+                      "config": {
+                        "options": [
+                          {
+                            "text": "१",
+                            "value": "1",
+                            "isCorrect": true
+                          },
+                          {
+                            "text": "२",
+                            "value": "2",
+                            "isCorrect": false
+                          },
+                          {
+                            "text": "३",
+                            "value": "3",
+                            "isCorrect": false
+                          },
+                          {
+                            "text": "४",
+                            "value": "4",
+                            "isCorrect": false
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "text": "हत्ती",
+                      "ans": "2",
+                      "config": {
+                        "options": [
+                          {
+                            "text": "१",
+                            "value": "1",
+                            "isCorrect": false
+                          },
+                          {
+                            "text": "२",
+                            "value": "2",
+                            "isCorrect": true
+                          },
+                          {
+                            "text": "३",
+                            "value": "3",
+                            "isCorrect": false
+                          },
+                          {
+                            "text": "४",
+                            "value": "4",
+                            "isCorrect": false
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "text": "रिक्षा",
+                      "ans": "3",
+                      "config": {
+                        "options": [
+                          {
+                            "text": "१",
+                            "value": "1",
+                            "isCorrect": false
+                          },
+                          {
+                            "text": "२",
+                            "value": "2",
+                            "isCorrect": false
+                          },
+                          {
+                            "text": "३",
+                            "value": "3",
+                            "isCorrect": true
+                          },
+                          {
+                            "text": "४",
+                            "value": "4",
+                            "isCorrect": false
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "text": "वडाचे झाड",
+                      "ans": "4",
+                      "config": {
+                        "options": [
+                          {
+                            "text": "१",
+                            "value": "1",
+                            "isCorrect": false
+                          },
+                          {
+                            "text": "२",
+                            "value": "2",
+                            "isCorrect": false
+                          },
+                          {
+                            "text": "३",
+                            "value": "3",
+                            "isCorrect": false
+                          },
+                          {
+                            "text": "४",
+                            "value": "4",
+                            "isCorrect": true
+                          }
+                        ]
+                      }
+                    }
+                  ]
                 }
               ]
             },

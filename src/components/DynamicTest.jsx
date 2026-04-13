@@ -106,7 +106,7 @@ const MemoryRegistrationQuestion = ({ title, description, words, fields, value, 
   }
 
   return (
-    <QuestionWrapper title={title} description="Please type the 3 words you just saw.">
+    <QuestionWrapper title={title} description={description || "Please type the information you just saw."}>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         {fields.map((field, idx) => (
           <div key={idx}>
@@ -613,11 +613,23 @@ const DynamicTest = () => {
     // Use config.frontend_type if available, otherwise fallback to q.type mapping
     const type = config.frontend_type || q.type;
 
+    let mediaUrls = q.media?.map(m => m.url) || [];
+    const slug = testSpecificInfo?.slug || 'ACE-III';
+    
+    if (config.imageFiles && config.imageFiles.length > 0) {
+      mediaUrls = [...mediaUrls, ...config.imageFiles.map(img => img.startsWith('http') || img.startsWith('data:') ? img : `/tests/${slug}/${img}`)];
+    }
+    
+    if (config.referenceImageFile) {
+      const refImg = config.referenceImageFile;
+      mediaUrls = [...mediaUrls, refImg.startsWith('http') || refImg.startsWith('data:') ? refImg : `/tests/${slug}/${refImg}`];
+    }
+
     let innerContent;
 
     if (q.isGradable === false) {
       innerContent = (
-        <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText} />
+        <QuestionWrapper mediaUrls={mediaUrls} key={`qw-${q.id}`} title={config.title} description={config.description || qText} />
       );
     } else {
       switch (type) {
@@ -636,7 +648,7 @@ const DynamicTest = () => {
           break;
         case 'text':
           innerContent = (
-            <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
+            <QuestionWrapper mediaUrls={mediaUrls} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
               <AutocompleteInput
                 value={responses[q.id] || ''}
                 onChange={(val) => handleResponseChange(q.id, val)}
@@ -649,7 +661,7 @@ const DynamicTest = () => {
           break;
         case 'text_multiline':
           innerContent = (
-            <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
+            <QuestionWrapper mediaUrls={mediaUrls} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
               <div className="space-y-2">
                 {config.suggestions && config.suggestions.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
@@ -678,7 +690,7 @@ const DynamicTest = () => {
           break;
         case 'dropdown_grouped':
           innerContent = (
-            <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
+            <QuestionWrapper mediaUrls={mediaUrls} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {(config.fields || []).map((field, fIdx) => (
                   <div key={fIdx}>
@@ -701,7 +713,7 @@ const DynamicTest = () => {
           break;
         case 'text_grouped':
           innerContent = (
-            <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
+            <QuestionWrapper mediaUrls={mediaUrls} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {(config.fields || []).map((field, fIdx) => {
                   const fieldSuggestions = (config.suggestions && config.suggestions[fIdx]) || [];
@@ -734,6 +746,7 @@ const DynamicTest = () => {
           innerContent = (
             <MultipleChoiceQuestion
               key={`qw-${q.id}`}
+              mediaUrls={mediaUrls}
               title={config.title}
               description={config.description || qText}
               options={transformedOptions}
@@ -770,7 +783,7 @@ const DynamicTest = () => {
         }
         case 'file_upload':
           innerContent = (
-            <QuestionWrapper mediaUrls={q.media?.map(m => m.url) || []} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
+            <QuestionWrapper mediaUrls={mediaUrls} key={`qw-${q.id}`} title={config.title} description={config.description || qText}>
               <div className="space-y-2 sm:space-y-3">
                 <input
                   type="file"
@@ -795,7 +808,7 @@ const DynamicTest = () => {
           );
           break;
         case 'audio_notes': {
-          let audioMediaUrls = q.media?.map(m => m.url) || [];
+          let audioMediaUrls = mediaUrls;
           if (config.randomImage && audioMediaUrls.length > 0) {
              const attemptNum = parseInt((attemptId || '0').toString().replace(/\D/g, '') || '0') + (q.id || 0);
              audioMediaUrls = [audioMediaUrls[attemptNum % audioMediaUrls.length]];

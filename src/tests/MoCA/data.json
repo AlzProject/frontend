@@ -165,7 +165,7 @@
             "ans": "21854",
             "config": {
               "title": "Digit Span Forward",
-              "frontend_type": "digit_span",
+              "frontend_type": "memory_registration",
               "sequence": [
                 2,
                 1,
@@ -185,7 +185,7 @@
             "ans": "247",
             "config": {
               "title": "Digit Span Backward",
-              "frontend_type": "digit_span",
+              "frontend_type": "memory_registration",
               "sequence": [
                 7,
                 4,
@@ -203,7 +203,7 @@
             "ans": "",
             "config": {
               "title": "Vigilance",
-              "frontend_type": "vigilance",
+              "frontend_type": "text",
               "sequence": "FBACMNAAJKLBAFAKDEAAAJAMOFAAB"
             },
             "category": "attention"
@@ -736,7 +736,7 @@
                   "text": "या प्राण्यांची नावे सांगा.",
                   "config": {
                     "title": "प्राणी ओळखा",
-                    "frontend_type": "naming_grouped",
+                    "frontend_type": "text_grouped",
                     "imageFiles": [
                       "lion.jpg",
                       "rhinoceros.jpg",
@@ -816,7 +816,7 @@
                   "text": "दाखवलेले अंक लक्षात ठेवा आणि त्याच क्रमाने लिहा.",
                   "config": {
                     "title": "अंक लक्षात ठेवा (सरळ)",
-                    "frontend_type": "digit_span",
+                    "frontend_type": "memory_registration",
                     "sequence": [
                       2,
                       1,
@@ -831,7 +831,7 @@
                   "text": "दाखवलेले अंक लक्षात ठेवा आणि उलट क्रमाने लिहा.",
                   "config": {
                     "title": "अंक लक्षात ठेवा (उलट)",
-                    "frontend_type": "digit_span",
+                    "frontend_type": "memory_registration",
                     "sequence": [
                       7,
                       4,
@@ -844,7 +844,7 @@
                   "text": "या क्रमात 'A' अक्षर दिसेल तिथे टॅप करा.",
                   "config": {
                     "title": "लक्ष लावा",
-                    "frontend_type": "vigilance",
+                    "frontend_type": "text",
                     "sequence": "FBACMNAAJKLBAFAKDEAAAJAMOFAAB"
                   }
                 },

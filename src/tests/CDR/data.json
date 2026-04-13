@@ -15,7 +15,7 @@
             "ans": "",
             "config": {
               "title": "Memory Registration",
-              "frontend_type": "memory_words_display",
+              "frontend_type": "memory_registration",
               "words": [
                 "Apple",
                 "Chair",
