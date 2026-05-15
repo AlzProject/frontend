@@ -4,9 +4,12 @@ import mime from 'mime-types';
 
 // Usage: node scripts/createTest.js <path-to-data.json>
 
-const API_URL = process.env.API_URL || 'http://localhost:3000/v1';
+const API_URL = process.env.API_URL || 'https://api.alzsmriti.one/v1';
 const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
-const adminPassword = process.env.ADMIN_PASSWORD || '123456';
+const adminPassword = process.env.ADMIN_PASSWORD || 'cognitive';
+// const API_URL = process.env.API_URL || 'http://localhost:3000/v1';
+// const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+// const adminPassword = process.env.ADMIN_PASSWORD || '123456';
 const dataPath = process.argv[2];
 
 if (!dataPath) {
@@ -168,6 +171,10 @@ async function run() {
           }
           if (qData.config?.referenceImageFile) {
             const mediaId = await uploadMedia(qData.config.referenceImageFile, token, `Reference for ${qText.substring(0,20)}`);
+            if (mediaId) await attachMediaToQuestion(qId, mediaId, token);
+          }
+          if (qData.config?.backgroundImage) {
+            const mediaId = await uploadMedia(qData.config.backgroundImage, token, `Background for ${qText.substring(0,20)}`);
             if (mediaId) await attachMediaToQuestion(qId, mediaId, token);
           }
 

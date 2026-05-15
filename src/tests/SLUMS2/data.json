@@ -358,7 +358,8 @@
             "config": {
               "title": "Place X in Triangle",
               "frontend_type": "drawing",
-              "backgroundImageKey": "SLUMS_FIGURES_SVG"
+              "backgroundImageKey": "SLUMS_FIGURES_SVG",
+              "backgroundImage": "Images/image.png"
             },
             "category": "figures"
           },

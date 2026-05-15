@@ -150,6 +150,7 @@ const TestRunner = ({ testData, testName, imagesBasePath = '/tests' }) => {
              <DrawingCanvasQuestion
                 {...commonProps}
                 referenceImage={question.config?.referenceImageFile ? `${imagesBasePath}/${question.config.referenceImageFile}` : null}
+                backgroundImage={question.config?.backgroundImage ? `${imagesBasePath}/${question.config.backgroundImage}` : null}
                 onSave={async (blob) => {
                   if (blob) {
                     try {

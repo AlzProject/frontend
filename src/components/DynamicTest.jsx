@@ -759,14 +759,35 @@ const DynamicTest = () => {
         }
         case 'drawing': {
           let referenceImage = null;
+          let backgroundImage = null;
           if (q.media && Array.isArray(q.media) && q.media.length > 0) {
-            const imageMedia = q.media.find(m => m.type === 'image');
-            if (imageMedia) {
-              referenceImage = imageMedia.url;
+            const imageMediaList = q.media.filter(m => m.type === 'image');
+            if (imageMediaList.length > 0) {
+              if (config.backgroundImage && !config.referenceImageFile) {
+                backgroundImage = imageMediaList[0].url;
+              } else if (config.referenceImageFile && !config.backgroundImage) {
+                referenceImage = imageMediaList[0].url;
+              } else if (config.referenceImageFile && config.backgroundImage) {
+                // Approximate mapping by checking URL, assuming server includes original filename or they are sorted.
+                // Simple fallback to first for reference, second for background, or try to match names (if available).
+                referenceImage = imageMediaList[0].url;
+                if (imageMediaList.length > 1) {
+                  backgroundImage = imageMediaList[1].url;
+                }
+              } else {
+                // Default to referenceImage for backward compatibility if image exists but no specific config
+                referenceImage = imageMediaList[0].url;
+              }
             }
           }
           if (!referenceImage && config.referenceImage) {
             referenceImage = config.referenceImage;
+          }
+          if (!backgroundImage && config.backgroundImage) {
+            // Usually this happens if config.backgroundImage is a full URL
+            if (config.backgroundImage.startsWith('http')) {
+               backgroundImage = config.backgroundImage;
+            }
           }
           
           innerContent = (
@@ -777,6 +798,7 @@ const DynamicTest = () => {
               onSave={(blob) => handleResponseChange(q.id, blob)}
               referenceImage={referenceImage}
               savedImage={responses[q.id] || null}
+              backgroundImage={backgroundImage || config.backgroundImageKey}
             />
           );
           break;
